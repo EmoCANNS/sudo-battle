@@ -65,7 +65,7 @@
 
     .user-stats-bar {
       display: flex; justify-content: space-around; background: #f8f9fa; padding: 12px 14px;
-      border-radius: 20px; margin-bottom: 16px; font-weight: 800; font-size: 0.85rem; color: var(--primary);
+      border-radius: 20px; margin-bottom: 16px; font-weight: 800; font-size: 0.82rem; color: var(--primary);
       box-shadow: inset 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #dfe4ea;
     }
 
@@ -156,6 +156,7 @@
       background: var(--card-bg); border: 1px solid #dfe4ea; padding: 9px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
     .tool-btn.active { background: #ffe3ec; border-color: var(--primary); color: var(--primary); }
+    .tool-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .numpad { display: grid; gap: 4px; }
     .num-btn {
@@ -267,7 +268,7 @@
     .guide-section-title { font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .guide-section-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
 
-    /* E-SPOR / VALORANT TARZI HAVALI RANKED STİLLERİ & İKON GÖRÜNÜRLÜK DÜZELTMESİ */
+    /* E-SPOR / VALORANT TARZI HAVALI RANKED STİLLERİ & İKON GÖRÜNÜRLÜK */
     .ranked-card-box {
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
@@ -375,8 +376,8 @@
   <div id="menuScreen" class="screen active">
     <div class="menu-card">
       <div class="user-stats-bar">
+        <span>⭐ Level: <strong id="userLevel">1</strong></span>
         <span>🔥 Seri: <strong id="userStreak">1 Gün</strong></span>
-        <span>⭐ Puan: <strong id="userScore">1200</strong></span>
         <span>🪙 Coin: <strong id="userCoins">800</strong></span>
       </div>
 
@@ -429,7 +430,7 @@
 
       <div style="display: flex; gap: 8px;">
         <button class="btn btn-guide" onclick="closeRankedLobby()">Geri</button>
-        <button class="btn btn-ranked" onclick="startRankedMatchmaking()" style="flex:2;">Rakip Ara 🚀</button>
+        <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex:2;">Rakip Ara 🚀</button>
       </div>
     </div>
   </div>
@@ -441,12 +442,12 @@
       <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Sudo Kılavuzu & Rehber 🌸</h2>
       
       <div class="guide-section-box">
-        <div class="guide-section-title">🧠 1. Sonsuz Sudoku Algoritması</div>
-        <div class="guide-section-text">Her yeni oyunda matrisler rastgele karıştırılır; böylece asla aynı bulmaca karşınıza çıkmaz!</div>
+        <div class="guide-section-title">🧠 1. Sonsuz Sudoku & Level 2 Kuralı</div>
+        <div class="guide-section-text">Klasik modda bulmaca çözerek Level 2 ol, Ranked modun kilidini aç!</div>
       </div>
       <div class="guide-section-box">
-        <div class="guide-section-title">⚔️ 2. Ranked 1v1 Düelloları</div>
-        <div class="guide-section-text">Takma adını belirle, rank puanı (RP) kas, rakibinin rankını gör ve zirveye tırman!</div>
+        <div class="guide-section-title">⚔️ 2. Ranked Mod & İpucu Yasağı</div>
+        <div class="guide-section-text">Ranked düellolarda ipucu yasaktır; tamamen kendi zekana güvenirsin!</div>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 10px;">
         <button class="btn btn-guide" onclick="closeTutorialModal()">Kapat</button>
@@ -697,6 +698,7 @@
 
     let userScore = parseInt(localStorage.getItem('sudo_score')) || 1200;
     let userCoins = localStorage.getItem('sudo_coins') !== null ? parseInt(localStorage.getItem('sudo_coins')) : 800;
+    let userLevel = parseInt(localStorage.getItem('sudo_level')) || 1;
     let hintCount = parseInt(localStorage.getItem('sudo_hints')) || 3;
     let streakDays = parseInt(localStorage.getItem('sudo_streak')) || 1;
     let lastLoginDate = localStorage.getItem('sudo_last_login') || '';
@@ -725,6 +727,9 @@
     }
 
     function openRankedLobby() {
+      if (userLevel < 2) {
+        return showAppAlert("Ranked moda girmek için en az Level 2 olmalısın! Klasik bulmaca çözerek level atla! 🚀");
+      }
       document.getElementById('rankedUsernameInput').value = userName;
       updateRankUI();
       document.getElementById('rankedStatusText').innerText = "";
@@ -853,6 +858,7 @@
     function saveUserData() {
       localStorage.setItem('sudo_score', userScore);
       localStorage.setItem('sudo_coins', userCoins);
+      localStorage.setItem('sudo_level', userLevel);
       localStorage.setItem('sudo_hints', hintCount);
       localStorage.setItem('sudo_streak', streakDays);
       localStorage.setItem('sudo_last_login', lastLoginDate);
@@ -869,11 +875,19 @@
     }
 
     function updateStatsUI() {
-      document.getElementById('userScore').innerText = userScore;
+      document.getElementById('userLevel').innerText = userLevel;
       document.getElementById('userCoins').innerText = userCoins;
       document.getElementById('userStreak').innerText = `${streakDays} Gün`;
       const hintBtn = document.getElementById('hintBtn');
-      if(hintBtn) hintBtn.innerHTML = `<span>💡</span> İpucu (${hintCount})`;
+      if(hintBtn) {
+        if (isRankedMatch) {
+          hintBtn.innerHTML = `<span>💡</span> Yasak`;
+          hintBtn.disabled = true;
+        } else {
+          hintBtn.innerHTML = `<span>💡</span> İpucu (${hintCount})`;
+          hintBtn.disabled = false;
+        }
+      }
       renderMascotSVG('menuMascot');
       updateMarketUI();
     }
@@ -1300,6 +1314,7 @@
 
     function getHint() {
       resetIdleTimer();
+      if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır! ⚔️");
       if (hintCount <= 0) return showAppAlert("İpucu kalmadı!");
       let totalCells = boardSize * boardSize;
       let emptyOrWrong = [];
@@ -1329,7 +1344,7 @@
         currentBoard[targetIndex] = solutionBoard[targetIndex];
         notesBoard[targetIndex] = [];
         renderBoard();
-        selectedCell = targetIndex;
+        selectedIndex = targetIndex;
         checkWin();
         resetMascotPosition();
       }, 850);
@@ -1377,6 +1392,12 @@
       let earnedScore = 150, earnedCoins = 50;
       userScore += earnedScore; userCoins += earnedCoins;
 
+      let levelUpText = "";
+      if (userLevel < 2) {
+        userLevel = 2;
+        levelUpText = " | 🔓 Level 2 Oldun! Ranked Açıldı!";
+      }
+
       let rpGainText = "";
       if (isRankedMatch) {
         userRp += 25;
@@ -1384,7 +1405,7 @@
       }
 
       saveUserData();
-      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
+      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}${levelUpText}`;
       document.getElementById('winModal').style.display = 'flex';
       updateStatsUI();
     }
