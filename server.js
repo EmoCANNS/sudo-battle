@@ -10,7 +10,6 @@ app.use(express.static('public'));
 
 let waitingPlayer = null;
 
-// Rank belirleme fonksiyonu
 function getRank(rp) {
     if (rp < 100) return { name: 'Bronz', icon: '#rank-bronze' };
     if (rp < 300) return { name: 'Gümüş', icon: '#rank-silver' };
@@ -24,6 +23,11 @@ io.on('connection', (socket) => {
     console.log(`Bir oyuncu bağlandı: ${socket.id}`);
 
     socket.on('find_match', (playerData) => {
+        // Eğer oyuncu zaten beklemedeyse tekrar sıraya alarak kendini bulmasını engelle
+        if (waitingPlayer && waitingPlayer.id === socket.id) {
+            return;
+        }
+
         socket.userData = {
             id: socket.id,
             username: playerData.username || 'Oyuncu',
@@ -31,9 +35,12 @@ io.on('connection', (socket) => {
         };
 
         if (waitingPlayer) {
-            const roomId = `room_${socket.id}_${waitingPlayer.id}`;
+            const opponent = waitingPlayer;
+            waitingPlayer = null; // Havuzu temizle
+
+            const roomId = `room_${socket.id}_${opponent.id}`;
             socket.join(roomId);
-            waitingPlayer.join(roomId);
+            opponent.join(roomId);
 
             const seed = Math.floor(Math.random() * 900000) + 100;
             
@@ -41,12 +48,12 @@ io.on('connection', (socket) => {
                 roomId,
                 seed,
                 opponent: {
-                    username: waitingPlayer.userData.username,
-                    rank: getRank(waitingPlayer.userData.rp)
+                    username: opponent.userData.username,
+                    rank: getRank(opponent.userData.rp)
                 }
             });
 
-            waitingPlayer.emit('match_found', {
+            opponent.emit('match_found', {
                 roomId,
                 seed,
                 opponent: {
@@ -54,11 +61,9 @@ io.on('connection', (socket) => {
                     rank: getRank(socket.userData.rp)
                 }
             });
-
-            waitingPlayer = null;
         } else {
             waitingPlayer = socket;
-            socket.emit('waiting_opponent', "Dereceli rakip aranıyor... ⚔️");
+            socket.emit('waiting_opponent', "Dereceli gerçek rakip aranıyor... ⚔️");
         }
     });
 
@@ -71,7 +76,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        if (waitingPlayer === socket) {
+        if (waitingPlayer && waitingPlayer.id === socket.id) {
             waitingPlayer = null;
         }
         console.log(`Oyuncu ayrıldı: ${socket.id}`);
