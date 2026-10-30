@@ -268,14 +268,14 @@
     .guide-section-title { font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .guide-section-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
 
-    /* E-SPOR / VALORANT TARZI HAVALI RANKED STİLLERİ & İKON GÖRÜNÜRLÜK (MOBİL UYUMLU DOĞRUDAN SVG) */
+    /* E-SPOR / VALORANT TARZI HAVALI & PREMIUM RANK ROZETLERİ */
     .ranked-card-box {
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
       box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,71,87,0.05);
       border-radius: 20px; padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; text-align: left;
     }
-    .rank-badge-sm { width: 65px; height: 65px; flex-shrink: 0; }
+    .rank-badge-sm { width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255,71,87,0.5)); }
     .rank-badge-sm svg, .vs-rank-icon svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
     .progress-bar-container { background: rgba(255,255,255,0.1); border-radius: 8px; height: 10px; width: 100%; margin-top: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
@@ -287,7 +287,7 @@
       border: 1px solid rgba(255, 71, 87, 0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.5);
     }
     .vs-player-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40%; color: #fff; }
-    .vs-rank-icon { width: 50px; height: 50px; }
+    .vs-rank-icon { width: 55px; height: 55px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
     
     .btn-ranked {
       background: linear-gradient(135deg, #ff4757 0%, #c51162 100%);
@@ -374,7 +374,7 @@
       </div>
       <div class="guide-section-box">
         <div class="guide-section-title">⚔️ 2. Ranked Mod & İpucu Yasağı</div>
-        <div class="guide-section-text">Ranked düellolarda ipucu yasaktır; tamamen kendi zekana güvenirsin!</div>
+        <div class="guide-section-text">Ranked düellolarda ipucu yasaktır; tamamen kendi zekana güvenirsin! Hatalar puanını düşürür!</div>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 10px;">
         <button class="btn btn-guide" onclick="closeTutorialModal()">Kapat</button>
@@ -551,7 +551,7 @@
       <div class="speech-bubble">Muhteşemsin! 🎉</div>
       <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Bulmaca Tamamlandı!</h2>
       <div style="background: rgba(255,71,87,0.1); padding: 12px; border-radius: 16px; margin: 12px 0; font-weight: 800; color: var(--primary);" id="winStatsText">Süre: 00:00</div>
-      <button class="btn btn-primary" onclick="startNewSudokuDirectly()">🔄 Yeni Bulmaca Oyna</button>
+      <button class="btn btn-primary" onclick="showMenu()">🏠 Ana Sayfaya Dön</button>
     </div>
   </div>
 
@@ -636,24 +636,24 @@
     let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
     let isRankedMatch = false;
 
-    // iPhone uyumlu doğrudan SVG render fonksiyonu (İkonlar iOS'te siyah görünmez, tam renkli çıkar)
+    // YENİ NESİL PREMIUM E-SPOR RANK ROZETLERİ (Valorant/League Tarzı)
     function getRankSvgHtml(type) {
       if (type === 'bronze') {
-        return `<svg viewBox="0 0 50 60"><defs><linearGradient id="g-br" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f39c12"/><stop offset="100%" stop-color="#8e44ad"/></linearGradient></defs><polygon points="25,2 48,16 48,44 25,58 2,44 2,16" fill="#3a1e16" stroke="url(#g-br)" stroke-width="3.5"/><polygon points="25,10 40,20 40,40 25,50 10,40 10,20" fill="url(#g-br)" opacity="0.9"/><circle cx="25" cy="30" r="7" fill="#ffffff" opacity="0.95"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.85"/><circle cx="50" cy="50" r="16" fill="#fff" opacity="0.95"/><circle cx="50" cy="50" r="8" fill="#e67e22"/></svg>`;
       }
       if (type === 'silver') {
-        return `<svg viewBox="0 0 50 60"><defs><linearGradient id="g-sl" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#95a5a6"/></linearGradient></defs><polygon points="25,2 48,16 48,44 25,58 2,44 2,16" fill="#2c3e50" stroke="url(#g-sl)" stroke-width="3.5"/><polygon points="25,10 40,20 40,40 25,50 10,40 10,20" fill="url(#g-sl)" opacity="0.9"/><polygon points="25,18 33,30 25,42 17,30" fill="#ffffff"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#718093"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e272c" stroke="url(#sl-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#sl-g)" opacity="0.85"/><polygon points="50,30 65,50 50,70 35,50" fill="#1e272c"/></svg>`;
       }
       if (type === 'gold') {
-        return `<svg viewBox="0 0 50 60"><defs><linearGradient id="g-go" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#e67e22"/></linearGradient></defs><polygon points="25,1 49,15 49,45 25,59 1,45 1,15" fill="#4d3300" stroke="url(#g-go)" stroke-width="4"/><polygon points="25,8 42,18 42,42 25,52 8,42 8,18" fill="url(#g-go)"/><polygon points="25,16 34,28 25,40 16,28" fill="#ffffff"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/></linearGradient></defs><polygon points="50,3 95,25 95,75 50,97 5,75 5,25" fill="#2c2c35" stroke="url(#go-g)" stroke-width="6"/><polygon points="50,12 85,28 85,72 50,88 15,72 15,28" fill="url(#go-g)"/><polygon points="50,32 66,50 50,68 34,50" fill="#ffffff"/></svg>`;
       }
       if (type === 'platinum') {
-        return `<svg viewBox="0 0 50 60"><defs><linearGradient id="g-pl" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1abc9c"/><stop offset="100%" stop-color="#2980b9"/></linearGradient></defs><path d="M25,2 L48,25 L25,58 L2,25 Z" fill="#0b3c36" stroke="url(#g-pl)" stroke-width="4"/><path d="M25,10 L40,25 L25,48 L10,25 Z" fill="url(#g-pl)"/><polygon points="25,18 33,25 25,36 17,25" fill="#ffffff"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><path d="M50,3 L95,50 L50,97 L5,50 Z" fill="#0c2461" stroke="url(#pl-g)" stroke-width="6"/><path d="M50,14 L84,50 L50,86 L16,50 Z" fill="url(#pl-g)"/><polygon points="50,34 64,50 50,66 36,50" fill="#ffffff"/></svg>`;
       }
       if (type === 'diamond') {
-        return `<svg viewBox="0 0 50 60"><defs><linearGradient id="g-di" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e056fd"/><stop offset="100%" stop-color="#686de0"/></linearGradient></defs><path d="M25,1 L49,18 39,57 11,57 1,18 Z" fill="#291147" stroke="url(#g-di)" stroke-width="4"/><polygon points="25,8 41,20 35,48 15,48 9,20" fill="url(#g-di)"/><polygon points="25,16 33,26 25,40 17,26" fill="#ffffff"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#6c5ce7"/></linearGradient></defs><path d="M50,2 L96,32 78,92 22,92 4,32 Z" fill="#2d132c" stroke="url(#di-g)" stroke-width="6"/><polygon points="50,12 86,36 70,82 30,82 14,36" fill="url(#di-g)"/><polygon points="50,28 68,48 50,72 32,48" fill="#ffffff"/></svg>`;
       }
-      return `<svg viewBox="0 0 50 60"><defs><linearGradient id="g-ma" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M25,1 L49,12 49,39 25,59 1,39 1,12 Z" fill="#4a0e17" stroke="url(#g-ma)" stroke-width="4.5"/><path d="M25,7 L43,15 L43,35 L25,51 L7,35 L7,15 Z" fill="url(#g-ma)"/><polygon points="25,14 35,26 25,42 15,26" fill="#ffffff"/><circle cx="25" cy="28" r="4.5" fill="#ffeaa7"/></svg>`;
+      return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="50%" stop-color="#ffa502"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M50,2 L97,20 97,65 50,98 3,65 3,20 Z" fill="#3b0712" stroke="url(#ma-g)" stroke-width="7"/><path d="M50,10 L88,25 88,60 50,90 12,60 12,25 Z" fill="url(#ma-g)"/><polygon points="50,25 67,45 50,75 33,45" fill="#ffffff"/><circle cx="50" cy="50" r="7" fill="#ffeaa7"/></svg>`;
     }
 
     function getRankDetails(rp) {
@@ -718,13 +718,17 @@
       initGame(data.seed, "RANKED 1v1", false);
     });
 
+    // Rakip oyundan çıkarsa veya maçı kaybederse otomatik kazandırma
     socket.on('game_over', (data) => {
       if (isRankedMatch) {
         stopTimer();
-        if (data.winner !== socket.id) {
+        if (data.winner === socket.id) {
+          showAppAlert("Rakip oyundan ayrıldı! Hükmen kazandın! 🏆");
+        } else {
           showAppAlert("Rakip bulmacayı önce tamamladı! Maçı kaybettin. 😢");
-          document.getElementById('winModal').style.display = 'none';
         }
+        document.getElementById('winModal').style.display = 'none';
+        setTimeout(() => { showMenu(); }, 2500);
       }
     });
 
@@ -1448,19 +1452,29 @@
 
       renderMascotSVG('winMascot');
       confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
-      let earnedScore = 150, earnedCoins = 50;
-      userScore += earnedScore; userCoins += earnedCoins;
+      
+      // Hata başına ödül düşürme sistemi
+      let earnedScore = Math.max(30, 150 - (mistakes * 20));
+      let earnedCoins = Math.max(10, 50 - (mistakes * 5));
+      userScore += earnedScore; 
+      userCoins += earnedCoins;
 
       let rpGainText = "";
       if (isRankedMatch) {
-        userRp += 25;
-        rpGainText = " | +25 RP 🏆";
+        let rpGain = Math.max(5, 25 - (mistakes * 4));
+        userRp += rpGain;
+        rpGainText = ` | +${rpGain} RP 🏆`;
       }
 
       saveUserData();
-      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
+      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | Hata: ${mistakes} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
       document.getElementById('winModal').style.display = 'flex';
       updateStatsUI();
+
+      // 3 saniye sonra otomatik ana sayfaya yönlendir
+      setTimeout(() => {
+        showMenu();
+      }, 3000);
     }
 
     checkDailyStreak();
