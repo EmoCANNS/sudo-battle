@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Tatlı Sudoku & Sudo Battle</title>
+  <title>Sudo Battle</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
@@ -295,11 +295,12 @@
       color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5); font-size: 1.05rem;
       border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px;
     }
+    .btn-ranked:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
 <body onclick="resetIdleTimer()" onmousemove="resetIdleTimer()">
 
-  <!-- HAVALI E-SPOR / VALORANT TARZI NEON RANK SVG İKONLARI -->
+  <!-- RANK SVG İKONLARI -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
     <defs>
       <linearGradient id="bronze-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -326,42 +327,36 @@
       </filter>
     </defs>
 
-    <!-- BRONZ -->
     <g id="rank-bronze" filter="url(#neon-glow)">
       <polygon points="25,2 48,16 48,44 25,58 2,44 2,16" fill="#3a1e16" stroke="url(#bronze-grad)" stroke-width="3.5"/>
       <polygon points="25,10 40,20 40,40 25,50 10,40 10,20" fill="url(#bronze-grad)" opacity="0.9"/>
       <circle cx="25" cy="30" r="7" fill="#ffffff" opacity="0.95"/>
     </g>
 
-    <!-- GÜMÜŞ -->
     <g id="rank-silver" filter="url(#neon-glow)">
       <polygon points="25,2 48,16 48,44 25,58 2,44 2,16" fill="#2c3e50" stroke="url(#silver-grad)" stroke-width="3.5"/>
       <polygon points="25,10 40,20 40,40 25,50 10,40 10,20" fill="url(#silver-grad)" opacity="0.9"/>
       <polygon points="25,18 33,30 25,42 17,30" fill="#ffffff"/>
     </g>
 
-    <!-- ALTIN -->
     <g id="rank-gold" filter="url(#neon-glow)">
       <polygon points="25,1 49,15 49,45 25,59 1,45 1,15" fill="#4d3300" stroke="url(#gold-grad)" stroke-width="4"/>
       <polygon points="25,8 42,18 42,42 25,52 8,42 8,18" fill="url(#gold-grad)"/>
       <polygon points="25,16 34,28 25,40 16,28" fill="#ffffff"/>
     </g>
 
-    <!-- PLATİN -->
     <g id="rank-platinum" filter="url(#neon-glow)">
       <path d="M25,2 L48,25 L25,58 L2,25 Z" fill="#0b3c36" stroke="url(#plat-grad)" stroke-width="4"/>
       <path d="M25,10 L40,25 L25,48 L10,25 Z" fill="url(#plat-grad)"/>
       <polygon points="25,18 33,25 25,36 17,25" fill="#ffffff"/>
     </g>
 
-    <!-- ELMAS -->
     <g id="rank-diamond" filter="url(#neon-glow)">
       <path d="M25,1 L49,18 39,57 11,57 1,18 Z" fill="#291147" stroke="url(#diamond-grad)" stroke-width="4"/>
       <polygon points="25,8 41,20 35,48 15,48 9,20" fill="url(#diamond-grad)"/>
       <polygon points="25,16 33,26 25,40 17,26" fill="#ffffff"/>
     </g>
 
-    <!-- ÜSTAT (MASTER) -->
     <g id="rank-master" filter="url(#neon-glow)">
       <path d="M25,1 L49,12 49,39 25,59 1,39 1,12 Z" fill="#4a0e17" stroke="url(#master-grad)" stroke-width="4.5"/>
       <path d="M25,7 L43,15 L43,35 L25,51 L7,35 L7,15 Z" fill="url(#master-grad)"/>
@@ -383,7 +378,7 @@
 
       <div class="mascot-container" id="menuMascot" style="width: 80px; height: 80px;" onclick="triggerMascotClick()"></div>
 
-      <h1 class="app-title">Tatlı Sudoku</h1>
+      <h1 class="app-title">Sudo Battle</h1>
       <p class="app-subtitle">Sudo ile zihnini çalıştır!</p>
 
       <div class="menu-buttons-grid">
@@ -442,8 +437,8 @@
       <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Sudo Kılavuzu & Rehber 🌸</h2>
       
       <div class="guide-section-box">
-        <div class="guide-section-title">🧠 1. Sonsuz Sudoku & Level 2 Kuralı</div>
-        <div class="guide-section-text">Klasik modda bulmaca çözerek Level 2 ol, Ranked modun kilidini aç!</div>
+        <div class="guide-section-title">🧠 1. Sonsuz Sudoku & Gelişim</div>
+        <div class="guide-section-text">Klasik modda bulmaca çözerek level atla ve ödüller kazan!</div>
       </div>
       <div class="guide-section-box">
         <div class="guide-section-title">⚔️ 2. Ranked Mod & İpucu Yasağı</div>
@@ -726,13 +721,13 @@
       document.getElementById('rpProgressBar').style.width = `${pct}%`;
     }
 
+    // RANKED LOBİSİ - HERKES DOĞRUDAN GİREBİLİR (LEVEL KONTROLÜ KALDIRILDI)
     function openRankedLobby() {
-      if (userLevel < 2) {
-        return showAppAlert("Ranked moda girmek için en az Level 2 olmalısın! Klasik bulmaca çözerek level atla! 🚀");
-      }
       document.getElementById('rankedUsernameInput').value = userName;
       updateRankUI();
       document.getElementById('rankedStatusText').innerText = "";
+      document.getElementById('rankedSearchBtn').disabled = false;
+      document.getElementById('rankedSearchBtn').innerText = "Rakip Ara 🚀";
       document.getElementById('rankedLobbyModal').style.display = 'flex';
     }
     function closeRankedLobby() { document.getElementById('rankedLobbyModal').style.display = 'none'; }
@@ -743,7 +738,10 @@
         userName = inputVal;
         localStorage.setItem('sudo_username', userName);
       }
-      document.getElementById('rankedStatusText').innerText = "Dereceli rakip aranıyor... ⚔️";
+      const searchBtn = document.getElementById('rankedSearchBtn');
+      searchBtn.disabled = true;
+      searchBtn.innerText = "Rakip Aranıyor... ⏳";
+      document.getElementById('rankedStatusText').innerText = "Dereceli gerçek rakip bekleniyor... ⚔️";
       socket.emit('find_match', { username: userName, rp: userRp });
     }
 
@@ -895,46 +893,127 @@
     function openTutorialModal() { renderMascotSVG('tutorialMascot'); document.getElementById('tutorialModal').style.display = 'flex'; }
     function closeTutorialModal() { document.getElementById('tutorialModal').style.display = 'none'; }
 
+    // HİZALANMIŞ VE DÜZELTİLMİŞ MASKOT / AKSESUAR SVG ÇİZİMİ
     function renderMascotSVG(containerId, mood = 'happy', isBlinking = false) {
       const el = document.getElementById(containerId);
-      if(!el) return;
+      if (!el) return;
       let color = skinColors[activeSkin] || '#ff4757';
 
-      let mouthPath = "M 38 58 Q 50 72 62 58";
-      if (mood === 'sad' || mood === 'sitem') mouthPath = "M 38 64 Q 50 52 62 64";
-      else if (mood === 'thinking') mouthPath = "M 42 60 Q 50 58 58 60";
-      else if (mood === 'sleep') mouthPath = "M 42 62 Q 50 66 58 62";
+      let mouthPath = "M 38 62 Q 50 74 62 62";
+      if (mood === 'sad' || mood === 'sitem') mouthPath = "M 38 66 Q 50 54 62 66";
+      else if (mood === 'thinking') mouthPath = "M 42 62 Q 50 60 58 62";
+      else if (mood === 'sleep') mouthPath = "M 42 64 Q 50 68 58 64";
 
       let eyesSVG = '';
       if (mood === 'sleep' || isBlinking) {
         eyesSVG = `
-          <path d="M 31 38 Q 37 43 43 38" stroke="#2f3542" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <path d="M 61 38 Q 67 43 73 38" stroke="#2f3542" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 31 38 Q 37 43 43 38" stroke="#2f3542" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M 61 38 Q 67 43 73 38" stroke="#2f3542" stroke-width="3.5" fill="none" stroke-linecap="round"/>
         `;
       } else {
         eyesSVG = `
-          <circle cx="35" cy="40" r="12" fill="#fff"/>
-          <circle cx="65" cy="40" r="12" fill="#fff"/>
-          <circle cx="37" cy="38" r="6" fill="#2f3542"/>
-          <circle cx="67" cy="38" r="6" fill="#2f3542"/>
-          <circle cx="39" cy="36" r="2" fill="#fff"/>
-          <circle cx="69" cy="36" r="2" fill="#fff"/>
+          <circle cx="35" cy="38" r="11" fill="#fff"/>
+          <circle cx="65" cy="38" r="11" fill="#fff"/>
+          <circle cx="37" cy="37" r="5.5" fill="#2f3542"/>
+          <circle cx="67" cy="37" r="5.5" fill="#2f3542"/>
+          <circle cx="39" cy="35" r="2" fill="#fff"/>
+          <circle cx="69" cy="35" r="2" fill="#fff"/>
         `;
       }
 
       let accSVG = '';
-      if (activeAcc === 'crown') accSVG = `<g transform="translate(0, -12)"><polygon points="24,18 34,4 50,14 66,4 76,18 73,24 27,24" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/><circle cx="50" cy="12" r="3.5" fill="#ff4757"/></g>`;
-      else if (activeAcc === 'glasses') accSVG = `<g transform="translate(0, 1)"><rect x="22" y="28" width="26" height="18" rx="5" fill="#2f3542"/><rect x="52" y="28" width="26" height="18" rx="5" fill="#2f3542"/><line x1="48" y1="36" x2="52" y2="36" stroke="#2f3542" stroke-width="4"/></g>`;
-      else if (activeAcc === 'halo') accSVG = `<g transform="translate(0, -10)"><ellipse cx="50" cy="10" rx="26" ry="8" fill="none" stroke="#f1c40f" stroke-width="6"/></g>`;
-      else if (activeAcc === 'bow') accSVG = `<g transform="translate(0, 40)"><polygon points="50,22 32,10 32,34" fill="#ff6b81"/><polygon points="50,22 68,10 68,34" fill="#ff6b81"/><circle cx="50" cy="22" r="5" fill="#ff4757"/></g>`;
-      else if (activeAcc === 'headphones') accSVG = `<g><path d="M 10 48 A 43 43 0 0 1 90 48" fill="none" stroke="#2f3542" stroke-width="8"/><rect x="2" y="36" width="14" height="28" rx="6" fill="#ff4757"/><rect x="84" y="36" width="14" height="28" rx="6" fill="#ff4757"/></g>`;
-      else if (activeAcc === 'cat') accSVG = `<g transform="translate(0, -8)"><polygon points="18,26 28,2 44,16" fill="${color}"/><polygon points="82,26 72,2 56,16" fill="${color}"/><polygon points="22,22 28,8 38,14" fill="#ff6b81"/><polygon points="78,22 72,8 62,14" fill="#ff6b81"/></g>`;
-      else if (activeAcc === 'chef') accSVG = `<g transform="translate(0, -16)"><ellipse cx="50" cy="16" rx="20" ry="14" fill="#fff"/><rect x="36" y="22" width="28" height="12" fill="#fff"/></g>`;
-      else if (activeAcc === 'wizard') accSVG = `<g transform="translate(0, -22)"><polygon points="50,-2 20,26 80,26" fill="#5352ed"/><ellipse cx="50" cy="26" rx="34" ry="7" fill="#5352ed"/><circle cx="50" cy="10" r="3" fill="#ffeaa7"/><circle cx="40" cy="18" r="2" fill="#ffeaa7"/><circle cx="62" cy="16" r="2.5" fill="#ffeaa7"/></g>`;
-      else if (activeAcc === 'pirate') accSVG = `<g transform="translate(0, -6)"><path d="M 20,24 Q 50,0 80,24 L 72,34 Q 50,14 28,34 Z" fill="#2f3542"/><circle cx="50" cy="14" r="6" fill="#f1f2f6"/></g>`;
-      else if (activeAcc === 'scarf') accSVG = `<g transform="translate(0, 42)"><rect x="26" y="0" width="48" height="12" rx="6" fill="#ff7f50"/><rect x="56" y="10" width="12" height="22" rx="5" fill="#ff7f50"/></g>`;
-      else if (activeAcc === 'rock') accSVG = `<g transform="translate(0, 0)"><rect x="18" y="26" width="64" height="12" rx="5" fill="#ff4757"/><polygon points="35,26 50,8 65,26" fill="#ffeaa7"/></g>`;
-      else if (activeAcc === 'doctor') accSVG = `<g transform="translate(0, -12)"><rect x="34" y="8" width="32" height="18" rx="5" fill="#2ed573"/><circle cx="50" cy="17" r="5" fill="#fff"/><rect x="47" y="13" width="6" height="8" fill="#ff4757"/><rect x="44" y="14" width="12" height="6" fill="#ff4757"/></g>`;
+
+      if (activeAcc === 'crown') {
+        accSVG = `
+          <g transform="translate(0, -18)">
+            <polygon points="20,22 32,4 50,16 68,4 80,22 75,28 25,28" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/>
+            <circle cx="50" cy="13" r="3.5" fill="#ff4757"/>
+            <circle cx="32" cy="10" r="2.5" fill="#2ed573"/>
+            <circle cx="68" cy="10" r="2.5" fill="#3742fa"/>
+          </g>`;
+      } else if (activeAcc === 'glasses') {
+        accSVG = `
+          <g transform="translate(0, -2)">
+            <rect x="20" y="26" width="28" height="22" rx="6" fill="#2f3542"/>
+            <rect x="52" y="26" width="28" height="22" rx="6" fill="#2f3542"/>
+            <line x1="48" y1="36" x2="52" y2="36" stroke="#2f3542" stroke-width="4"/>
+            <line x1="8" y1="34" x2="20" y2="34" stroke="#2f3542" stroke-width="3"/>
+            <line x1="80" y1="34" x2="92" y2="34" stroke="#2f3542" stroke-width="3"/>
+          </g>`;
+      } else if (activeAcc === 'halo') {
+        accSVG = `
+          <g transform="translate(0, -16)">
+            <ellipse cx="50" cy="10" rx="30" ry="8" fill="none" stroke="#f1c40f" stroke-width="5" opacity="0.9"/>
+          </g>`;
+      } else if (activeAcc === 'bow') {
+        accSVG = `
+          <g transform="translate(0, 52)">
+            <polygon points="50,22 30,10 30,34" fill="#ff6b81"/>
+            <polygon points="50,22 70,10 70,34" fill="#ff6b81"/>
+            <circle cx="50" cy="22" r="5" fill="#ff4757"/>
+          </g>`;
+      } else if (activeAcc === 'headphones') {
+        accSVG = `
+          <g>
+            <path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#2f3542" stroke-width="7" stroke-linecap="round"/>
+            <rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/>
+            <rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/>
+          </g>`;
+      } else if (activeAcc === 'cat') {
+        accSVG = `
+          <g transform="translate(0, -12)">
+            <polygon points="12,28 26,-2 42,18" fill="${color}" stroke="#2f3542" stroke-width="2"/>
+            <polygon points="88,28 74,-2 58,18" fill="${color}" stroke="#2f3542" stroke-width="2"/>
+            <polygon points="18,24 26,4 36,16" fill="#ff6b81"/>
+            <polygon points="82,24 74,4 64,16" fill="#ff6b81"/>
+          </g>`;
+      } else if (activeAcc === 'chef') {
+        accSVG = `
+          <g transform="translate(0, -28)">
+            <circle cx="36" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
+            <circle cx="64" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
+            <circle cx="50" cy="12" r="16" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
+            <rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
+          </g>`;
+      } else if (activeAcc === 'wizard') {
+        accSVG = `
+          <g transform="translate(0, -32)">
+            <polygon points="50,-8 22,28 78,28" fill="#5352ed"/>
+            <ellipse cx="50" cy="28" rx="38" ry="8" fill="#3742fa"/>
+            <path d="M 42,12 L 46,16 L 54,14 L 48,20 L 52,26 L 44,22 L 38,26 Z" fill="#ffeaa7"/>
+          </g>`;
+      } else if (activeAcc === 'pirate') {
+        accSVG = `
+          <g transform="translate(0, -22)">
+            <path d="M 10,28 Q 50,-10 90,28 L 78,36 Q 50,20 22,36 Z" fill="#2f3542"/>
+            <circle cx="50" cy="18" r="5" fill="#ffffff"/>
+            <line x1="45" y1="13" x2="55" y2="23" stroke="#ffffff" stroke-width="2"/>
+            <line x1="55" y1="13" x2="45" y2="23" stroke="#ffffff" stroke-width="2"/>
+          </g>`;
+      } else if (activeAcc === 'scarf') {
+        accSVG = `
+          <g transform="translate(0, 58)">
+            <rect x="18" y="0" width="64" height="18" rx="9" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/>
+            <rect x="56" y="10" width="16" height="28" rx="6" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/>
+            <line x1="56" y1="32" x2="72" y2="32" stroke="#ffffff" stroke-dasharray="3,3" stroke-width="2"/>
+          </g>`;
+      } else if (activeAcc === 'rock') {
+        accSVG = `
+          <g transform="translate(0, 2)">
+            <rect x="6" y="18" width="88" height="12" rx="4" fill="#ff4757" stroke="#2f3542" stroke-width="1.5"/>
+            <circle cx="50" cy="24" r="3" fill="#ffeaa7"/>
+            <path d="M 12,28 Q 8,45 16,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M 88,28 Q 92,45 84,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/>
+          </g>`;
+      } else if (activeAcc === 'doctor') {
+        accSVG = `
+          <g transform="translate(0, -18)">
+            <rect x="30" y="8" width="40" height="20" rx="6" fill="#ffffff" stroke="#ced6e0" stroke-width="2"/>
+            <circle cx="50" cy="18" r="6" fill="#2ed573"/>
+            <rect x="48" y="14" width="4" height="8" fill="#ffffff"/>
+            <rect x="46" y="16" width="8" height="4" fill="#ffffff"/>
+          </g>`;
+      }
 
       el.innerHTML = `
         <svg viewBox="0 0 100 100" width="100%" height="100%" style="position:relative; overflow:visible;">
@@ -1344,7 +1423,7 @@
         currentBoard[targetIndex] = solutionBoard[targetIndex];
         notesBoard[targetIndex] = [];
         renderBoard();
-        selectedIndex = targetIndex;
+        selectedCell = targetIndex;
         checkWin();
         resetMascotPosition();
       }, 850);
@@ -1392,12 +1471,6 @@
       let earnedScore = 150, earnedCoins = 50;
       userScore += earnedScore; userCoins += earnedCoins;
 
-      let levelUpText = "";
-      if (userLevel < 2) {
-        userLevel = 2;
-        levelUpText = " | 🔓 Level 2 Oldun! Ranked Açıldı!";
-      }
-
       let rpGainText = "";
       if (isRankedMatch) {
         userRp += 25;
@@ -1405,7 +1478,7 @@
       }
 
       saveUserData();
-      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}${levelUpText}`;
+      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
       document.getElementById('winModal').style.display = 'flex';
       updateStatsUI();
     }
