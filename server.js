@@ -10,22 +10,56 @@ app.use(express.static('public'));
 
 let waitingPlayer = null;
 
+// Rank belirleme fonksiyonu
+function getRank(rp) {
+    if (rp < 100) return { name: 'Bronz', icon: '#rank-bronze' };
+    if (rp < 300) return { name: 'Gümüş', icon: '#rank-silver' };
+    if (rp < 600) return { name: 'Altın', icon: '#rank-gold' };
+    if (rp < 1000) return { name: 'Platin', icon: '#rank-platinum' };
+    if (rp < 1500) return { name: 'Elmas', icon: '#rank-diamond' };
+    return { name: 'Üstat', icon: '#rank-master' };
+}
+
 io.on('connection', (socket) => {
     console.log(`Bir oyuncu bağlandı: ${socket.id}`);
 
-    socket.on('find_match', () => {
+    socket.on('find_match', (playerData) => {
+        socket.userData = {
+            id: socket.id,
+            username: playerData.username || 'Oyuncu',
+            rp: playerData.rp || 0
+        };
+
         if (waitingPlayer) {
             const roomId = `room_${socket.id}_${waitingPlayer.id}`;
             socket.join(roomId);
             waitingPlayer.join(roomId);
 
             const seed = Math.floor(Math.random() * 900000) + 100;
-            io.to(roomId).emit('match_found', { roomId, seed });
+            
+            // İki oyuncuya da rakip bilgilerini gönder
+            socket.emit('match_found', {
+                roomId,
+                seed,
+                opponent: {
+                    username: waitingPlayer.userData.username,
+                    rank: getRank(waitingPlayer.userData.rp)
+                }
+            });
+
+            waitingPlayer.emit('match_found', {
+                roomId,
+                seed,
+                opponent: {
+                    username: socket.userData.username,
+                    rank: getRank(socket.userData.rp)
+                }
+            });
 
             waitingPlayer = null;
         } else {
             waitingPlayer = socket;
-            socket.emit('waiting_opponent', "Rakip bekleniyor...");
+            socket.emit('waiting_opponent', "Dereceli rakip aranıyor...");
         }
     });
 

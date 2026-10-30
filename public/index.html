@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Tatlı Sudoku & Sudo</title>
+  <title>Tatlı Sudoku & Sudo Battle</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
   <style>
     :root {
       --card-bg: rgba(255, 255, 255, 0.96);
@@ -16,7 +15,7 @@
       --accent-gradient: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%);
       --league-gradient: linear-gradient(135deg, #3742fa 0%, #5352ed 100%);
       --promo-gradient: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
-      --duel-gradient: linear-gradient(135deg, #ff4655 0%, #bd3944 100%);
+      --ranked-gradient: linear-gradient(135deg, #e53935 0%, #e35d5b 100%);
       --text-main: #2f3542;
       --text-muted: #747d8c;
       --shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
@@ -80,7 +79,7 @@
     .btn:active { transform: scale(0.97); }
     
     .btn-play { background: var(--primary-gradient); color: white; box-shadow: 0 8px 22px rgba(255, 71, 87, 0.4); font-size: 1.05rem; }
-    .btn-duel { background: var(--duel-gradient); color: white; box-shadow: 0 8px 22px rgba(255, 70, 85, 0.4); font-size: 1.05rem; }
+    .btn-ranked { background: var(--ranked-gradient); color: white; box-shadow: 0 8px 22px rgba(229, 57, 53, 0.4); font-size: 1.05rem; }
     .btn-league { background: var(--league-gradient); color: white; box-shadow: 0 8px 22px rgba(83, 82, 237, 0.35); }
     .btn-daily { background: var(--accent-gradient); color: white; box-shadow: 0 8px 22px rgba(255, 165, 2, 0.35); }
     .btn-market { background: var(--secondary-gradient); color: white; box-shadow: 0 8px 22px rgba(83, 82, 237, 0.3); }
@@ -269,9 +268,55 @@
     .guide-section-box { background: #f8f9fa; border: 1px solid #dfe4ea; border-radius: 16px; padding: 12px; margin-bottom: 10px; text-align: left; }
     .guide-section-title { font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .guide-section-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
+
+    /* RANKED LOBİ & PROGRES STİLLERİ */
+    .ranked-card-box { background: #f8f9fa; border: 1px solid #dfe4ea; border-radius: 20px; padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; text-align: left; }
+    .rank-badge-sm { width: 60px; height: 60px; flex-shrink: 0; }
+    .progress-bar-container { background: #dfe4ea; border-radius: 8px; height: 10px; width: 100%; margin-top: 6px; overflow: hidden; }
+    .progress-bar { background: var(--primary-gradient); height: 100%; width: 0%; transition: width 0.4s ease; }
+    .vs-match-box { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; background: #f1f2f6; padding: 14px; border-radius: 18px; border: 1px solid #dfe4ea; }
+    .vs-player-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40%; }
+    .vs-rank-icon { width: 45px; height: 45px; }
   </style>
 </head>
 <body onclick="resetIdleTimer()" onmousemove="resetIdleTimer()">
+
+  <!-- RANK SVG İKONLARI GİZLİ KAPSAYICISI -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <g id="rank-bronze">
+      <path d="M25,5 L45,20 L45,45 L25,55 L5,45 L5,20 Z" fill="#2d1b18" stroke="#a85c32" stroke-width="3"/>
+      <polygon points="25,12 38,22 38,38 25,48 12,38 12,22" fill="#8c4722"/>
+      <circle cx="25" cy="30" r="6" fill="#cd7f32"/>
+    </g>
+    <g id="rank-silver">
+      <path d="M25,5 L45,15 L45,45 L25,55 L5,45 L5,15 Z" fill="#1e252b" stroke="#7f8c8d" stroke-width="3"/>
+      <polygon points="25,12 37,20 37,40 25,48 13,40 13,20" fill="#bdc3c7"/>
+      <polygon points="25,18 31,30 25,42 19,30" fill="#ecf0f1"/>
+    </g>
+    <g id="rank-gold">
+      <path d="M25,2 L48,15 L48,45 L25,58 L2,45 L2,15 Z" fill="#2b2208" stroke="#f39c12" stroke-width="3"/>
+      <path d="M25,8 L42,18 L42,42 L25,52 L8,42 L8,18 Z" fill="#f1c40f"/>
+      <polygon points="25,15 32,25 25,40 18,25" fill="#ffffff"/>
+      <circle cx="25" cy="27" r="4" fill="#d35400"/>
+    </g>
+    <g id="rank-platinum">
+      <path d="M25,2 L48,25 L25,58 L2,25 Z" fill="#0f2b2a" stroke="#1abc9c" stroke-width="3"/>
+      <path d="M25,10 L40,25 L25,50 L10,25 Z" fill="#16a085"/>
+      <polygon points="25,16 33,25 25,38 17,25" fill="#e0f7fa"/>
+    </g>
+    <g id="rank-diamond">
+      <path d="M25,2 L48,18 L40,55 L10,55 L2,18 Z" fill="#1a0f2b" stroke="#9b59b6" stroke-width="3"/>
+      <polygon points="25,10 40,22 35,48 15,48 10,22" fill="#8e44ad"/>
+      <polygon points="25,18 32,26 25,40 18,26" fill="#f3e5f5"/>
+      <circle cx="25" cy="28" r="5" fill="#e1bee7"/>
+    </g>
+    <g id="rank-master">
+      <path d="M25,2 L48,12 L48,38 L25,58 L2,38 L2,12 Z" fill="#2b0f14" stroke="#e74c3c" stroke-width="3"/>
+      <path d="M25,8 L42,16 L42,34 L25,50 L8,34 L8,16 Z" fill="#c0392b"/>
+      <polygon points="25,12 34,25 25,42 16,25" fill="#ffeb3b"/>
+      <circle cx="25" cy="26" r="6" fill="#ffffff"/>
+    </g>
+  </svg>
 
   <button class="music-toggle-btn" onclick="toggleChillMusic()" id="musicBtn">🎵 Müzik: Açık</button>
 
@@ -290,8 +335,8 @@
       <p class="app-subtitle">Sudo ile zihnini çalıştır!</p>
 
       <div class="menu-buttons-grid">
-        <button class="btn btn-play" onclick="openGameSettingsModal()">🎮 Hemen Oyna</button>
-        <button class="btn btn-duel" onclick="start1v1Match()">⚔️ 1v1 Düello (Ranked)</button>
+        <button class="btn btn-play" onclick="openGameSettingsModal()">🎮 Klasik Oyna</button>
+        <button class="btn btn-ranked" onclick="openRankedLobby()">⚔️ Ranked 1v1 Düello</button>
         <button class="btn btn-league" onclick="openLeagueModal()">🏆 Haftalık Ligler</button>
         <button class="btn btn-daily" onclick="openDailyRewardsModal()">🎁 Günlük Ödül Takvimi</button>
         <button class="btn btn-market" onclick="openShop()">🛒 Profesyonel Market</button>
@@ -301,6 +346,39 @@
       <div class="promo-container">
         <input type="text" id="promoInput" class="promo-input" placeholder="Promo Kod (800 veya 500)">
         <button class="btn btn-promo" onclick="redeemPromoCode()">Kullan 🎁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKED LOBİ MODALI -->
+  <div id="rankedLobbyModal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px;">Ranked 1v1 Düellosu ⚔️</h2>
+      
+      <div class="setting-group" style="text-align: center;">
+        <label class="setting-label">TAKMA ADINIZ</label>
+        <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:1rem; width:100%;">
+      </div>
+
+      <div class="ranked-card-box">
+        <div class="rank-badge-sm" id="myRankIconBox">
+          <svg viewBox="0 0 50 60"><use href="#rank-bronze"></use></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted);">MEVCUT RANKINIZ</div>
+          <div id="myRankNameText" style="font-size: 1.1rem; font-weight: 800; color: var(--primary);">BRONZ</div>
+          <div id="myRpText" style="font-size: 0.8rem; font-weight: 700; color: var(--text-main);">0 RP</div>
+          <div class="progress-bar-container">
+            <div id="rpProgressBar" class="progress-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.88rem; margin-bottom: 12px;"></p>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-guide" onclick="closeRankedLobby()">Geri</button>
+        <button class="btn btn-ranked" onclick="startRankedMatchmaking()" style="flex:2;">Rakip Ara 🚀</button>
       </div>
     </div>
   </div>
@@ -316,8 +394,8 @@
         <div class="guide-section-text">Her yeni oyunda matrisler rastgele karıştırılır; böylece asla aynı bulmaca karşınıza çıkmaz!</div>
       </div>
       <div class="guide-section-box">
-        <div class="guide-section-title">🌀 2. Canlı Sudo Animasyonları</div>
-        <div class="guide-section-text">Sudo esniyor, uyukluyor, doğru hamlelerde dans ediyor ve hata yaptığında hafifçe sitem ediyor!</div>
+        <div class="guide-section-title">⚔️ 2. Ranked 1v1 Düelloları</div>
+        <div class="guide-section-text">Takma adını belirle, rank puanı (RP) kas, rakibinin rankını gör ve zirveye tırman!</div>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 10px;">
         <button class="btn btn-guide" onclick="closeTutorialModal()">Kapat</button>
@@ -434,6 +512,19 @@
       <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);" id="mistakeCounter">Hata: 0</div>
     </div>
 
+    <!-- EĞER RANKED MAÇ İSE RAKİP BİLGİ BARINI BURADA GÖSTERİRİZ -->
+    <div id="rankedVersusInfoBox" class="vs-match-box" style="display:none; margin: 4px 0;">
+      <div class="vs-player-col">
+        <strong id="vsMyName" style="font-size:0.8rem;">Sen</strong>
+        <div class="vs-rank-icon" id="vsMyRankSvg"><svg viewBox="0 0 50 60"><use href="#rank-bronze"></use></svg></div>
+      </div>
+      <div style="font-weight:800; color:var(--primary); font-size:1.1rem;">VS</div>
+      <div class="vs-player-col">
+        <strong id="vsOppName" style="font-size:0.8rem;">Rakip</strong>
+        <div class="vs-rank-icon" id="vsOppRankSvg"><svg viewBox="0 0 50 60"><use href="#rank-bronze"></use></svg></div>
+      </div>
+    </div>
+
     <div class="side-guide-bar">
       <div class="guide-mascot-wrapper" id="guideMascotWrapper" onclick="triggerMascotClick()">
         <div class="guide-mascot-avatar" id="mascotEmotionAvatar"></div>
@@ -485,41 +576,10 @@
     </div>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // --- WEBSOCKET / 1V1 ENTEGRASYONU ---
     const socket = io();
-    let currentRoomId = null;
 
-    function start1v1Match() {
-      showAppAlert("1v1 Ranked Düello aranıyor! Rakip bekleniyor... ⚔️");
-      socket.emit('find_match');
-    }
-
-    socket.on('waiting_opponent', (msg) => {
-      console.log(msg);
-    });
-
-    socket.on('match_found', (data) => {
-      currentRoomId = data.roomId;
-      closeAppAlert();
-      // Bulunan ortak seed ile 9x9 maçı başlat
-      initGame(data.seed, "1v1 RANKED DÜELLO", false);
-    });
-
-    socket.on('opponent_progress', (progress) => {
-      console.log("Rakibin ilerlemesi: %" + progress);
-    });
-
-    socket.on('game_over', (data) => {
-      if (data.winner === socket.id) {
-        showAppAlert("Tebrikler! Maçı Kazandın! 🏆 (+20 MMR)");
-      } else {
-        showAppAlert("Maalesef kaybettin... Rakip daha hızlıydı.");
-      }
-    });
-
-
-    // --- OYUN MANTIĞI & SESLER ---
     let audioCtx = null;
     let isMusicPlaying = false;
     let musicTimer = null;
@@ -590,6 +650,66 @@
     let streakDays = parseInt(localStorage.getItem('sudo_streak')) || 1;
     let lastLoginDate = localStorage.getItem('sudo_last_login') || '';
     
+    // Ranked Verileri
+    let userRp = parseInt(localStorage.getItem('sudo_rp')) || 0;
+    let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
+    let isRankedMatch = false;
+
+    function getRankDetails(rp) {
+      if (rp < 100) return { name: 'BRONZ', icon: '#rank-bronze', max: 100 };
+      if (rp < 300) return { name: 'GÜMÜŞ', icon: '#rank-silver', max: 300 };
+      if (rp < 600) return { name: 'ALTIN', icon: '#rank-gold', max: 600 };
+      if (rp < 1000) return { name: 'PLATİN', icon: '#rank-platinum', max: 1000 };
+      if (rp < 1500) return { name: 'ELMAS', icon: '#rank-diamond', max: 1500 };
+      return { name: 'ÜSTAT', icon: '#rank-master', max: 2000 };
+    }
+
+    function updateRankUI() {
+      const rank = getRankDetails(userRp);
+      document.getElementById('myRankNameText').innerText = rank.name;
+      document.getElementById('myRpText').innerText = `${userRp} RP`;
+      document.getElementById('myRankIconBox').innerHTML = `<svg viewBox="0 0 50 60"><use href="${rank.icon}"></use></svg>`;
+      const pct = Math.min(100, (userRp / rank.max) * 100);
+      document.getElementById('rpProgressBar').style.width = `${pct}%`;
+    }
+
+    function openRankedLobby() {
+      document.getElementById('rankedUsernameInput').value = userName;
+      updateRankUI();
+      document.getElementById('rankedStatusText').innerText = "";
+      document.getElementById('rankedLobbyModal').style.display = 'flex';
+    }
+    function closeRankedLobby() { document.getElementById('rankedLobbyModal').style.display = 'none'; }
+
+    function startRankedMatchmaking() {
+      const inputVal = document.getElementById('rankedUsernameInput').value.trim();
+      if (inputVal) {
+        userName = inputVal;
+        localStorage.setItem('sudo_username', userName);
+      }
+      document.getElementById('rankedStatusText').innerText = "Dereceli rakip aranıyor... ⚔️";
+      socket.emit('find_match', { username: userName, rp: userRp });
+    }
+
+    socket.on('waiting_opponent', (msg) => {
+      document.getElementById('rankedStatusText').innerText = msg;
+    });
+
+    socket.on('match_found', (data) => {
+      closeRankedLobby();
+      isRankedMatch = true;
+      document.getElementById('rankedVersusInfoBox').style.display = 'flex';
+      
+      document.getElementById('vsMyName').innerText = userName;
+      const myRank = getRankDetails(userRp);
+      document.getElementById('vsMyRankSvg').innerHTML = `<svg viewBox="0 0 50 60"><use href="${myRank.icon}"></use></svg>`;
+
+      document.getElementById('vsOppName').innerText = data.opponent.username;
+      document.getElementById('vsOppRankSvg').innerHTML = `<svg viewBox="0 0 50 60"><use href="${data.opponent.rank.icon}"></use></svg>`;
+
+      initGame(data.seed, "RANKED 1v1", false);
+    });
+
     let currentRewardDay = parseInt(localStorage.getItem('sudo_reward_day')) || 1;
     let lastClaimDate = localStorage.getItem('sudo_last_claim_date') || '';
 
@@ -655,12 +775,12 @@
       if (inputVal === "800") {
         userCoins += 800; saveUserData(); updateStatsUI();
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        showAppAlert("Tebrikler! Sınırsız promo kod ile +800 Coin eklendi! 🎉");
+        showAppAlert("Tebrikler! Sınırsız promo kod ile +800 Coin eklendi! 🎉🪙[cite: 8]");
         document.getElementById('promoInput').value = "";
       } else if (inputVal === "500") {
         userCoins += 4000; saveUserData(); updateStatsUI();
         confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-        showAppAlert("Tebrikler! Sınırsız özel kod ile +4.000 Coin yüklendi! 🚀");
+        showAppAlert("Tebrikler! Sınırsız özel kod ile +4.000 Coin yüklendi! 🚀🪙[cite: 8]");
         document.getElementById('promoInput').value = "";
       } else {
         showAppAlert("Geçersiz promo kod! (800 veya 500 deneyebilirsin) ❌");
@@ -693,6 +813,8 @@
       localStorage.setItem('sudo_active_acc', activeAcc);
       localStorage.setItem('sudo_owned_board_themes', JSON.stringify(ownedBoardThemes));
       localStorage.setItem('sudo_active_board_theme', activeBoardTheme);
+      localStorage.setItem('sudo_rp', userRp);
+      localStorage.setItem('sudo_username', userName);
     }
 
     function updateStatsUI() {
@@ -797,7 +919,7 @@
 
     function renderLeaderboard() {
       const container = document.getElementById('leaderboardContainer');
-      let dummyPlayers = [{ name: "Zeynep K.", score: 2450 }, { name: "Sen (Emircan)", score: userScore, isUser: true }, { name: "Ahmet Y.", score: 2100 }];
+      let dummyPlayers = [{ name: "Zeynep K.", score: 2450 }, { name: userName, score: userScore, isUser: true }, { name: "Ahmet Y.", score: 2100 }];
       dummyPlayers.sort((a, b) => b.score - a.score);
       let html = '';
       dummyPlayers.forEach((p, idx) => {
@@ -916,14 +1038,13 @@
       showAppAlert("+3 İpucu alındı! 💡");
     }
 
-    function openGameSettingsModal() { document.getElementById('gameSettingsModal').style.display = 'flex'; }
+    function openGameSettingsModal() { isRankedMatch = false; document.getElementById('rankedVersusInfoBox').style.display = 'none'; document.getElementById('gameSettingsModal').style.display = 'flex'; }
     function closeGameSettingsModal() { document.getElementById('gameSettingsModal').style.display = 'none'; }
     function setBoardSize(size, btn) { boardSize = size; document.querySelectorAll('#sizeOptions .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
     function startConfiguredGame() { closeGameSettingsModal(); startNewSudokuDirectly(); }
     function startNewSudokuDirectly() { document.getElementById('winModal').style.display = 'none'; initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false); }
 
-    function generateSudoku(size, seed = null) {
-      // Seed destekli rastgelelik simülasyonu
+    function generateSudoku(size) {
       let baseTemplates = {
         6: [1,2,3,4,5,6, 4,5,6,1,2,3, 2,3,1,5,6,4, 5,6,4,2,3,1, 3,1,2,6,4,5, 6,4,5,3,1,2],
         9: [1,2,3,4,5,6,7,8,9, 4,5,6,7,8,9,1,2,3, 7,8,9,1,2,3,4,5,6, 2,3,1,5,6,4,8,9,7, 5,6,4,8,9,7,2,3,1, 8,9,7,2,3,1,5,6,4, 3,1,2,6,4,5,9,7,8, 6,4,5,9,7,8,3,1,2, 9,7,8,3,1,2,6,4,5],
@@ -970,7 +1091,7 @@
     function initGame(seed, title, tutorialMode) {
       mistakes = 0; streakCorrect = 0;
       document.getElementById('mistakeCounter').innerText = `Hata: 0`;
-      const data = generateSudoku(boardSize, seed);
+      const data = generateSudoku(boardSize);
       initialBoard = [...data.puzzle]; currentBoard = [...data.puzzle]; solutionBoard = [...data.solution];
       notesBoard = Array(boardSize * boardSize).fill().map(() => []);
       history = []; selectedCell = null; isNotesMode = false;
@@ -1091,15 +1212,6 @@
         }
       }
       renderBoard();
-
-      // 1v1 maçındaysak ilerlemeyi rakibe bildir
-      if (currentRoomId) {
-        let filledCount = currentBoard.filter((val, idx) => val === solutionBoard[idx]).length;
-        let totalEmpty = solutionBoard.filter((val, idx) => initialBoard[idx] === 0).length;
-        let progress = Math.floor((filledCount / (initialBoard.length)) * 100);
-        socket.emit('progress_update', { roomId: currentRoomId, progress });
-      }
-
       checkWin();
     }
 
@@ -1213,15 +1325,15 @@
       confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
       let earnedScore = 150, earnedCoins = 50;
       userScore += earnedScore; userCoins += earnedCoins;
-      saveUserData();
 
-      // Eğer 1v1 maçındaysak sunucuya oyunu kazandığımızı bildir
-      if (currentRoomId) {
-        socket.emit('game_won', { roomId: currentRoomId });
-        currentRoomId = null;
+      let rpGainText = "";
+      if (isRankedMatch) {
+        userRp += 25;
+        rpGainText = " | +25 RP 🏆";
       }
 
-      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin`;
+      saveUserData();
+      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
       document.getElementById('winModal').style.display = 'flex';
       updateStatsUI();
     }

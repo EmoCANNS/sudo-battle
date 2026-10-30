@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <!-- BRONZ -->
+  <g id="rank-bronze">
+    <path d="M25,5 L45,20 L45,45 L25,55 L5,45 L5,20 Z" fill="#2d1b18" stroke="#a85c32" stroke-width="3" />
+    <polygon points="25,12 38,22 38,38 25,48 12,38 12,22" fill="#8c4722" />
+    <circle cx="25" cy="30" r="6" fill="#cd7f32" />
+  </g>
+
+  <!-- GÜMÜŞ -->
+  <g id="rank-silver">
+    <path d="M25,5 L45,15 L45,45 L25,55 L5,45 L5,15 Z" fill="#1e252b" stroke="#7f8c8d" stroke-width="3" />
+    <polygon points="25,12 37,20 37,40 25,48 13,40 13,20" fill="#bdc3c7" />
+    <polygon points="25,18 31,30 25,42 19,30" fill="#ecf0f1" />
+  </g>
+
+  <!-- ALTIN -->
+  <g id="rank-gold">
+    <path d="M25,2 L48,15 L48,45 L25,58 L2,45 L2,15 Z" fill="#2b2208" stroke="#f39c12" stroke-width="3" />
+    <path d="M25,8 L42,18 L42,42 L25,52 L8,42 L8,18 Z" fill="#f1c40f" />
+    <polygon points="25,15 32,25 25,40 18,25" fill="#ffffff" />
+    <circle cx="25" cy="27" r="4" fill="#d35400" />
+  </g>
+
+  <!-- PLATİN -->
+  <g id="rank-platinum">
+    <path d="M25,2 L48,25 L25,58 L2,25 Z" fill="#0f2b2a" stroke="#1abc9c" stroke-width="3" />
+    <path d="M25,10 L40,25 L25,50 L10,25 Z" fill="#16a085" />
+    <polygon points="25,16 33,25 25,38 17,25" fill="#e0f7fa" />
+  </g>
+
+  <!-- ELMAS -->
+  <g id="rank-diamond">
+    <path d="M25,2 L48,18 L40,55 L10,55 L2,18 Z" fill="#1a0f2b" stroke="#9b59b6" stroke-width="3" />
+    <polygon points="25,10 40,22 35,48 15,48 10,22" fill="#8e44ad" />
+    <polygon points="25,18 32,26 25,40 18,26" fill="#f3e5f5" />
+    <circle cx="25" cy="28" r="5" fill="#e1bee7" />
+  </g>
+
+  <!-- ÜSTAT (MASTER) -->
+  <g id="rank-master">
+    <path d="M25,2 L48,12 L48,38 L25,58 L2,38 L2,12 Z" fill="#2b0f14" stroke="#e74c3c" stroke-width="3" />
+    <path d="M25,8 L42,16 L42,34 L25,50 L8,34 L8,16 Z" fill="#c0392b" />
+    <polygon points="25,12 34,25 25,42 16,25" fill="#ffeb3b" />
+    <circle cx="25" cy="26" r="6" fill="#ffffff" />
+  </g>
+</svg>
