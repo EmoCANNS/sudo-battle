@@ -37,7 +37,6 @@ io.on('connection', (socket) => {
 
             const seed = Math.floor(Math.random() * 900000) + 100;
             
-            // İki oyuncuya da rakip bilgilerini gönder
             socket.emit('match_found', {
                 roomId,
                 seed,
@@ -59,7 +58,7 @@ io.on('connection', (socket) => {
             waitingPlayer = null;
         } else {
             waitingPlayer = socket;
-            socket.emit('waiting_opponent', "Dereceli rakip aranıyor...");
+            socket.emit('waiting_opponent', "Dereceli rakip aranıyor... ⚔️");
         }
     });
 
@@ -79,7 +78,7 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda çalışıyor! 🚀`);
 });
