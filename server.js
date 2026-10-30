@@ -23,7 +23,6 @@ io.on('connection', (socket) => {
     console.log(`Bir oyuncu bağlandı: ${socket.id}`);
 
     socket.on('find_match', (playerData) => {
-        // Eğer oyuncu zaten beklemedeyse tekrar sıraya alarak kendini bulmasını engelle
         if (waitingPlayer && waitingPlayer.id === socket.id) {
             return;
         }
@@ -36,12 +35,17 @@ io.on('connection', (socket) => {
 
         if (waitingPlayer) {
             const opponent = waitingPlayer;
-            waitingPlayer = null; // Havuzu temizle
+            waitingPlayer = null;
 
             const roomId = `room_${socket.id}_${opponent.id}`;
             socket.join(roomId);
             opponent.join(roomId);
+            
+            // Odayı socket objelerine kaydediyoruz ki bitiş kontrolünde kullanabilelim
+            socket.roomId = roomId;
+            opponent.roomId = roomId;
 
+            // AYNI SUDOKU İÇİN ORTAK SEED ÜRETİMİ
             const seed = Math.floor(Math.random() * 900000) + 100;
             
             socket.emit('match_found', {
@@ -71,8 +75,12 @@ io.on('connection', (socket) => {
         socket.to(data.roomId).emit('opponent_progress', data.progress);
     });
 
+    // Biri bulmacayı bitirdiğinde çalışacak kısım
     socket.on('game_won', (data) => {
-        io.to(data.roomId).emit('game_over', { winner: socket.id });
+        if (socket.roomId) {
+            // Ojedeki diğer oyuncuya veya tüm odaya maçı bitti bildirimi gönder
+            io.to(socket.roomId).emit('game_over', { winner: socket.id });
+        }
     });
 
     socket.on('disconnect', () => {
