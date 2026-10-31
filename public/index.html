@@ -80,6 +80,7 @@
     .btn:active { transform: scale(0.97); }
     
     .btn-play { background: var(--primary-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4); font-size: 1.05rem; }
+    .btn-ranked { background: linear-gradient(135deg, #ff4757 0%, #c51162 100%); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5); font-size: 1.05rem; border: 1px solid rgba(255,255,255,0.2); }
     .btn-league { background: var(--league-gradient); color: white; box-shadow: 0 8px 25px rgba(55, 66, 250, 0.35); }
     .btn-daily { background: var(--accent-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 165, 2, 0.35); }
     .btn-market { background: var(--secondary-gradient); color: white; box-shadow: 0 8px 25px rgba(83, 82, 237, 0.3); }
@@ -100,9 +101,7 @@
     .promo-input:focus { border-color: var(--primary); }
     .btn-promo { background: var(--promo-gradient); color: white; width: auto; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; }
 
-    .league-header {
-      background: var(--league-gradient); color: white; padding: 14px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; font-size: 1rem;
-    }
+    .league-header { background: var(--league-gradient); color: white; padding: 14px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; font-size: 1rem; }
     .leaderboard-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .leaderboard-item {
       display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08);
@@ -215,26 +214,6 @@
       100% { transform: rotate(8deg) scale(1.03); }
     }
 
-    .mascot-sitem { animation: sudoSitemShake 0.25s ease-in-out 2 !important; }
-    @keyframes sudoSitemShake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px) rotate(-5deg); }
-      75% { transform: translateX(6px) rotate(5deg); }
-    }
-
-    .mascot-sleep { animation: sudoSleepDrift 3s ease-in-out infinite alternate !important; opacity: 0.85; }
-    @keyframes sudoSleepDrift {
-      0% { transform: translateY(0px) scale(0.98) rotate(-3deg); }
-      100% { transform: translateY(6px) scale(0.95) rotate(-5deg); }
-    }
-
-    .rolling-motion { animation: sudoRollHint 0.85s ease-in-out forwards !important; }
-    @keyframes sudoRollHint {
-      0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-      50% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(1.25); }
-      100% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(1); }
-    }
-
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 600; padding: 20px;
     }
@@ -242,6 +221,29 @@
       background: var(--card-bg); border: var(--glass-border); padding: 24px 20px; border-radius: 28px; text-align: center; max-width: 360px; width: 100%;
       box-shadow: 0 25px 50px rgba(0,0,0,0.6);
     }
+
+    /* CANLI REHBER OVERLAY EKRANI */
+    .live-guide-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: flex-end; justify-content: center; z-index: 900; padding: 20px;
+      cursor: pointer;
+    }
+    .live-guide-container {
+      width: 100%; max-width: 440px; display: flex; align-items: flex-end; gap: 12px; margin-bottom: 20px; animation: slideUpGuide 0.3s ease-out;
+    }
+    @keyframes slideUpGuide {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .live-mascot-box {
+      width: 80px; height: 80px; flex-shrink: 0; animation: sudoAliveBreathing 2s ease-in-out infinite alternate;
+    }
+    .live-dialog-box {
+      background: rgba(30, 30, 42, 0.95); border: 2px solid var(--primary); padding: 16px 18px; border-radius: 20px; flex: 1; text-align: left;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative;
+    }
+    .live-dialog-title { font-size: 0.8rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .live-dialog-text { font-size: 0.88rem; font-weight: 700; color: var(--text-main); line-height: 1.4; }
+    .live-dialog-hint { font-size: 0.685rem; color: var(--text-muted); margin-top: 8px; text-align: right; font-weight: 600; }
 
     .duolingo-reward-popup {
       position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500;
@@ -278,10 +280,6 @@
     }
     .option-btn.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 14px rgba(255, 71, 87, 0.3); }
 
-    .guide-section-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; text-align: left; }
-    .guide-section-title { font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .guide-section-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
-
     .ranked-card-box {
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
@@ -301,13 +299,6 @@
     }
     .vs-player-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40%; color: #fff; }
     .vs-rank-icon { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
-    
-    .btn-ranked {
-      background: linear-gradient(135deg, #ff4757 0%, #c51162 100%);
-      color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5); font-size: 1.05rem;
-      border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px;
-    }
-    .btn-ranked:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
 <body onclick="resetIdleTimer()" onmousemove="resetIdleTimer()">
@@ -336,7 +327,7 @@
         <button class="btn btn-league" onclick="openLeagueModal()">🏆 Haftalık Ligler</button>
         <button class="btn btn-daily" onclick="openDailyRewardsModal()">🎁 Günlük Ödül Takvimi</button>
         <button class="btn btn-market" onclick="openShop()">🛒 Sudo Market</button>
-        <button class="btn btn-guide" onclick="openTutorialModal()">❓ Sudo Detaylı Rehber</button>
+        <button class="btn btn-guide" onclick="startLiveGuide()">❓ Sudo Canlı Rehber</button>
       </div>
 
       <div class="promo-container">
@@ -346,7 +337,19 @@
     </div>
   </div>
 
-  <!-- KLASİK OYNA AYARLARI (KÜÇÜK MINI MODAL) -->
+  <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI -->
+  <div id="liveGuideOverlay" class="live-guide-overlay" onclick="nextLiveGuideStep()">
+    <div class="live-guide-container">
+      <div class="live-mascot-box" id="liveGuideMascotAvatar"></div>
+      <div class="live-dialog-box">
+        <div class="live-dialog-title" id="liveGuideStepTitle">Sudo Rehberi (1/6)</div>
+        <div class="live-dialog-text" id="liveGuideStepText">Merhabalar patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını anlatacağım. Devam etmek için ekrana dokun! 🌸</div>
+        <div class="live-dialog-hint">Devam etmek için dokun 👆</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KLASİK OYNA AYARLARI (KÜÇÜK MİNİ MODAL) -->
   <div id="gameSettingsModal" class="modal-overlay">
     <div class="modal-card-small">
       <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">Oyun Ayarları ⚙️</h2>
@@ -403,30 +406,6 @@
       <div style="display: flex; gap: 8px; align-items: center;">
         <button class="btn btn-guide" onclick="showMenu()" style="flex: 1; padding: 14px 10px; font-size: 0.9rem;">Geri</button>
         <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex: 2.5; padding: 15px;">Rakip Ara 🚀</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- REHBER EKRANI -->
-  <div id="tutorialScreen" class="screen">
-    <div class="full-page-card" style="text-align: left; justify-content: flex-start; gap: 12px; overflow-y: auto;">
-      <div style="text-align: center;"><div class="mascot-container" id="tutorialMascot" style="width: 75px; height: 75px; margin-bottom: 4px;"></div></div>
-      <h2 style="font-size: 1.3rem; font-weight: 800; text-align: center; margin-bottom: 6px; color: var(--text-main);">Sudo Kılavuzu & Rehber 🌸</h2>
-      
-      <div class="guide-section-box">
-        <div class="guide-section-title">🧠 1. Sonsuz Sudoku & Gelişim</div>
-        <div class="guide-section-text">Klasik modda bulmaca çözerek level atla ve ödüller kazan!</div>
-      </div>
-      <div class="guide-section-box">
-        <div class="guide-section-title">⚔️ 2. Ranked Mod & İpucu Yasağı</div>
-        <div class="guide-section-text">Ranked düellolarda ipucu yasaktır; tamamen kendi zekana güvenirsin! Hatalar puanını düşürür!</div>
-      </div>
-      <div class="guide-section-box">
-        <div class="guide-section-title">⚡ 3. Anında Maç Sonu Tespiti</div>
-        <div class="guide-section-text">Rakip oyundan çıkarsa veya ana sayfaya dönerse sistem zaferi sana yazar!</div>
-      </div>
-      <div style="margin-top: auto; padding-top: 10px;">
-        <button class="btn btn-primary" onclick="showMenu()">Anladım, Ana Sayfaya Dön! 🚀</button>
       </div>
     </div>
   </div>
@@ -563,7 +542,7 @@
   </div>
 
   <!-- UYARI EKRANI -->
-  <div id="appAlertModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:600; align-items:center; justify-content:center; padding:20px;">
+  <div id="appAlertModal" class="modal-overlay" style="display:none;">
     <div class="menu-card" style="min-height: auto; max-width: 340px; width: 100%; padding: 24px;">
       <div class="mascot-container" id="alertMascot" style="width: 75px; height: 75px; margin-bottom: 6px;"></div>
       <div class="speech-bubble" id="alertMessageText" style="margin-bottom: 16px;">Mesaj içeriği</div>
@@ -572,7 +551,7 @@
   </div>
 
   <!-- KAZANMA EKRANI -->
-  <div id="winModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:600; align-items:center; justify-content:center; padding:20px;">
+  <div id="winModal" class="modal-overlay" style="display:none;">
     <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 28px;">
       <div class="mascot-container" id="winMascot" style="width: 85px; height: 85px; margin-bottom: 6px;"></div>
       <div class="speech-bubble">Muhteşemsin! 🎉</div>
@@ -662,6 +641,40 @@
     let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
     let isRankedMatch = false;
     let matchHistory = JSON.parse(localStorage.getItem('sudo_match_history')) || [];
+
+    // CANLI REHBER ADIMLARI
+    const liveGuideSteps = [
+      { title: "Sudo Rehberi (1/6)", text: "Selam patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını ve sistemini adım adım anlatacağım. Devam etmek için ekrana dokun! 🌸" },
+      { title: "Sudoku Nedir? (2/6)", text: "Sudoku, 9x9 (veya farklı boyutlardaki) tahtalarda her satır, sütun ve 3x3 kutucukta 1'den 9'a kadar olan sayıların tam birer kez yer alması gereken bir mantık bulmacasıdır! 🧠" },
+      { title: "Ranked Modu (3/6)", text: "⚔️ Ranked (Dereceli) Mod tam sana göredir! Burada eş zamanlı olarak gerçek bir rakiple kapışırsın. En hızlı ve hatasız bitiren kazanır!" },
+      { title: "İpucu ve Kurallar (4/6)", text: "Dikkat! Ranked maçlarda ipucu kullanmak kesinlikle **yasaktır**! Tamamen kendi zekana ve hızına güvenirsin. Hatalı hamleler moralini bozmasın!" },
+      { title: "Rank Puanı - RP (5/6)", text: "Kazandığın her ranked maç sana **+20 / +25 RP** kazandırır ve Bronz, Gümüş, Altın, Platin, Elmas liglerine tırmanırsın! Kaybedersen RP düşer." },
+      { title: "Online Sistem (6/6)", text: "⚡ Canlı online altyapımız sayesinde rakip oyundan çıkar veya ana sayfaya dönerse maç anında biter ve zafer otomatik olarak sana yazılır! Hazırsın, bol şans! 🚀" }
+    ];
+    let currentLiveGuideIdx = 0;
+
+    function startLiveGuide() {
+      currentLiveGuideIdx = 0;
+      renderMascotSVG('liveGuideMascotAvatar', 'happy');
+      updateLiveGuideContent();
+      document.getElementById('liveGuideOverlay').style.display = 'flex';
+    }
+
+    function nextLiveGuideStep() {
+      currentLiveGuideIdx++;
+      if (currentLiveGuideIdx >= liveGuideSteps.length) {
+        document.getElementById('liveGuideOverlay').style.display = 'none';
+      } else {
+        updateLiveGuideContent();
+      }
+    }
+
+    function updateLiveGuideContent() {
+      const step = liveGuideSteps[currentLiveGuideIdx];
+      document.getElementById('liveGuideStepTitle').innerText = step.title;
+      document.getElementById('liveGuideStepText').innerText = step.text;
+      renderMascotSVG('liveGuideMascotAvatar', currentLiveGuideIdx % 2 === 0 ? 'happy' : 'thinking');
+    }
 
     function getRankSvgHtml(type) {
       if (type === 'bronze') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#ffffff"/></svg>`;
@@ -912,7 +925,6 @@
       updateMarketUI();
     }
 
-    function openTutorialModal() { renderMascotSVG('tutorialMascot'); switchScreen('tutorialScreen'); }
     function openLeagueModal() { renderLeaderboard(); switchScreen('leagueScreen'); }
     function openDailyRewardsModal() { renderDailyRewardsGrid(); switchScreen('dailyRewardsScreen'); }
     function openShop() { updateMarketUI(); switchScreen('shopScreen'); }
