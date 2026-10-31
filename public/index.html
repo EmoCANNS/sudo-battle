@@ -243,7 +243,7 @@
     .rank-row-icon { width: 38px; height: 38px; flex-shrink: 0; }
     .rank-row-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
-    /* İNTERAKTİF CANLI REHBER (Ekranda Gezinen Pozisyonlar) */
+    /* İNTERAKTİF CANLI REHBER */
     .live-guide-overlay {
       position: fixed; inset: 0; background: transparent; display: none; z-index: 900; pointer-events: auto;
     }
@@ -430,11 +430,11 @@
     </div>
   </div>
 
-  <!-- TÜM RANAKLARI GÖSTEREN MODAL -->
+  <!-- TÜM RANKLARI GÖSTEREN MODAL -->
   <div id="allRanksModal" class="modal-overlay">
     <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 24px;">
       <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Tüm Ligler ve Ranklar 🏆</h2>
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">RP toplayarak tırmanabileceğin ligler:</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">RP toplayarak tırmanabileceğin efsanevi ligler:</p>
       
       <div class="all-ranks-container" id="allRanksListContainer"></div>
 
@@ -720,7 +720,9 @@
       if (type === 'gold') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/></linearGradient></defs><polygon points="50,3 95,25 95,75 50,97 5,75 5,25" fill="#2c2c35" stroke="url(#go-g)" stroke-width="6"/><polygon points="50,12 85,28 85,72 50,88 15,72 15,28" fill="url(#go-g)"/><polygon points="50,30 68,50 50,70 32,50" fill="#ffffff"/></svg>`;
       if (type === 'platinum') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><path d="M50,3 L95,50 L50,97 L5,50 Z" fill="#0c2461" stroke="url(#pl-g)" stroke-width="6"/><path d="M50,14 L84,50 L50,86 L16,50 Z" fill="url(#pl-g)"/><polygon points="50,32 66,50 50,68 34,50" fill="#ffffff"/></svg>`;
       if (type === 'diamond') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#6c5ce7"/></linearGradient></defs><path d="M50,2 L96,32 78,92 22,92 4,32 Z" fill="#2d132c" stroke="url(#di-g)" stroke-width="6"/><polygon points="50,12 86,36 70,82 30,82 14,36" fill="url(#di-g)"/><polygon points="50,28 68,48 50,72 32,48" fill="#ffffff"/></svg>`;
-      return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="50%" stop-color="#ffa502"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M50,2 L97,20 97,65 50,98 3,65 3,20 Z" fill="#3b0712" stroke="url(#ma-g)" stroke-width="7"/><path d="M50,10 L88,25 88,60 50,90 12,60 12,25 Z" fill="url(#ma-g)"/><polygon points="50,25 67,45 50,75 33,45" fill="#ffffff"/><circle cx="50" cy="50" r="6" fill="#ffeaa7"/></svg>`;
+      if (type === 'master') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="50%" stop-color="#ffa502"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M50,2 L97,20 97,65 50,98 3,65 3,20 Z" fill="#3b0712" stroke="url(#ma-g)" stroke-width="7"/><path d="M50,10 L88,25 88,60 50,90 12,60 12,25 Z" fill="url(#ma-g)"/><polygon points="50,25 67,45 50,75 33,45" fill="#ffffff"/><circle cx="50" cy="50" r="6" fill="#ffeaa7"/></svg>`;
+      // YENİ EFSANEVİ LİG: GRANDMASTER (BÜYÜK USTA)
+      return `<svg viewBox="0 0 100 100"><defs><linearGradient id="gm-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a29bfe"/><stop offset="50%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#ffeaa7"/></linearGradient><filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter></defs><polygon points="50,2 98,30 82,90 18,90 2,30" fill="#120c1f" stroke="url(#gm-g)" stroke-width="7" filter="url(#glow)"/><polygon points="50,12 88,34 75,82 25,82 12,34" fill="url(#gm-g)" opacity="0.85"/><polygon points="50,26 68,48 50,72 32,48" fill="#ffffff"/><circle cx="50" cy="20" r="5" fill="#fff"/><circle cx="35" cy="58" r="4" fill="#fff"/><circle cx="65" cy="58" r="4" fill="#fff"/></svg>`;
     }
 
     function getRankDetails(rp) {
@@ -729,7 +731,8 @@
       if (rp < 600) return { name: 'ALTIN', type: 'gold', max: 600 };
       if (rp < 1000) return { name: 'PLATİN', type: 'platinum', max: 1000 };
       if (rp < 1500) return { name: 'ELMAS', type: 'diamond', max: 1500 };
-      return { name: 'ÜSTAT', type: 'master', max: 2000 };
+      if (rp < 2000) return { name: 'ÜSTAT', type: 'master', max: 2000 };
+      return { name: 'GRANDMASTER ⚡', type: 'grandmaster', max: 2500 };
     }
 
     function updateRankUI() {
@@ -749,7 +752,8 @@
         { name: 'ALTIN', type: 'gold', range: '300 - 599 RP' },
         { name: 'PLATİN', type: 'platinum', range: '600 - 999 RP' },
         { name: 'ELMAS', type: 'diamond', range: '1000 - 1499 RP' },
-        { name: 'ÜSTAT', type: 'master', range: '1500+ RP' }
+        { name: 'ÜSTAT', type: 'master', range: '1500 - 1999 RP' },
+        { name: 'GRANDMASTER ⚡', type: 'grandmaster', range: '2000+ RP (Zirve)' }
       ];
       let html = '';
       ranksData.forEach(r => {
