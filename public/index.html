@@ -109,7 +109,6 @@
     }
     .leaderboard-item.user-row { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); }
 
-    /* MAÇ GEÇMİŞİ LİSTESİ */
     .match-history-container {
       flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 180px; padding-right: 2px;
     }
@@ -236,6 +235,14 @@
       100% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(1); }
     }
 
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 600; padding: 20px;
+    }
+    .modal-card-small {
+      background: var(--card-bg); border: var(--glass-border); padding: 24px 20px; border-radius: 28px; text-align: center; max-width: 360px; width: 100%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    }
+
     .duolingo-reward-popup {
       position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500;
     }
@@ -339,7 +346,27 @@
     </div>
   </div>
 
-  <!-- RANKED LOBİ EKRANI (DÜZELTİLMİŞ BUTONLAR VE MAÇ GEÇMİŞİ) -->
+  <!-- KLASİK OYNA AYARLARI (KÜÇÜK MINI MODAL) -->
+  <div id="gameSettingsModal" class="modal-overlay">
+    <div class="modal-card-small">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">Oyun Ayarları ⚙️</h2>
+      <div class="setting-group">
+        <label class="setting-label">BOYUT SEÇ</label>
+        <div class="options-grid" id="sizeOptions">
+          <button class="option-btn active" onclick="setBoardSize(9, this)">9x9 (Klasik)</button>
+          <button class="option-btn" onclick="setBoardSize(6, this)">6x6 (Mini)</button>
+          <button class="option-btn" onclick="setBoardSize(12, this)">12x12 (Usta 🔥)</button>
+          <button class="option-btn" onclick="setBoardSize(16, this)">16x16 (Efsanevi ⚡)</button>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button class="btn btn-guide" onclick="closeGameSettingsModal()" style="flex:1;">İptal</button>
+        <button class="btn btn-primary" onclick="startConfiguredGame()" style="flex:2;">Başla 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKED LOBİ EKRANI -->
   <div id="rankedLobbyScreen" class="screen">
     <div class="full-page-card">
       <div>
@@ -373,7 +400,6 @@
         </div>
       </div>
 
-      <!-- BUTONLAR: Rakip Ara BÜYÜK, Geri KÜÇÜK -->
       <div style="display: flex; gap: 8px; align-items: center;">
         <button class="btn btn-guide" onclick="showMenu()" style="flex: 1; padding: 14px 10px; font-size: 0.9rem;">Geri</button>
         <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex: 2.5; padding: 15px;">Rakip Ara 🚀</button>
@@ -413,26 +439,6 @@
         <div class="leaderboard-list" id="leaderboardContainer"></div>
       </div>
       <button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button>
-    </div>
-  </div>
-
-  <!-- OYUN AYARLARI EKRANI -->
-  <div id="gameSettingsScreen" class="screen">
-    <div class="full-page-card" style="justify-content: flex-start; gap: 16px;">
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-top: 10px;">Oyun Ayarları ⚙️</h2>
-      <div class="setting-group">
-        <label class="setting-label">BOYUT SEÇ</label>
-        <div class="options-grid" id="sizeOptions">
-          <button class="option-btn active" onclick="setBoardSize(9, this)">9x9 (Klasik)</button>
-          <button class="option-btn" onclick="setBoardSize(6, this)">6x6 (Mini)</button>
-          <button class="option-btn" onclick="setBoardSize(12, this)">12x12 (Usta 🔥)</button>
-          <button class="option-btn" onclick="setBoardSize(16, this)">16x16 (Efsanevi ⚡)</button>
-        </div>
-      </div>
-      <div style="margin-top: auto; display: flex; gap: 10px;">
-        <button class="btn btn-guide" onclick="showMenu()">İptal</button>
-        <button class="btn btn-primary" onclick="startConfiguredGame()" style="flex:2;">Başla 🚀</button>
-      </div>
     </div>
   </div>
 
@@ -696,6 +702,16 @@
       updateStatsUI();
     }
 
+    function openGameSettingsModal() {
+      isRankedMatch = false;
+      document.getElementById('rankedVersusInfoBox').style.display = 'none';
+      document.getElementById('gameSettingsModal').style.display = 'flex';
+    }
+
+    function closeGameSettingsModal() {
+      document.getElementById('gameSettingsModal').style.display = 'none';
+    }
+
     function handleExitMatch() {
       if (isRankedMatch && currentRoomId) {
         socket.emit('leave_match', { roomId: currentRoomId });
@@ -898,7 +914,6 @@
 
     function openTutorialModal() { renderMascotSVG('tutorialMascot'); switchScreen('tutorialScreen'); }
     function openLeagueModal() { renderLeaderboard(); switchScreen('leagueScreen'); }
-    function openGameSettingsModal() { isRankedMatch = false; document.getElementById('rankedVersusInfoBox').style.display = 'none'; switchScreen('gameSettingsScreen'); }
     function openDailyRewardsModal() { renderDailyRewardsGrid(); switchScreen('dailyRewardsScreen'); }
     function openShop() { updateMarketUI(); switchScreen('shopScreen'); }
 
@@ -1068,7 +1083,11 @@
     }
 
     function setBoardSize(size, btn) { boardSize = size; document.querySelectorAll('#sizeOptions .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    function startConfiguredGame() { switchScreen('menuScreen'); initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false); }
+    
+    function startConfiguredGame() {
+      closeGameSettingsModal();
+      initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false);
+    }
 
     function seededRandom(seed) { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
 
