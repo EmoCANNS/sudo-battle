@@ -194,6 +194,17 @@
       cursor: pointer;
     }
 
+    /* IPUCU YUVARLANMA ANİMASYONU */
+    .rolling-motion {
+      animation: sudoRollToTarget 0.85s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards !important;
+      z-index: 9999;
+    }
+    @keyframes sudoRollToTarget {
+      0% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+      50% { transform: translate(var(--dx), var(--dy)) rotate(540deg) scale(1.25); }
+      100% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(1); }
+    }
+
     .guide-mascot-avatar { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); }
 
     @keyframes sudoAliveBreathing {
@@ -221,6 +232,16 @@
       background: var(--card-bg); border: var(--glass-border); padding: 24px 20px; border-radius: 28px; text-align: center; max-width: 360px; width: 100%;
       box-shadow: 0 25px 50px rgba(0,0,0,0.6);
     }
+
+    /* TÜM RANKLAR MODAL LİSTESİ */
+    .all-ranks-container {
+      max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 12px 0; padding-right: 4px; text-align: left;
+    }
+    .rank-row-item {
+      display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 10px 14px; border-radius: 14px;
+    }
+    .rank-row-icon { width: 38px; height: 38px; flex-shrink: 0; }
+    .rank-row-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
     /* İNTERAKTİF CANLI REHBER (Ekranda Gezinen Pozisyonlar) */
     .live-guide-overlay {
@@ -281,8 +302,9 @@
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      border-radius: 20px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; text-align: left;
+      border-radius: 20px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer; transition: transform 0.1s;
     }
+    .ranked-card-box:active { transform: scale(0.98); }
     .rank-badge-sm { width: 60px; height: 60px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
     .rank-badge-sm svg, .vs-rank-icon svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
@@ -334,7 +356,7 @@
     </div>
   </div>
 
-  <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI (EKRANDA GEZİNEN POZİSYONLAR) -->
+  <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI -->
   <div id="liveGuideOverlay" class="live-guide-overlay" onclick="nextLiveGuideStep()">
     <div class="live-guide-wrapper" id="liveGuideWrapper">
       <div class="live-mascot-box" id="liveGuideMascotAvatar"></div>
@@ -346,7 +368,7 @@
     </div>
   </div>
 
-  <!-- KLASİK OYNA AYARLARI (KÜÇÜK MİNİ MODAL) -->
+  <!-- KLASİK OYNA AYARLARI -->
   <div id="gameSettingsModal" class="modal-overlay">
     <div class="modal-card-small">
       <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">Oyun Ayarları ⚙️</h2>
@@ -377,10 +399,11 @@
           <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:0.95rem; width:100%; padding:8px;">
         </div>
 
-        <div class="ranked-card-box">
+        <!-- TIKLANABİLİR RANK KUTUSU -->
+        <div class="ranked-card-box" onclick="openAllRanksModal()">
           <div class="rank-badge-sm" id="myRankIconBox"></div>
           <div style="flex:1;">
-            <div style="font-size: 0.68rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ</div>
+            <div style="font-size: 0.68rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ (Tümünü Gör 👆)</div>
             <div id="myRankNameText" style="font-size: 1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
             <div id="myRpText" style="font-size: 0.75rem; font-weight: 700; color: #fff;">0 RP</div>
             <div class="progress-bar-container">
@@ -404,6 +427,18 @@
         <button class="btn btn-guide" onclick="showMenu()" style="flex: 1; padding: 14px 10px; font-size: 0.9rem;">Geri</button>
         <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex: 2.5; padding: 15px;">Rakip Ara 🚀</button>
       </div>
+    </div>
+  </div>
+
+  <!-- TÜM RANAKLARI GÖSTEREN MODAL -->
+  <div id="allRanksModal" class="modal-overlay">
+    <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 24px;">
+      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Tüm Ligler ve Ranklar 🏆</h2>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">RP toplayarak tırmanabileceğin ligler:</p>
+      
+      <div class="all-ranks-container" id="allRanksListContainer"></div>
+
+      <button class="btn btn-primary" onclick="closeAllRanksModal()" style="margin-top: 10px;">Kapat 👍</button>
     </div>
   </div>
 
@@ -639,7 +674,7 @@
     let isRankedMatch = false;
     let matchHistory = JSON.parse(localStorage.getItem('sudo_match_history')) || [];
 
-    // CANLI REHBER ADIMLARI (Her adımda farklı bir konuma, sağa/sola ve yukarı/aşağı gidiyor)
+    // CANLI REHBER ADIMLARI
     const liveGuideSteps = [
       { title: "Sudo Rehberi (1/6)", text: "Selam patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını anlatacağım.", top: "15%", left: "5%" },
       { title: "Sudoku Nedir? (2/6)", text: "Sudoku, satır, sütun ve kutucuklarda sayıların birer kez yer aldığı mantık bulmacasıdır! 🧠", top: "25%", right: "5%" },
@@ -704,6 +739,36 @@
       document.getElementById('myRankIconBox').innerHTML = getRankSvgHtml(rank.type);
       const pct = Math.min(100, (userRp / rank.max) * 100);
       document.getElementById('rpProgressBar').style.width = `${pct}%`;
+    }
+
+    function openAllRanksModal() {
+      const container = document.getElementById('allRanksListContainer');
+      const ranksData = [
+        { name: 'BRONZ', type: 'bronze', range: '0 - 99 RP' },
+        { name: 'GÜMÜŞ', type: 'silver', range: '100 - 299 RP' },
+        { name: 'ALTIN', type: 'gold', range: '300 - 599 RP' },
+        { name: 'PLATİN', type: 'platinum', range: '600 - 999 RP' },
+        { name: 'ELMAS', type: 'diamond', range: '1000 - 1499 RP' },
+        { name: 'ÜSTAT', type: 'master', range: '1500+ RP' }
+      ];
+      let html = '';
+      ranksData.forEach(r => {
+        let isCurrent = getRankDetails(userRp).name === r.name;
+        let bgStyle = isCurrent ? 'background: rgba(255,71,87,0.15); border-color: var(--primary);' : '';
+        html += `<div class="rank-row-item" style="${bgStyle}">
+          <div class="rank-row-icon">${getRankSvgHtml(r.type)}</div>
+          <div style="flex:1;">
+            <div style="font-size:0.9rem; font-weight:800; color:var(--text-main);">${r.name} ${isCurrent ? '⭐ (Mevcut)' : ''}</div>
+            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Gereksinim: ${r.range}</div>
+          </div>
+        </div>`;
+      });
+      container.innerHTML = html;
+      document.getElementById('allRanksModal').style.display = 'flex';
+    }
+
+    function closeAllRanksModal() {
+      document.getElementById('allRanksModal').style.display = 'none';
     }
 
     function switchScreen(screenId) {
