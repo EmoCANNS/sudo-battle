@@ -268,14 +268,14 @@
     .guide-section-title { font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .guide-section-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
 
-    /* E-SPOR / VALORANT TARZI HAVALI & PREMIUM RANK ROZETLERİ */
+    /* E-SPOR / VALORANT TARZI HAVALI RANK KARTLARI */
     .ranked-card-box {
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
       box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,71,87,0.05);
       border-radius: 20px; padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; text-align: left;
     }
-    .rank-badge-sm { width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255,71,87,0.5)); }
+    .rank-badge-sm { width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
     .rank-badge-sm svg, .vs-rank-icon svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
     .progress-bar-container { background: rgba(255,255,255,0.1); border-radius: 8px; height: 10px; width: 100%; margin-top: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
@@ -287,7 +287,7 @@
       border: 1px solid rgba(255, 71, 87, 0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.5);
     }
     .vs-player-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40%; color: #fff; }
-    .vs-rank-icon { width: 55px; height: 55px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); }
+    .vs-rank-icon { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
     
     .btn-ranked {
       background: linear-gradient(135deg, #ff4757 0%, #c51162 100%);
@@ -636,24 +636,24 @@
     let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
     let isRankedMatch = false;
 
-    // YENİ NESİL PREMIUM E-SPOR RANK ROZETLERİ (Valorant/League Tarzı)
+    // GERÇEKÇİ & HAVAİ E-SPOR RANK ROZETLERİ (Valorant Tarzı)
     function getRankSvgHtml(type) {
       if (type === 'bronze') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.85"/><circle cx="50" cy="50" r="16" fill="#fff" opacity="0.95"/><circle cx="50" cy="50" r="8" fill="#e67e22"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#ffffff"/></svg>`;
       }
       if (type === 'silver') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#718093"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e272c" stroke="url(#sl-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#sl-g)" opacity="0.85"/><polygon points="50,30 65,50 50,70 35,50" fill="#1e272c"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#718093"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e272c" stroke="url(#sl-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#sl-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#1e272c"/></svg>`;
       }
       if (type === 'gold') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/></linearGradient></defs><polygon points="50,3 95,25 95,75 50,97 5,75 5,25" fill="#2c2c35" stroke="url(#go-g)" stroke-width="6"/><polygon points="50,12 85,28 85,72 50,88 15,72 15,28" fill="url(#go-g)"/><polygon points="50,32 66,50 50,68 34,50" fill="#ffffff"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/></linearGradient></defs><polygon points="50,3 95,25 95,75 50,97 5,75 5,25" fill="#2c2c35" stroke="url(#go-g)" stroke-width="6"/><polygon points="50,12 85,28 85,72 50,88 15,72 15,28" fill="url(#go-g)"/><polygon points="50,30 68,50 50,70 32,50" fill="#ffffff"/></svg>`;
       }
       if (type === 'platinum') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><path d="M50,3 L95,50 L50,97 L5,50 Z" fill="#0c2461" stroke="url(#pl-g)" stroke-width="6"/><path d="M50,14 L84,50 L50,86 L16,50 Z" fill="url(#pl-g)"/><polygon points="50,34 64,50 50,66 36,50" fill="#ffffff"/></svg>`;
+        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><path d="M50,3 L95,50 L50,97 L5,50 Z" fill="#0c2461" stroke="url(#pl-g)" stroke-width="6"/><path d="M50,14 L84,50 L50,86 L16,50 Z" fill="url(#pl-g)"/><polygon points="50,32 66,50 50,68 34,50" fill="#ffffff"/></svg>`;
       }
       if (type === 'diamond') {
         return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#6c5ce7"/></linearGradient></defs><path d="M50,2 L96,32 78,92 22,92 4,32 Z" fill="#2d132c" stroke="url(#di-g)" stroke-width="6"/><polygon points="50,12 86,36 70,82 30,82 14,36" fill="url(#di-g)"/><polygon points="50,28 68,48 50,72 32,48" fill="#ffffff"/></svg>`;
       }
-      return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="50%" stop-color="#ffa502"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M50,2 L97,20 97,65 50,98 3,65 3,20 Z" fill="#3b0712" stroke="url(#ma-g)" stroke-width="7"/><path d="M50,10 L88,25 88,60 50,90 12,60 12,25 Z" fill="url(#ma-g)"/><polygon points="50,25 67,45 50,75 33,45" fill="#ffffff"/><circle cx="50" cy="50" r="7" fill="#ffeaa7"/></svg>`;
+      return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="50%" stop-color="#ffa502"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M50,2 L97,20 97,65 50,98 3,65 3,20 Z" fill="#3b0712" stroke="url(#ma-g)" stroke-width="7"/><path d="M50,10 L88,25 88,60 50,90 12,60 12,25 Z" fill="url(#ma-g)"/><polygon points="50,25 67,45 50,75 33,45" fill="#ffffff"/><circle cx="50" cy="50" r="6" fill="#ffeaa7"/></svg>`;
     }
 
     function getRankDetails(rp) {
@@ -718,7 +718,7 @@
       initGame(data.seed, "RANKED 1v1", false);
     });
 
-    // Rakip oyundan çıkarsa veya maçı kaybederse otomatik kazandırma
+    // Rakip çıkarsa otomatik kazandırma ve ana menüye yönlendirme
     socket.on('game_over', (data) => {
       if (isRankedMatch) {
         stopTimer();
@@ -889,97 +889,30 @@
       }
 
       let accSVG = '';
-
       if (activeAcc === 'crown') {
-        accSVG = `
-          <g transform="translate(0, -18)">
-            <polygon points="20,22 32,4 50,16 68,4 80,22 75,28 25,28" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/>
-            <circle cx="50" cy="13" r="3.5" fill="#ff4757"/>
-            <circle cx="32" cy="10" r="2.5" fill="#2ed573"/>
-            <circle cx="68" cy="10" r="2.5" fill="#3742fa"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -18)"><polygon points="20,22 32,4 50,16 68,4 80,22 75,28 25,28" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/><circle cx="50" cy="13" r="3.5" fill="#ff4757"/><circle cx="32" cy="10" r="2.5" fill="#2ed573"/><circle cx="68" cy="10" r="2.5" fill="#3742fa"/></g>`;
       } else if (activeAcc === 'glasses') {
-        accSVG = `
-          <g transform="translate(0, -2)">
-            <rect x="20" y="26" width="28" height="22" rx="6" fill="#2f3542"/>
-            <rect x="52" y="26" width="28" height="22" rx="6" fill="#2f3542"/>
-            <line x1="48" y1="36" x2="52" y2="36" stroke="#2f3542" stroke-width="4"/>
-            <line x1="8" y1="34" x2="20" y2="34" stroke="#2f3542" stroke-width="3"/>
-            <line x1="80" y1="34" x2="92" y2="34" stroke="#2f3542" stroke-width="3"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -2)"><rect x="20" y="26" width="28" height="22" rx="6" fill="#2f3542"/><rect x="52" y="26" width="28" height="22" rx="6" fill="#2f3542"/><line x1="48" y1="36" x2="52" y2="36" stroke="#2f3542" stroke-width="4"/><line x1="8" y1="34" x2="20" y2="34" stroke="#2f3542" stroke-width="3"/><line x1="80" y1="34" x2="92" y2="34" stroke="#2f3542" stroke-width="3"/></g>`;
       } else if (activeAcc === 'halo') {
-        accSVG = `
-          <g transform="translate(0, -16)">
-            <ellipse cx="50" cy="10" rx="30" ry="8" fill="none" stroke="#f1c40f" stroke-width="5" opacity="0.9"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -16)"><ellipse cx="50" cy="10" rx="30" ry="8" fill="none" stroke="#f1c40f" stroke-width="5" opacity="0.9"/></g>`;
       } else if (activeAcc === 'bow') {
-        accSVG = `
-          <g transform="translate(0, 52)">
-            <polygon points="50,22 30,10 30,34" fill="#ff6b81"/>
-            <polygon points="50,22 70,10 70,34" fill="#ff6b81"/>
-            <circle cx="50" cy="22" r="5" fill="#ff4757"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, 52)"><polygon points="50,22 30,10 30,34" fill="#ff6b81"/><polygon points="50,22 70,10 70,34" fill="#ff6b81"/><circle cx="50" cy="22" r="5" fill="#ff4757"/></g>`;
       } else if (activeAcc === 'headphones') {
-        accSVG = `
-          <g>
-            <path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#2f3542" stroke-width="7" stroke-linecap="round"/>
-            <rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/>
-            <rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/>
-          </g>`;
+        accSVG = `<g><path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#2f3542" stroke-width="7" stroke-linecap="round"/><rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/><rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/></g>`;
       } else if (activeAcc === 'cat') {
-        accSVG = `
-          <g transform="translate(0, -12)">
-            <polygon points="12,28 26,-2 42,18" fill="${color}" stroke="#2f3542" stroke-width="2"/>
-            <polygon points="88,28 74,-2 58,18" fill="${color}" stroke="#2f3542" stroke-width="2"/>
-            <polygon points="18,24 26,4 36,16" fill="#ff6b81"/>
-            <polygon points="82,24 74,4 64,16" fill="#ff6b81"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -12)"><polygon points="12,28 26,-2 42,18" fill="${color}" stroke="#2f3542" stroke-width="2"/><polygon points="88,28 74,-2 58,18" fill="${color}" stroke="#2f3542" stroke-width="2"/><polygon points="18,24 26,4 36,16" fill="#ff6b81"/><polygon points="82,24 74,4 64,16" fill="#ff6b81"/></g>`;
       } else if (activeAcc === 'chef') {
-        accSVG = `
-          <g transform="translate(0, -28)">
-            <circle cx="36" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
-            <circle cx="64" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
-            <circle cx="50" cy="12" r="16" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
-            <rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -28)"><circle cx="36" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/><circle cx="64" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/><circle cx="50" cy="12" r="16" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/><rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/></g>`;
       } else if (activeAcc === 'wizard') {
-        accSVG = `
-          <g transform="translate(0, -32)">
-            <polygon points="50,-8 22,28 78,28" fill="#5352ed"/>
-            <ellipse cx="50" cy="28" rx="38" ry="8" fill="#3742fa"/>
-            <path d="M 42,12 L 46,16 L 54,14 L 48,20 L 52,26 L 44,22 L 38,26 Z" fill="#ffeaa7"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -32)"><polygon points="50,-8 22,28 78,28" fill="#5352ed"/><ellipse cx="50" cy="28" rx="38" ry="8" fill="#3742fa"/><path d="M 42,12 L 46,16 L 54,14 L 48,20 L 52,26 L 44,22 L 38,26 Z" fill="#ffeaa7"/></g>`;
       } else if (activeAcc === 'pirate') {
-        accSVG = `
-          <g transform="translate(0, -22)">
-            <path d="M 10,28 Q 50,-10 90,28 L 78,36 Q 50,20 22,36 Z" fill="#2f3542"/>
-            <circle cx="50" cy="18" r="5" fill="#ffffff"/>
-            <line x1="45" y1="13" x2="55" y2="23" stroke="#ffffff" stroke-width="2"/>
-            <line x1="55" y1="13" x2="45" y2="23" stroke="#ffffff" stroke-width="2"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -22)"><path d="M 10,28 Q 50,-10 90,28 L 78,36 Q 50,20 22,36 Z" fill="#2f3542"/><circle cx="50" cy="18" r="5" fill="#ffffff"/><line x1="45" y1="13" x2="55" y2="23" stroke="#ffffff" stroke-width="2"/><line x1="55" y1="13" x2="45" y2="23" stroke="#ffffff" stroke-width="2"/></g>`;
       } else if (activeAcc === 'scarf') {
-        accSVG = `
-          <g transform="translate(0, 58)">
-            <rect x="18" y="0" width="64" height="18" rx="9" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/>
-            <rect x="56" y="10" width="16" height="28" rx="6" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/>
-            <line x1="56" y1="32" x2="72" y2="32" stroke="#ffffff" stroke-dasharray="3,3" stroke-width="2"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, 58)"><rect x="18" y="0" width="64" height="18" rx="9" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/><rect x="56" y="10" width="16" height="28" rx="6" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/><line x1="56" y1="32" x2="72" y2="32" stroke="#ffffff" stroke-dasharray="3,3" stroke-width="2"/></g>`;
       } else if (activeAcc === 'rock') {
-        accSVG = `
-          <g transform="translate(0, 2)">
-            <rect x="6" y="18" width="88" height="12" rx="4" fill="#ff4757" stroke="#2f3542" stroke-width="1.5"/>
-            <circle cx="50" cy="24" r="3" fill="#ffeaa7"/>
-            <path d="M 12,28 Q 8,45 16,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/>
-            <path d="M 88,28 Q 92,45 84,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, 2)"><rect x="6" y="18" width="88" height="12" rx="4" fill="#ff4757" stroke="#2f3542" stroke-width="1.5"/><circle cx="50" cy="24" r="3" fill="#ffeaa7"/><path d="M 12,28 Q 8,45 16,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/><path d="M 88,28 Q 92,45 84,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/></g>`;
       } else if (activeAcc === 'doctor') {
-        accSVG = `
-          <g transform="translate(0, -18)">
-            <rect x="30" y="8" width="40" height="20" rx="6" fill="#ffffff" stroke="#ced6e0" stroke-width="2"/>
-            <circle cx="50" cy="18" r="6" fill="#2ed573"/>
-            <rect x="48" y="14" width="4" height="8" fill="#ffffff"/>
-            <rect x="46" y="16" width="8" height="4" fill="#ffffff"/>
-          </g>`;
+        accSVG = `<g transform="translate(0, -18)"><rect x="30" y="8" width="40" height="20" rx="6" fill="#ffffff" stroke="#ced6e0" stroke-width="2"/><circle cx="50" cy="18" r="6" fill="#2ed573"/><rect x="48" y="14" width="4" height="8" fill="#ffffff"/><rect x="46" y="16" width="8" height="4" fill="#ffffff"/></g>`;
       }
 
       el.innerHTML = `
@@ -1117,7 +1050,7 @@
     function buyOrEquipSkin(id, color, price) {
       if (ownedSkins.includes(id)) { activeSkin = id; saveUserData(); updateStatsUI(); }
       else {
-        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok!");
+        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok Üstadım!");
         userCoins -= price; ownedSkins.push(id); activeSkin = id;
         saveUserData(); updateStatsUI(); showAppAlert("Kostüm giyildi! 🌸");
       }
@@ -1126,7 +1059,7 @@
     function buyOrEquipAcc(id, price) {
       if (ownedAccs.includes(id)) { activeAcc = id; saveUserData(); updateStatsUI(); }
       else {
-        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok!");
+        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok Üstadım!");
         userCoins -= price; ownedAccs.push(id); activeAcc = id;
         saveUserData(); updateStatsUI(); showAppAlert("Aksesuar takıldı! ✨");
       }
@@ -1135,7 +1068,7 @@
     function buyOrEquipBoardTheme(id, price) {
       if (ownedBoardThemes.includes(id)) { activeBoardTheme = id; saveUserData(); updateStatsUI(); renderBoard(); }
       else {
-        if (userCoins < price) return showAppAlert(`Bu tema için ${price} Coin gerekiyor!`);
+        if (userCoins < price) return showAppAlert(`Bu tema için ${price} Coin gerekiyor Üstadım!`);
         userCoins -= price; ownedBoardThemes.push(id); activeBoardTheme = id;
         saveUserData(); updateStatsUI(); renderBoard();
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
@@ -1144,7 +1077,7 @@
     }
 
     function buyHints() {
-      if (userCoins < 40) return showAppAlert("Yeterli Coin'in yok!");
+      if (userCoins < 40) return showAppAlert("Yeterli Coin'in yok Üstadım!");
       userCoins -= 40; hintCount += 3; saveUserData(); updateStatsUI();
       showAppAlert("+3 İpucu alındı! 💡");
     }
@@ -1239,7 +1172,7 @@
       document.getElementById('gameScreen').classList.add('active');
       updateStatsUI();
       resetMascotPosition();
-      setSudoEmotion('happy', "Hadi başlayalım! 🌸");
+      setSudoEmotion('happy', "Hadi başlayalım Üstadım! 🌸");
       startBlinkLoop();
       resetIdleTimer();
       if (!isMusicPlaying) {
@@ -1341,7 +1274,7 @@
     function triggerDuolingoRewardModal() {
       hintCount += 1; saveUserData(); updateStatsUI();
       renderMascotSVG('duoFlyingMascotContainer');
-      document.getElementById('duoRewardMessage').innerText = `Sana bir hediye verdim: +1 İpucu! 🎁✨`;
+      document.getElementById('duoRewardMessage').innerText = `Sana bir hediye verdim Üstadım: +1 İpucu! 🎁✨`;
       const modal = document.getElementById('duolingoRewardModal');
       modal.style.display = 'flex';
       setTimeout(() => { modal.classList.add('active'); }, 10);
@@ -1358,7 +1291,7 @@
       resetIdleTimer();
       isNotesMode = !isNotesMode;
       document.getElementById('notesBtn').classList.toggle('active', isNotesMode);
-      setSudoEmotion('thinking', isNotesMode ? "Not modu açık! ✏️" : "Normal mod aktif.");
+      setSudoEmotion('thinking', isNotesMode ? "Not modu açık Üstadım! ✏️" : "Normal mod aktif.");
     }
 
     function erase() {
@@ -1372,7 +1305,7 @@
 
     function getHint() {
       resetIdleTimer();
-      if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır! ⚔️");
+      if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır Üstadım! ⚔️");
       if (hintCount <= 0) return showAppAlert("İpucu kalmadı!");
       let totalCells = boardSize * boardSize;
       let emptyOrWrong = [];
@@ -1388,7 +1321,7 @@
       let wrapperEl = document.getElementById('guideMascotWrapper');
       let mascotRect = wrapperEl.getBoundingClientRect();
 
-      setSudoEmotion('thinking', "Yuvarlanıyorum! 🌀✨");
+      setSudoEmotion('thinking', "Yuvarlanıyorum Üstadım! 🌀✨");
 
       let dx = cellRect.left - mascotRect.left + (cellRect.width / 2) - (mascotRect.width / 2);
       let dy = cellRect.top - mascotRect.top + (cellRect.height / 2) - (mascotRect.height / 2);
@@ -1453,7 +1386,6 @@
       renderMascotSVG('winMascot');
       confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
       
-      // Hata başına ödül düşürme sistemi
       let earnedScore = Math.max(30, 150 - (mistakes * 20));
       let earnedCoins = Math.max(10, 50 - (mistakes * 5));
       userScore += earnedScore; 
@@ -1471,7 +1403,6 @@
       document.getElementById('winModal').style.display = 'flex';
       updateStatsUI();
 
-      // 3 saniye sonra otomatik ana sayfaya yönlendir
       setTimeout(() => {
         showMenu();
       }, 3000);

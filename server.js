@@ -1,75 +1,103 @@
-const express = require('express');
+const express = require('http');
 const http = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: { origin: "*" }
-});
+const io = new Server(server);
 
-app.use(express.static('public'));
+// Statik dosyaları sunmak için (public klasörü veya ana dizin)
+app.use(express.static(path.join(__dirname)));
 
+// Bekleyen ranked oyuncu kuyruğu
 let waitingPlayer = null;
+// Aktif oyun odaları
+const activeRooms = {};
 
 io.on('connection', (socket) => {
-    socket.on('find_match', (playerData) => {
-        if (waitingPlayer && waitingPlayer.id === socket.id) return;
+  console.log(`Bir oyuncu bağlandı Üstadım: ${socket.id}`);
 
-        socket.userData = {
-            id: socket.id,
-            username: playerData.username || 'Oyuncu',
-            rp: playerData.rp || 0
-        };
+  // Ranked Rakip Arama
+  socket.on('find_match', (data) => {
+    const { username, rp } = data;
 
-        if (waitingPlayer) {
-            const opponent = waitingPlayer;
-            waitingPlayer = null;
+    if (waitingPlayer) {
+      // Eşleşme sağlandı! Bir oda oluşturuyoruz
+      const roomId = `room_${Date.now()}`;
+      const seed = Math.floor(Math.random() * 900000) + 100;
 
-            const roomId = `room_${socket.id}_${opponent.id}`;
-            socket.join(roomId);
-            opponent.join(roomId);
+      socket.join(roomId);
+      waitingPlayer.socket.join(roomId);
 
-            const seed = Math.floor(Math.random() * 899999) + 100000;
-            
-            socket.emit('match_found', {
-                roomId,
-                seed,
-                opponent: { username: opponent.userData.username }
-            });
+      activeRooms[roomId] = {
+        players: [
+          { id: waitingPlayer.socket.id, username: waitingPlayer.username, rp: waitingPlayer.rp },
+          { id: socket.id, username: username, rp: rp }
+        ]
+      };
 
-            opponent.emit('match_found', {
-                roomId,
-                seed,
-                opponent: { username: socket.userData.username }
-            });
-        } else {
-            waitingPlayer = socket;
-            socket.emit('waiting_opponent', "Dereceli rakip bekleniyor... ⚔️");
+      // Bekleyen oyuncuya haberi ver
+      waitingPlayer.socket.emit('match_found', {
+        roomId: roomId,
+        seed: seed,
+        opponent: { username: username, rp: rp }
+      });
+
+      // Yeni katılan oyuncuya haberi ver
+      socket.emit('match_found', {
+        roomId: roomId,
+        seed: seed,
+        opponent: { username: waitingPlayer.username, rp: waitingPlayer.rp }
+      });
+
+      console.log(`Üstadım, ${roomId} odasında kapışma başladı!`);
+      waitingPlayer = null;
+    } else {
+      // Bekleyen kimse yoksa kuyruğa al
+      waitingPlayer = { socket: socket, username: username, rp: rp };
+      socket.emit('waiting_opponent', 'Rakip bekleniyor Üstadım... ⚔️');
+    }
+  });
+
+  // Oyunu bitiren taraf
+  socket.on('game_won', (data) => {
+    const { roomId } = data;
+    if (activeRooms[roomId]) {
+      // Odadaki diğer oyuncuya kaybettiğini bildir
+      io.to(roomId).emit('game_over', { winner: socket.id });
+      delete activeRooms[roomId];
+    }
+  });
+
+  // Oyuncu oyundan ayrıldığında veya bağlantısı koptuğunda
+  socket.on('disconnect', () => {
+    console.log(`Bir oyuncu ayrıldı Üstadım: ${socket.id}`);
+    
+    if (waitingPlayer && waitingPlayer.socket.id === socket.id) {
+      waitingPlayer = null;
+    }
+
+    // Aktif odalarda maçı yarım bırakan var mı kontrol et
+    for (const roomId in activeRooms) {
+      const room = activeRooms[roomId];
+      const playerInRoom = room.players.find(p => p.id === socket.id);
+      
+      if (playerInRoom) {
+        // Kalan diğer oyuncuyu bul
+        const remainingPlayer = room.players.find(p => p.id !== socket.id);
+        if (remainingPlayer) {
+          // Kalan oyuncuya hükmen galibiyet ver
+          io.to(roomId).emit('game_over', { winner: remainingPlayer.id });
         }
-    });
-
-    // Biri bulmacayı bitirdiğinde odadaki herkese bildir
-    socket.on('game_won', (data) => {
-        if (data && data.roomId) {
-            // Bitirene zafer yolla
-            socket.emit('match_result', { winner: true });
-            // Odadaki diğer kişiye mağlubiyet yolla
-            socket.to(data.roomId).emit('match_result', { 
-                winner: false, 
-                winnerName: socket.userData ? socket.userData.username : 'Rakip' 
-            });
-        }
-    });
-
-    socket.on('disconnect', () => {
-        if (waitingPlayer && waitingPlayer.id === socket.id) {
-            waitingPlayer = null;
-        }
-    });
+        delete activeRooms[roomId];
+        break;
+      }
+    }
+  });
 });
 
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Sunucu ${PORT} portunda yayında! 🚀`);
+  console.log(`Sudo Battle sunucusu ${PORT} portunda ayakta Üstadım! 🚀`);
 });
