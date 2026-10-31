@@ -8,138 +8,141 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --card-bg: rgba(255, 255, 255, 0.96);
+      --card-bg: rgba(20, 20, 28, 0.95);
       --primary-gradient: linear-gradient(135deg, #ff6b81 0%, #ff4757 100%);
       --primary: #ff4757;
       --secondary-gradient: linear-gradient(135deg, #5352ed 0%, #70a1ff 100%);
       --accent-gradient: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%);
       --league-gradient: linear-gradient(135deg, #3742fa 0%, #5352ed 100%);
       --promo-gradient: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
-      --text-main: #2f3542;
-      --text-muted: #747d8c;
-      --shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.9);
+      --text-main: #f1f2f6;
+      --text-muted: #a4b0be;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     
     body {
       font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(135deg, #f1f2f6 0%, #dfe4ea 100%);
+      background: radial-gradient(circle at center, #1e1e2f 0%, #0f0f17 100%);
       min-height: 100vh;
       color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding: 10px;
     }
     
     .screen { width: 100%; max-width: 440px; display: none; flex-direction: column; gap: 12px; position: relative; }
     .screen.active { display: flex; animation: fadeInScreen 0.3s ease-out; }
 
     @keyframes fadeInScreen {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    .menu-card, .modal-card {
+    /* TAM EKRAN DOLU MENÜ VE PENCERELER */
+    .menu-card, .full-page-card {
       background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-radius: 32px;
-      padding: 24px 20px;
+      backdrop-filter: blur(25px);
+      border-radius: 28px;
+      padding: 24px 18px;
       box-shadow: var(--shadow);
       text-align: center;
       border: var(--glass-border);
       position: relative;
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .app-title {
-      font-size: 2.2rem; font-weight: 800;
+      font-size: 2.4rem; font-weight: 800;
       background: var(--primary-gradient);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 2px;
+      letter-spacing: 0.5px;
     }
-    .app-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; font-weight: 700; }
+    .app-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; }
 
     .user-stats-bar {
-      display: flex; justify-content: space-around; background: #f8f9fa; padding: 12px 14px;
-      border-radius: 20px; margin-bottom: 16px; font-weight: 800; font-size: 0.82rem; color: var(--primary);
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #dfe4ea;
+      display: flex; justify-content: space-around; background: rgba(255,255,255,0.05); padding: 12px 10px;
+      border-radius: 18px; margin-bottom: 14px; font-weight: 800; font-size: 0.82rem; color: var(--primary);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
-    .menu-buttons-grid { display: flex; flex-direction: column; gap: 10px; }
+    .menu-buttons-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
 
     .btn {
-      border: none; padding: 14px 20px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+      border: none; padding: 15px 20px; border-radius: 18px; font-weight: 800; font-size: 0.98rem; cursor: pointer;
       transition: transform 0.1s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; font-family: 'Quicksand', sans-serif;
     }
     .btn:active { transform: scale(0.97); }
     
-    .btn-play { background: var(--primary-gradient); color: white; box-shadow: 0 8px 22px rgba(255, 71, 87, 0.4); font-size: 1.05rem; }
-    .btn-league { background: var(--league-gradient); color: white; box-shadow: 0 8px 22px rgba(83, 82, 237, 0.35); }
-    .btn-daily { background: var(--accent-gradient); color: white; box-shadow: 0 8px 22px rgba(255, 165, 2, 0.35); }
-    .btn-market { background: var(--secondary-gradient); color: white; box-shadow: 0 8px 22px rgba(83, 82, 237, 0.3); }
-    .btn-guide { background: #f1f2f6; border: 1px solid #ced6e0; color: var(--text-muted); }
+    .btn-play { background: var(--primary-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4); font-size: 1.05rem; }
+    .btn-league { background: var(--league-gradient); color: white; box-shadow: 0 8px 25px rgba(55, 66, 250, 0.35); }
+    .btn-daily { background: var(--accent-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 165, 2, 0.35); }
+    .btn-market { background: var(--secondary-gradient); color: white; box-shadow: 0 8px 25px rgba(83, 82, 237, 0.3); }
+    .btn-guide { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); }
 
     .music-toggle-btn {
-      position: absolute; top: 16px; right: 16px; background: #ffffff; border: 1px solid #dfe4ea; border-radius: 16px;
-      padding: 6px 12px; font-size: 0.75rem; font-weight: 800; color: var(--primary); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.04); z-index: 10;
+      position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px;
+      padding: 6px 12px; font-size: 0.75rem; font-weight: 800; color: var(--primary); cursor: pointer; z-index: 10;
     }
 
     .promo-container {
-      display: flex; gap: 8px; margin-top: 10px; background: #f8f9fa; padding: 8px; border-radius: 18px; border: 1px solid #dfe4ea;
+      display: flex; gap: 8px; margin-top: 10px; background: rgba(255,255,255,0.04); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);
     }
     .promo-input {
-      flex: 1; border: 1px solid #ced6e0; background: #ffffff; padding: 10px 14px; border-radius: 14px;
+      flex: 1; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px;
       font-family: 'Quicksand', sans-serif; font-weight: 700; color: var(--text-main); font-size: 0.85rem; outline: none;
     }
     .promo-input:focus { border-color: var(--primary); }
-    .btn-promo { background: var(--promo-gradient); color: white; width: auto; padding: 10px 16px; border-radius: 14px; font-size: 0.85rem; }
+    .btn-promo { background: var(--promo-gradient); color: white; width: auto; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; }
 
     .league-header {
-      background: var(--league-gradient); color: white; padding: 12px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; font-size: 0.95rem;
+      background: var(--league-gradient); color: white; padding: 14px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; font-size: 1rem;
     }
-    .leaderboard-list { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .leaderboard-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .leaderboard-item {
-      display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 10px 14px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; border: 1px solid #dfe4ea;
+      display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08);
     }
-    .leaderboard-item.user-row { background: #ffe3ec; border-color: var(--primary); color: var(--primary); }
+    .leaderboard-item.user-row { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); }
 
-    .daily-reward-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-height: 220px; overflow-y: auto; padding: 4px; margin-bottom: 12px; }
+    .daily-reward-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 4px; margin-bottom: 12px; }
     .reward-day-box {
-      background: #f8f9fa; border: 2px solid #dfe4ea; border-radius: 12px; padding: 6px 2px; text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 4px; text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
-    .reward-day-box.claimed { background: #e8f8f0; border-color: #2ed573; color: #2ed573; opacity: 0.8; }
-    .reward-day-box.active-day { background: #ffe3ec; border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 12px rgba(255,71,87,0.25); }
+    .reward-day-box.claimed { background: rgba(46,213,115,0.1); border-color: #2ed573; color: #2ed573; opacity: 0.8; }
+    .reward-day-box.active-day { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 15px rgba(255,71,87,0.25); }
 
-    .market-tabs { display: flex; gap: 4px; margin-bottom: 12px; background: #f1f2f6; padding: 4px; border-radius: 16px; }
-    .market-tab { flex: 1; padding: 8px 6px; border: none; background: transparent; font-weight: 700; font-size: 0.72rem; color: var(--text-muted); border-radius: 12px; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all 0.2s; white-space: nowrap; }
-    .market-tab.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .market-tabs { display: flex; gap: 4px; margin-bottom: 12px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 16px; }
+    .market-tab { flex: 1; padding: 10px 6px; border: none; background: transparent; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); border-radius: 12px; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all 0.2s; white-space: nowrap; }
+    .market-tab.active { background: rgba(255,255,255,0.15); color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
-    .market-section { display: none; max-height: 220px; overflow-y: auto; padding-right: 2px; }
-    .market-section.active { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .market-section { display: none; flex: 1; overflow-y: auto; padding-right: 2px; }
+    .market-section.active { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-content: start; }
 
     .shop-item {
-      background: #f8f9fa; border: 2px solid #dfe4ea; border-radius: 16px; padding: 10px; text-align: center; cursor: pointer; transition: all 0.2s;
+      background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;
     }
-    .shop-item.equipped { border-color: var(--primary); background: #ffe3ec; }
-    .shop-item.purchased { border-color: #70a1ff; background: #f1f5f9; }
+    .shop-item.equipped { border-color: var(--primary); background: rgba(255,71,87,0.15); }
+    .shop-item.purchased { border-color: #70a1ff; background: rgba(112,161,255,0.1); }
 
     .game-header {
       display: flex; justify-content: space-between; align-items: center;
       background: var(--card-bg); backdrop-filter: blur(10px); padding: 10px 16px; border-radius: 20px; box-shadow: var(--shadow); border: var(--glass-border);
     }
     .icon-btn {
-      background: rgba(255, 71, 87, 0.1); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: var(--primary);
+      background: rgba(255, 71, 87, 0.15); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: var(--primary);
     }
     .game-info { text-align: center; }
     .game-title { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
     .game-timer { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
 
     .sudoku-board-container {
-      width: 100%; aspect-ratio: 1; background: var(--card-bg); border: 3px solid var(--text-main); border-radius: 24px; overflow: hidden; display: grid; gap: 1px; box-shadow: var(--shadow); position: relative;
+      width: 100%; aspect-ratio: 1; background: var(--card-bg); border: 3px solid rgba(255,255,255,0.2); border-radius: 24px; overflow: hidden; display: grid; gap: 1px; box-shadow: var(--shadow); position: relative;
     }
     
     .cell {
@@ -153,16 +156,16 @@
 
     .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .tool-btn {
-      background: var(--card-bg); border: 1px solid #dfe4ea; padding: 9px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); cursor: pointer; font-family: 'Quicksand', sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); cursor: pointer; font-family: 'Quicksand', sans-serif;
     }
-    .tool-btn.active { background: #ffe3ec; border-color: var(--primary); color: var(--primary); }
+    .tool-btn.active { background: rgba(255,71,87,0.2); border-color: var(--primary); color: var(--primary); }
     .tool-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .numpad { display: grid; gap: 4px; }
     .num-btn {
-      background: var(--card-bg); border: 1px solid #dfe4ea; border-radius: 12px; font-weight: 800; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.02); font-family: 'Quicksand', sans-serif; transition: all 0.15s;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Quicksand', sans-serif; transition: all 0.15s;
     }
-    .num-btn:active { transform: scale(0.95); background: #ffe3ec; color: var(--primary); }
+    .num-btn:active { transform: scale(0.95); background: rgba(255,71,87,0.2); color: var(--primary); }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
@@ -175,17 +178,16 @@
     }
 
     .guide-bubble {
-      background: white; border: 2px solid var(--primary); padding: 10px 14px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); font-weight: 700; font-size: 0.82rem; color: var(--text-main); line-height: 1.3; text-align: left; flex: 1; position: relative;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,71,87,0.4); padding: 10px 14px; border-radius: 16px; font-weight: 700; font-size: 0.82rem; color: var(--text-main); line-height: 1.3; text-align: left; flex: 1; position: relative;
     }
 
     .guide-mascot-wrapper {
       width: 58px; height: 58px; flex-shrink: 0; position: relative; z-index: 100;
       animation: sudoAliveBreathing 2.5s ease-in-out infinite alternate;
-      transition: transform 0.4s cubic-bezier(0.34, 1.3, 0.64, 1);
       cursor: pointer;
     }
 
-    .guide-mascot-avatar { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.12)); }
+    .guide-mascot-avatar { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); }
 
     @keyframes sudoAliveBreathing {
       0% { transform: translateY(0px) scale(1) rotate(0deg); }
@@ -226,11 +228,11 @@
     }
 
     .duolingo-reward-popup {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500;
     }
     .duolingo-card {
-      background: white; padding: 32px 24px; border-radius: 32px; text-align: center; max-width: 320px; width: 90%;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.3); transform: translateY(120px) scale(0.4); opacity: 0;
+      background: var(--card-bg); border: var(--glass-border); padding: 32px 24px; border-radius: 32px; text-align: center; max-width: 320px; width: 90%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(120px) scale(0.4); opacity: 0;
       transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
     }
     .duolingo-reward-popup.active .duolingo-card { transform: translateY(0) scale(1); opacity: 1; }
@@ -243,36 +245,31 @@
       100% { transform: translateY(-20px) scale(1.18) rotate(10deg); }
     }
 
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(47, 53, 66, 0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 200;
-    }
-    
     .mascot-container {
       width: 80px; height: 80px; margin: 0 auto 8px; cursor: pointer;
       animation: sudoAliveBreathing 2.5s ease-in-out infinite alternate;
     }
 
     .speech-bubble {
-      background: #f8f9fa; border: 1px solid #dfe4ea; padding: 12px 16px; border-radius: 18px; font-weight: 700; color: var(--text-main); font-size: 0.88rem; display: block; margin-bottom: 12px; position: relative; line-height: 1.35; text-align: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 16px; border-radius: 18px; font-weight: 700; color: var(--text-main); font-size: 0.88rem; display: block; margin-bottom: 12px; position: relative; line-height: 1.35; text-align: center;
     }
 
-    .setting-group { margin-bottom: 12px; text-align: left; }
+    .setting-group { margin-bottom: 14px; text-align: left; }
     .setting-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
-    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .option-btn {
-      background: #f8f9fa; border: 1px solid #dfe4ea; padding: 10px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); cursor: pointer; font-family: 'Quicksand', sans-serif; text-align: center;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); cursor: pointer; font-family: 'Quicksand', sans-serif; text-align: center;
     }
     .option-btn.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 14px rgba(255, 71, 87, 0.3); }
 
-    .guide-section-box { background: #f8f9fa; border: 1px solid #dfe4ea; border-radius: 16px; padding: 12px; margin-bottom: 10px; text-align: left; }
+    .guide-section-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 12px; margin-bottom: 10px; text-align: left; }
     .guide-section-title { font-weight: 800; font-size: 0.85rem; color: var(--primary); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .guide-section-text { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; font-weight: 600; }
 
-    /* E-SPOR / VALORANT TARZI HAVALI RANK KARTLARI */
     .ranked-card-box {
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,71,87,0.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
       border-radius: 20px; padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; text-align: left;
     }
     .rank-badge-sm { width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
@@ -301,26 +298,28 @@
 
   <button class="music-toggle-btn" onclick="toggleChillMusic()" id="musicBtn">🎵 Müzik: Açık</button>
 
-  <!-- ANA MENÜ -->
+  <!-- ANA MENÜ (DAHA DOLU VE CANLI) -->
   <div id="menuScreen" class="screen active">
     <div class="menu-card">
-      <div class="user-stats-bar">
-        <span>⭐ Level: <strong id="userLevel">1</strong></span>
-        <span>🔥 Seri: <strong id="userStreak">1 Gün</strong></span>
-        <span>🪙 Coin: <strong id="userCoins">800</strong></span>
+      <div>
+        <div class="user-stats-bar">
+          <span>⭐ Level: <strong id="userLevel">1</strong></span>
+          <span>🔥 Seri: <strong id="userStreak">1 Gün</strong></span>
+          <span>🪙 Coin: <strong id="userCoins">800</strong></span>
+        </div>
+
+        <div class="mascot-container" id="menuMascot" onclick="triggerMascotClick()"></div>
+
+        <h1 class="app-title">Sudo Battle</h1>
+        <p class="app-subtitle">Zekânı Konuştur, Rakibini Alt Et! ⚡</p>
       </div>
-
-      <div class="mascot-container" id="menuMascot" style="width: 80px; height: 80px;" onclick="triggerMascotClick()"></div>
-
-      <h1 class="app-title">Sudo Battle</h1>
-      <p class="app-subtitle">Sudo ile zihnini çalıştır!</p>
 
       <div class="menu-buttons-grid">
         <button class="btn btn-play" onclick="openGameSettingsModal()">🎮 Klasik Oyna</button>
         <button class="btn btn-ranked" onclick="openRankedLobby()">⚔️ Ranked 1v1 Düello</button>
         <button class="btn btn-league" onclick="openLeagueModal()">🏆 Haftalık Ligler</button>
         <button class="btn btn-daily" onclick="openDailyRewardsModal()">🎁 Günlük Ödül Takvimi</button>
-        <button class="btn btn-market" onclick="openShop()">🛒 Profesyonel Market</button>
+        <button class="btn btn-market" onclick="openShop()">🛒 Sudo Market</button>
         <button class="btn btn-guide" onclick="openTutorialModal()">❓ Sudo Detaylı Rehber</button>
       </div>
 
@@ -331,42 +330,44 @@
     </div>
   </div>
 
-  <!-- RANKED LOBİ MODALI -->
-  <div id="rankedLobbyModal" class="modal-overlay">
-    <div class="modal-card">
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px;">Ranked 1v1 Düellosu ⚔️</h2>
-      
-      <div class="setting-group" style="text-align: center;">
-        <label class="setting-label">TAKMA ADINIZ</label>
-        <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:1rem; width:100%;">
-      </div>
+  <!-- RANKED LOBİ EKRANI (TAM EKRAN) -->
+  <div id="rankedLobbyScreen" class="screen">
+    <div class="full-page-card">
+      <div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 16px;">Ranked 1v1 Düellosu ⚔️</h2>
+        
+        <div class="setting-group" style="text-align: center;">
+          <label class="setting-label">TAKMA ADINIZ</label>
+          <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:1rem; width:100%;">
+        </div>
 
-      <div class="ranked-card-box">
-        <div class="rank-badge-sm" id="myRankIconBox"></div>
-        <div style="flex:1;">
-          <div style="font-size: 0.72rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ</div>
-          <div id="myRankNameText" style="font-size: 1.1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
-          <div id="myRpText" style="font-size: 0.8rem; font-weight: 700; color: #fff;">0 RP</div>
-          <div class="progress-bar-container">
-            <div id="rpProgressBar" class="progress-bar"></div>
+        <div class="ranked-card-box">
+          <div class="rank-badge-sm" id="myRankIconBox"></div>
+          <div style="flex:1;">
+            <div style="font-size: 0.72rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ</div>
+            <div id="myRankNameText" style="font-size: 1.1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
+            <div id="myRpText" style="font-size: 0.8rem; font-weight: 700; color: #fff;">0 RP</div>
+            <div class="progress-bar-container">
+              <div id="rpProgressBar" class="progress-bar"></div>
+            </div>
           </div>
         </div>
+
+        <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.9rem; margin-top: 10px;"></p>
       </div>
 
-      <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.88rem; margin-bottom: 12px;"></p>
-
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-guide" onclick="closeRankedLobby()">Geri</button>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-guide" onclick="showMenu()">Geri</button>
         <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex:2;">Rakip Ara 🚀</button>
       </div>
     </div>
   </div>
 
-  <!-- REHBER MODALI -->
-  <div id="tutorialModal" class="modal-overlay">
-    <div class="modal-card" style="max-height: 85vh; overflow-y: auto;">
-      <div class="mascot-container" id="tutorialMascot" style="width: 75px; height: 75px; margin-bottom: 6px;"></div>
-      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Sudo Kılavuzu & Rehber 🌸</h2>
+  <!-- REHBER EKRANI (TAM EKRAN) -->
+  <div id="tutorialScreen" class="screen">
+    <div class="full-page-card" style="text-align: left; justify-content: flex-start; gap: 12px; overflow-y: auto;">
+      <div style="text-align: center;"><div class="mascot-container" id="tutorialMascot" style="width: 75px; height: 75px; margin-bottom: 4px;"></div></div>
+      <h2 style="font-size: 1.3rem; font-weight: 800; text-align: center; margin-bottom: 6px; color: var(--text-main);">Sudo Kılavuzu & Rehber 🌸</h2>
       
       <div class="guide-section-box">
         <div class="guide-section-title">🧠 1. Sonsuz Sudoku & Gelişim</div>
@@ -376,26 +377,31 @@
         <div class="guide-section-title">⚔️ 2. Ranked Mod & İpucu Yasağı</div>
         <div class="guide-section-text">Ranked düellolarda ipucu yasaktır; tamamen kendi zekana güvenirsin! Hatalar puanını düşürür!</div>
       </div>
-      <div style="display: flex; gap: 8px; margin-top: 10px;">
-        <button class="btn btn-guide" onclick="closeTutorialModal()">Kapat</button>
-        <button class="btn btn-primary" onclick="closeTutorialModal()">Anladım, Başla! 🚀</button>
+      <div class="guide-section-box">
+        <div class="guide-section-title">⚡ 3. Gerçek Zamanlı Rakip Tespiti</div>
+        <div class="guide-section-text">Rakibin oyunu terk ederse veya bağlantısı koparsa sistem otomatik olarak zaferi sana yazar!</div>
+      </div>
+      <div style="margin-top: auto; padding-top: 10px;">
+        <button class="btn btn-primary" onclick="showMenu()">Anladım, Ana Sayfaya Dön! 🚀</button>
       </div>
     </div>
   </div>
 
-  <!-- LİG MODALI -->
-  <div id="leagueModal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="league-header">🛡️ Bronz Lig - 3. Gün</div>
-      <div class="leaderboard-list" id="leaderboardContainer"></div>
-      <button class="btn btn-primary" onclick="closeLeagueModal()">Kapat</button>
+  <!-- LİG EKRANI (TAM EKRAN) -->
+  <div id="leagueScreen" class="screen">
+    <div class="full-page-card">
+      <div>
+        <div class="league-header">🛡️ Bronz Lig - 3. Gün</div>
+        <div class="leaderboard-list" id="leaderboardContainer"></div>
+      </div>
+      <button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button>
     </div>
   </div>
 
-  <!-- OYUN AYARLARI MODALI -->
-  <div id="gameSettingsModal" class="modal-overlay">
-    <div class="modal-card">
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 14px; color: var(--text-main);">Oyun Ayarları ⚙️</h2>
+  <!-- OYUN AYARLARI EKRANI (TAM EKRAN) -->
+  <div id="gameSettingsScreen" class="screen">
+    <div class="full-page-card" style="justify-content: flex-start; gap: 16px;">
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-top: 10px;">Oyun Ayarları ⚙️</h2>
       <div class="setting-group">
         <label class="setting-label">BOYUT SEÇ</label>
         <div class="options-grid" id="sizeOptions">
@@ -405,78 +411,75 @@
           <button class="option-btn" onclick="setBoardSize(16, this)">16x16 (Efsanevi ⚡)</button>
         </div>
       </div>
-      <div style="display: flex; gap: 8px; margin-top: 16px;">
-        <button class="btn btn-guide" onclick="closeGameSettingsModal()">İptal</button>
-        <button class="btn btn-primary" onclick="startConfiguredGame()">Başla 🚀</button>
+      <div style="margin-top: auto; display: flex; gap: 10px;">
+        <button class="btn btn-guide" onclick="showMenu()">İptal</button>
+        <button class="btn btn-primary" onclick="startConfiguredGame()" style="flex:2;">Başla 🚀</button>
       </div>
     </div>
   </div>
 
-  <!-- GÜNLÜK ÖDÜL MODALI -->
-  <div id="dailyRewardsModal" class="modal-overlay">
-    <div class="modal-card">
-      <h2 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; color: var(--text-main);">Günlük Ödüller 🎁</h2>
-      <div class="daily-reward-grid" id="dailyRewardGridContainer"></div>
-      <div style="display: flex; gap: 8px; margin-top: 10px;">
-        <button class="btn btn-guide" onclick="closeDailyRewardsModal()">Kapat</button>
+  <!-- GÜNLÜK ÖDÜL EKRANI (TAM EKRAN) -->
+  <div id="dailyRewardsScreen" class="screen">
+    <div class="full-page-card">
+      <div>
+        <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">Günlük Ödüller 🎁</h2>
+        <div class="daily-reward-grid" id="dailyRewardGridContainer"></div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button class="btn btn-guide" onclick="showMenu()">Geri</button>
         <button class="btn btn-primary" onclick="claimDailyReward()" id="claimRewardBtn" style="flex:2;">Bugünkü Ödülü Al ✨</button>
       </div>
     </div>
   </div>
 
-  <!-- MARKET MODALI -->
-  <div id="shopModal" class="modal-overlay">
-    <div class="modal-card" style="max-height: 88vh; overflow-y: auto;">
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; color: var(--text-main);">Sudo Marketi 🛒</h2>
+  <!-- SUDO MARKET EKRANI (TAM EKRAN) -->
+  <div id="shopScreen" class="screen">
+    <div class="full-page-card" style="justify-content: flex-start; gap: 12px;">
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Sudo Market 🛒</h2>
       
       <div class="market-tabs">
         <button class="market-tab active" onclick="switchMarketTab('skins', this)">🎨 Kostüm</button>
-        <button class="market-tab" onclick="switchMarketTab('accessories', this)">🎩 Aksesuarlar</button>
-        <button class="market-tab" onclick="switchMarketTab('boards', this)">🧩 Tahtalar</button>
+        <button class="market-tab" onclick="switchMarketTab('accessories', this)">🎩 Aksesuar</button>
+        <button class="market-tab" onclick="switchMarketTab('boards', this)">🧩 Tahta</button>
         <button class="market-tab" onclick="switchMarketTab('boosters', this)">💡 Güçler</button>
       </div>
 
       <!-- KOSTÜMLER -->
       <div id="market-skins" class="market-section active">
-        <div class="shop-item equipped" id="skin-default" onclick="buyOrEquipSkin('default', '#ff4757', 0)"><div style="font-size:1.4rem;">🌸</div><div style="font-weight:700;font-size:0.78rem;">Klasik</div></div>
-        <div class="shop-item" id="skin-mint" onclick="buyOrEquipSkin('mint', '#2ed573', 120)"><div style="font-size:1.4rem;">🍃</div><div style="font-weight:700;font-size:0.78rem;">Nane</div></div>
-        <div class="shop-item" id="skin-royal" onclick="buyOrEquipSkin('royal', '#5352ed', 200)"><div style="font-size:1.4rem;">👑</div><div style="font-weight:700;font-size:0.78rem;">Kraliyet</div></div>
+        <div class="shop-item equipped" id="skin-default" onclick="buyOrEquipSkin('default', '#ff4757', 0)"><div style="font-size:1.6rem;">🌸</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Klasik</div></div>
+        <div class="shop-item" id="skin-mint" onclick="buyOrEquipSkin('mint', '#2ed573', 120)"><div style="font-size:1.6rem;">🍃</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Nane</div></div>
+        <div class="shop-item" id="skin-royal" onclick="buyOrEquipSkin('royal', '#5352ed', 200)"><div style="font-size:1.6rem;">👑</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Kraliyet</div></div>
       </div>
 
       <!-- AKSESUARLAR -->
-      <div id="market-accessories" class="market-section" style="grid-template-columns: repeat(2, 1fr);">
-        <div class="shop-item" id="acc-none" onclick="buyOrEquipAcc('none', 0)"><div style="font-size:1.3rem;">🚫</div><div style="font-size:0.75rem;font-weight:700;">Yok</div></div>
-        <div class="shop-item" id="acc-crown" onclick="buyOrEquipAcc('crown', 250)"><div style="font-size:1.3rem;">👑</div><div style="font-size:0.75rem;font-weight:700;">Altın Taç</div><div style="font-size:0.65rem;color:var(--primary);">250 Coin</div></div>
-        <div class="shop-item" id="acc-glasses" onclick="buyOrEquipAcc('glasses', 180)"><div style="font-size:1.3rem;">🕶️</div><div style="font-size:0.75rem;font-weight:700;">Gözlük</div><div style="font-size:0.65rem;color:var(--primary);">180 Coin</div></div>
-        <div class="shop-item" id="acc-halo" onclick="buyOrEquipAcc('halo', 300)"><div style="font-size:1.3rem;">😇</div><div style="font-size:0.75rem;font-weight:700;">Melek Halesi</div><div style="font-size:0.65rem;color:var(--primary);">300 Coin</div></div>
-        <div class="shop-item" id="acc-bow" onclick="buyOrEquipAcc('bow', 150)"><div style="font-size:1.3rem;">🎀</div><div style="font-size:0.75rem;font-weight:700;">Papyon</div><div style="font-size:0.65rem;color:var(--primary);">150 Coin</div></div>
-        <div class="shop-item" id="acc-headphones" onclick="buyOrEquipAcc('headphones', 220)"><div style="font-size:1.3rem;">🎧</div><div style="font-size:0.75rem;font-weight:700;">Kulaklık</div><div style="font-size:0.65rem;color:var(--primary);">220 Coin</div></div>
-        <div class="shop-item" id="acc-cat" onclick="buyOrEquipAcc('cat', 280)"><div style="font-size:1.3rem;">🐱</div><div style="font-size:0.75rem;font-weight:700;">Kedi Kulağı</div><div style="font-size:0.65rem;color:var(--primary);">280 Coin</div></div>
-        <div class="shop-item" id="acc-chef" onclick="buyOrEquipAcc('chef', 200)"><div style="font-size:1.3rem;">👨‍🍳</div><div style="font-size:0.75rem;font-weight:700;">Şef Şapkası</div><div style="font-size:0.65rem;color:var(--primary);">200 Coin</div></div>
-        <div class="shop-item" id="acc-wizard" onclick="buyOrEquipAcc('wizard', 350)"><div style="font-size:1.3rem;">🧙‍♂️</div><div style="font-size:0.75rem;font-weight:700;">Sihirbaz</div><div style="font-size:0.65rem;color:var(--primary);">350 Coin</div></div>
-        <div class="shop-item" id="acc-pirate" onclick="buyOrEquipAcc('pirate', 270)"><div style="font-size:1.3rem;">🏴‍☠️</div><div style="font-size:0.75rem;font-weight:700;">Korsan</div><div style="font-size:0.65rem;color:var(--primary);">270 Coin</div></div>
-        <div class="shop-item" id="acc-scarf" onclick="buyOrEquipAcc('scarf', 190)"><div style="font-size:1.3rem;">🧣</div><div style="font-size:0.75rem;font-weight:700;">Atkı</div><div style="font-size:0.65rem;color:var(--primary);">190 Coin</div></div>
-        <div class="shop-item" id="acc-rock" onclick="buyOrEquipAcc('rock', 320)"><div style="font-size:1.3rem;">🎸</div><div style="font-size:0.75rem;font-weight:700;">Rockstar</div><div style="font-size:0.65rem;color:var(--primary);">320 Coin</div></div>
-        <div class="shop-item" id="acc-doctor" onclick="buyOrEquipAcc('doctor', 240)"><div style="font-size:1.3rem;">🩺</div><div style="font-size:0.75rem;font-weight:700;">Doktor Kep</div><div style="font-size:0.65rem;color:var(--primary);">240 Coin</div></div>
+      <div id="market-accessories" class="market-section">
+        <div class="shop-item" id="acc-none" onclick="buyOrEquipAcc('none', 0)"><div style="font-size:1.5rem;">🚫</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Yok</div></div>
+        <div class="shop-item" id="acc-crown" onclick="buyOrEquipAcc('crown', 250)"><div style="font-size:1.5rem;">👑</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Altın Taç</div><div style="font-size:0.65rem;color:var(--primary);">250 Coin</div></div>
+        <div class="shop-item" id="acc-glasses" onclick="buyOrEquipAcc('glasses', 180)"><div style="font-size:1.5rem;">🕶️</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Gözlük</div><div style="font-size:0.65rem;color:var(--primary);">180 Coin</div></div>
+        <div class="shop-item" id="acc-halo" onclick="buyOrEquipAcc('halo', 300)"><div style="font-size:1.5rem;">😇</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Melek Halesi</div><div style="font-size:0.65rem;color:var(--primary);">300 Coin</div></div>
+        <div class="shop-item" id="acc-bow" onclick="buyOrEquipAcc('bow', 150)"><div style="font-size:1.5rem;">🎀</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Papyon</div><div style="font-size:0.65rem;color:var(--primary);">150 Coin</div></div>
+        <div class="shop-item" id="acc-headphones" onclick="buyOrEquipAcc('headphones', 220)"><div style="font-size:1.5rem;">🎧</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Kulaklık</div><div style="font-size:0.65rem;color:var(--primary);">220 Coin</div></div>
+        <div class="shop-item" id="acc-cat" onclick="buyOrEquipAcc('cat', 280)"><div style="font-size:1.5rem;">🐱</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Kedi Kulağı</div><div style="font-size:0.65rem;color:var(--primary);">280 Coin</div></div>
+        <div class="shop-item" id="acc-chef" onclick="buyOrEquipAcc('chef', 200)"><div style="font-size:1.5rem;">👨‍🍳</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Şef Şapkası</div><div style="font-size:0.65rem;color:var(--primary);">200 Coin</div></div>
       </div>
 
       <!-- TAHTALAR -->
       <div id="market-boards" class="market-section">
-        <div class="shop-item equipped" id="boardtheme-classic" onclick="buyOrEquipBoardTheme('classic', 0)"><div style="font-size:1.4rem;">⬜</div><div style="font-size:0.78rem;">Klasik</div></div>
-        <div class="shop-item" id="boardtheme-midnight" onclick="buyOrEquipBoardTheme('midnight', 1500)"><div style="font-size:1.4rem;">🌙</div><div style="font-size:0.78rem;">Gece (1.5K)</div></div>
-        <div class="shop-item" id="boardtheme-forest" onclick="buyOrEquipBoardTheme('forest', 2500)"><div style="font-size:1.4rem;">🌲</div><div style="font-size:0.78rem;">Orman (2.5K)</div></div>
-        <div class="shop-item" id="boardtheme-royalgold" onclick="buyOrEquipBoardTheme('royalgold', 4000)"><div style="font-size:1.4rem;">👑</div><div style="font-size:0.78rem;">Altın (4K)</div></div>
+        <div class="shop-item equipped" id="boardtheme-classic" onclick="buyOrEquipBoardTheme('classic', 0)"><div style="font-size:1.5rem;">⬜</div><div style="font-size:0.78rem; margin-top:4px;">Klasik</div></div>
+        <div class="shop-item" id="boardtheme-midnight" onclick="buyOrEquipBoardTheme('midnight', 1500)"><div style="font-size:1.5rem;">🌙</div><div style="font-size:0.78rem; margin-top:4px;">Gece (1.5K)</div></div>
+        <div class="shop-item" id="boardtheme-forest" onclick="buyOrEquipBoardTheme('forest', 2500)"><div style="font-size:1.5rem;">🌲</div><div style="font-size:0.78rem; margin-top:4px;">Orman (2.5K)</div></div>
+        <div class="shop-item" id="boardtheme-royalgold" onclick="buyOrEquipBoardTheme('royalgold', 4000)"><div style="font-size:1.5rem;">👑</div><div style="font-size:0.78rem; margin-top:4px;">Altın (4K)</div></div>
       </div>
 
       <!-- GÜÇLER -->
       <div id="market-boosters" class="market-section" style="grid-template-columns: 1fr;">
-        <div style="background: rgba(255,71,87,0.08); border: 1px dashed var(--primary); border-radius: 16px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
-          <div><div style="font-weight: 800; font-size: 0.82rem;">+3 İpucu Paketi 💡</div></div>
-          <button class="btn btn-accent" style="width: auto; padding: 8px 12px; font-size: 0.78rem;" onclick="buyHints()">40 Coin 🪙</button>
+        <div style="background: rgba(255,71,87,0.08); border: 1px dashed var(--primary); border-radius: 16px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div><div style="font-weight: 800; font-size: 0.85rem;">+3 İpucu Paketi 💡</div></div>
+          <button class="btn btn-accent" style="width: auto; padding: 8px 14px; font-size: 0.8rem;" onclick="buyHints()">40 Coin 🪙</button>
         </div>
       </div>
 
-      <div style="margin-top: 14px;"><button class="btn btn-primary" onclick="closeShop()">Kapat</button></div>
+      <div style="margin-top: auto;"><button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button></div>
     </div>
   </div>
 
@@ -535,18 +538,18 @@
     </div>
   </div>
 
-  <!-- UYARI MODALI -->
-  <div id="appAlertModal" class="modal-overlay">
-    <div class="modal-card">
+  <!-- UYARI EKRANI -->
+  <div id="appAlertModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:600; align-items:center; justify-content:center; padding:20px;">
+    <div class="menu-card" style="min-height: auto; max-width: 340px; width: 100%; padding: 24px;">
       <div class="mascot-container" id="alertMascot" style="width: 75px; height: 75px; margin-bottom: 6px;"></div>
-      <div class="speech-bubble" id="alertMessageText">Mesaj içeriği</div>
+      <div class="speech-bubble" id="alertMessageText" style="margin-bottom: 16px;">Mesaj içeriği</div>
       <button class="btn btn-primary" onclick="closeAppAlert()">Tamam 👍</button>
     </div>
   </div>
 
-  <!-- KAZANMA MODALI -->
-  <div id="winModal" class="modal-overlay">
-    <div class="modal-card">
+  <!-- KAZANMA EKRANI -->
+  <div id="winModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:600; align-items:center; justify-content:center; padding:20px;">
+    <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 28px;">
       <div class="mascot-container" id="winMascot" style="width: 85px; height: 85px; margin-bottom: 6px;"></div>
       <div class="speech-bubble">Muhteşemsin! 🎉</div>
       <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Bulmaca Tamamlandı!</h2>
@@ -631,28 +634,16 @@
     let streakDays = parseInt(localStorage.getItem('sudo_streak')) || 1;
     let lastLoginDate = localStorage.getItem('sudo_last_login') || '';
     
-    // Ranked Verileri
     let userRp = parseInt(localStorage.getItem('sudo_rp')) || 0;
     let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
     let isRankedMatch = false;
 
-    // GERÇEKÇİ & HAVAİ E-SPOR RANK ROZETLERİ (Valorant Tarzı)
     function getRankSvgHtml(type) {
-      if (type === 'bronze') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#ffffff"/></svg>`;
-      }
-      if (type === 'silver') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#718093"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e272c" stroke="url(#sl-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#sl-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#1e272c"/></svg>`;
-      }
-      if (type === 'gold') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/></linearGradient></defs><polygon points="50,3 95,25 95,75 50,97 5,75 5,25" fill="#2c2c35" stroke="url(#go-g)" stroke-width="6"/><polygon points="50,12 85,28 85,72 50,88 15,72 15,28" fill="url(#go-g)"/><polygon points="50,30 68,50 50,70 32,50" fill="#ffffff"/></svg>`;
-      }
-      if (type === 'platinum') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><path d="M50,3 L95,50 L50,97 L5,50 Z" fill="#0c2461" stroke="url(#pl-g)" stroke-width="6"/><path d="M50,14 L84,50 L50,86 L16,50 Z" fill="url(#pl-g)"/><polygon points="50,32 66,50 50,68 34,50" fill="#ffffff"/></svg>`;
-      }
-      if (type === 'diamond') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#6c5ce7"/></linearGradient></defs><path d="M50,2 L96,32 78,92 22,92 4,32 Z" fill="#2d132c" stroke="url(#di-g)" stroke-width="6"/><polygon points="50,12 86,36 70,82 30,82 14,36" fill="url(#di-g)"/><polygon points="50,28 68,48 50,72 32,48" fill="#ffffff"/></svg>`;
-      }
+      if (type === 'bronze') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#ffffff"/></svg>`;
+      if (type === 'silver') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#718093"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e272c" stroke="url(#sl-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#sl-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#1e272c"/></svg>`;
+      if (type === 'gold') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f1c40f"/><stop offset="100%" stop-color="#d35400"/></linearGradient></defs><polygon points="50,3 95,25 95,75 50,97 5,75 5,25" fill="#2c2c35" stroke="url(#go-g)" stroke-width="6"/><polygon points="50,12 85,28 85,72 50,88 15,72 15,28" fill="url(#go-g)"/><polygon points="50,30 68,50 50,70 32,50" fill="#ffffff"/></svg>`;
+      if (type === 'platinum') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient></defs><path d="M50,3 L95,50 L50,97 L5,50 Z" fill="#0c2461" stroke="url(#pl-g)" stroke-width="6"/><path d="M50,14 L84,50 L50,86 L16,50 Z" fill="url(#pl-g)"/><polygon points="50,32 66,50 50,68 34,50" fill="#ffffff"/></svg>`;
+      if (type === 'diamond') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fd79a8"/><stop offset="100%" stop-color="#6c5ce7"/></linearGradient></defs><path d="M50,2 L96,32 78,92 22,92 4,32 Z" fill="#2d132c" stroke="url(#di-g)" stroke-width="6"/><polygon points="50,12 86,36 70,82 30,82 14,36" fill="url(#di-g)"/><polygon points="50,28 68,48 50,72 32,48" fill="#ffffff"/></svg>`;
       return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4757"/><stop offset="50%" stop-color="#ffa502"/><stop offset="100%" stop-color="#ff6b81"/></linearGradient></defs><path d="M50,2 L97,20 97,65 50,98 3,65 3,20 Z" fill="#3b0712" stroke="url(#ma-g)" stroke-width="7"/><path d="M50,10 L88,25 88,60 50,90 12,60 12,25 Z" fill="url(#ma-g)"/><polygon points="50,25 67,45 50,75 33,45" fill="#ffffff"/><circle cx="50" cy="50" r="6" fill="#ffeaa7"/></svg>`;
     }
 
@@ -674,26 +665,34 @@
       document.getElementById('rpProgressBar').style.width = `${pct}%`;
     }
 
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function showMenu() {
+      stopTimer();
+      document.getElementById('winModal').style.display = 'none';
+      switchScreen('menuScreen');
+      updateStatsUI();
+    }
+
     function openRankedLobby() {
       document.getElementById('rankedUsernameInput').value = userName;
       updateRankUI();
       document.getElementById('rankedStatusText').innerText = "";
       document.getElementById('rankedSearchBtn').disabled = false;
       document.getElementById('rankedSearchBtn').innerText = "Rakip Ara 🚀";
-      document.getElementById('rankedLobbyModal').style.display = 'flex';
+      switchScreen('rankedLobbyScreen');
     }
-    function closeRankedLobby() { document.getElementById('rankedLobbyModal').style.display = 'none'; }
 
     function startRankedMatchmaking() {
       const inputVal = document.getElementById('rankedUsernameInput').value.trim();
-      if (inputVal) {
-        userName = inputVal;
-        localStorage.setItem('sudo_username', userName);
-      }
+      if (inputVal) { userName = inputVal; localStorage.setItem('sudo_username', userName); }
       const searchBtn = document.getElementById('rankedSearchBtn');
       searchBtn.disabled = true;
       searchBtn.innerText = "Rakip Aranıyor... ⏳";
-      document.getElementById('rankedStatusText').innerText = "Dereceli gerçek rakip bekleniyor... ⚔️";
+      document.getElementById('rankedStatusText').innerText = "Rakip aranıyor... ⚔️";
       socket.emit('find_match', { username: userName, rp: userRp });
     }
 
@@ -702,7 +701,6 @@
     });
 
     socket.on('match_found', (data) => {
-      closeRankedLobby();
       isRankedMatch = true;
       currentRoomId = data.roomId;
       document.getElementById('rankedVersusInfoBox').style.display = 'flex';
@@ -718,14 +716,13 @@
       initGame(data.seed, "RANKED 1v1", false);
     });
 
-    // Rakip çıkarsa otomatik kazandırma ve ana menüye yönlendirme
     socket.on('game_over', (data) => {
       if (isRankedMatch) {
         stopTimer();
         if (data.winner === socket.id) {
-          showAppAlert("Rakip oyundan ayrıldı! Hükmen kazandın! 🏆");
+          showAppAlert("Rakip oyunu terk etti veya bağlantısı koptu! Hükmen kazandın! 🏆");
         } else {
-          showAppAlert("Rakip bulmacayı önce tamamladı! Maçı kaybettin. 😢");
+          showAppAlert("Maçı kaybettin. 😢");
         }
         document.getElementById('winModal').style.display = 'none';
         setTimeout(() => { showMenu(); }, 2500);
@@ -737,7 +734,7 @@
 
     let ownedSkins = JSON.parse(localStorage.getItem('sudo_owned_skins')) || ['default'];
     let activeSkin = localStorage.getItem('sudo_active_skin') || 'default';
-    let skinColors = { default: '#ff4757', mint: '#2ed573', royal: '#5352ed', sunny: '#ffa502' };
+    let skinColors = { default: '#ff4757', mint: '#2ed573', royal: '#5352ed' };
 
     let ownedAccs = JSON.parse(localStorage.getItem('sudo_owned_accs')) || ['none'];
     let activeAcc = localStorage.getItem('sudo_active_acc') || 'none';
@@ -746,20 +743,16 @@
     let activeBoardTheme = localStorage.getItem('sudo_active_board_theme') || 'classic';
     
     const boardThemesData = {
-      classic: { bg: '#ffffff', text: '#2f3542', border: '#dfe4ea', highlight: '#f1f2f6', selected: '#ffeaa7', userNum: '#ff4757' },
+      classic: { bg: '#14141c', text: '#f1f2f6', border: 'rgba(255,255,255,0.15)', highlight: '#222230', selected: '#3a3a55', userNum: '#ff4757' },
       midnight: { bg: '#1e272c', text: '#d2ddef', border: '#485460', highlight: '#2f3542', selected: '#3742fa', userNum: '#ff6b81' },
       forest: { bg: '#1e3d2f', text: '#e8f8f0', border: '#2e6950', highlight: '#264d3d', selected: '#2ed573', userNum: '#ffd166' },
       royalgold: { bg: '#2b221e', text: '#fbf8cc', border: '#bc6c25', highlight: '#3d322c', selected: '#e58e26', userNum: '#f4a261' }
     };
 
-    let mistakes = 0;
-    let streakCorrect = 0;
-    let boardSize = 9;
+    let mistakes = 0, streakCorrect = 0, boardSize = 9;
     let initialBoard = [], solutionBoard = [], currentBoard = [], notesBoard = [], history = [];
     let selectedCell = null, isNotesMode = false, timerInterval = null, secondsElapsed = 0;
-    let blinkInterval = null;
-    let idleTimer = null;
-    let isSleeping = false;
+    let blinkInterval = null, idleTimer = null, isSleeping = false;
 
     const successPhrases = ["Süpersin! ✨", "Zihninin zembereği çalıştı! 🧠", "Harika hamle! 🔥", "İşte budur! 🚀"];
     const errorPhrases = ["Eyvah, yanlış hamle! 🥺", "Hmm, orası öyle değil 🤔", "Küçük kaza! 🙈"];
@@ -767,10 +760,7 @@
     const sleepPhrases = ["Zzz... Düşünüyorum... 💤", "Burası çok huzurlu... 🌙", "Bekliyorum patron! 😴"];
 
     function resetIdleTimer() {
-      if (isSleeping) {
-        isSleeping = false;
-        setSudoEmotion('happy', "Uyandım! Devam edelim! 🚀");
-      }
+      if (isSleeping) { isSleeping = false; setSudoEmotion('happy', "Uyandım! Devam edelim! 🚀"); }
       if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
         if (document.getElementById('gameScreen').classList.contains('active')) {
@@ -846,26 +836,23 @@
       document.getElementById('userStreak').innerText = `${streakDays} Gün`;
       const hintBtn = document.getElementById('hintBtn');
       if(hintBtn) {
-        if (isRankedMatch) {
-          hintBtn.innerHTML = `<span>💡</span> Yasak`;
-          hintBtn.disabled = true;
-        } else {
-          hintBtn.innerHTML = `<span>💡</span> İpucu (${hintCount})`;
-          hintBtn.disabled = false;
-        }
+        if (isRankedMatch) { hintBtn.innerHTML = `<span>💡</span> Yasak`; hintBtn.disabled = true; }
+        else { hintBtn.innerHTML = `<span>💡</span> İpucu (${hintCount})`; hintBtn.disabled = false; }
       }
       renderMascotSVG('menuMascot');
       updateMarketUI();
     }
 
-    function openTutorialModal() { renderMascotSVG('tutorialMascot'); document.getElementById('tutorialModal').style.display = 'flex'; }
-    function closeTutorialModal() { document.getElementById('tutorialModal').style.display = 'none'; }
+    function openTutorialModal() { renderMascotSVG('tutorialMascot'); switchScreen('tutorialScreen'); }
+    function openLeagueModal() { renderLeaderboard(); switchScreen('leagueScreen'); }
+    function openGameSettingsModal() { isRankedMatch = false; document.getElementById('rankedVersusInfoBox').style.display = 'none'; switchScreen('gameSettingsScreen'); }
+    function openDailyRewardsModal() { renderDailyRewardsGrid(); switchScreen('dailyRewardsScreen'); }
+    function openShop() { updateMarketUI(); switchScreen('shopScreen'); }
 
     function renderMascotSVG(containerId, mood = 'happy', isBlinking = false) {
       const el = document.getElementById(containerId);
       if (!el) return;
       let color = skinColors[activeSkin] || '#ff4757';
-
       let mouthPath = "M 38 62 Q 50 74 62 62";
       if (mood === 'sad' || mood === 'sitem') mouthPath = "M 38 66 Q 50 54 62 66";
       else if (mood === 'thinking') mouthPath = "M 42 62 Q 50 60 58 62";
@@ -873,56 +860,29 @@
 
       let eyesSVG = '';
       if (mood === 'sleep' || isBlinking) {
-        eyesSVG = `
-          <path d="M 31 38 Q 37 43 43 38" stroke="#2f3542" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-          <path d="M 61 38 Q 67 43 73 38" stroke="#2f3542" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-        `;
+        eyesSVG = `<path d="M 31 38 Q 37 43 43 38" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M 61 38 Q 67 43 73 38" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
       } else {
-        eyesSVG = `
-          <circle cx="35" cy="38" r="11" fill="#fff"/>
-          <circle cx="65" cy="38" r="11" fill="#fff"/>
-          <circle cx="37" cy="37" r="5.5" fill="#2f3542"/>
-          <circle cx="67" cy="37" r="5.5" fill="#2f3542"/>
-          <circle cx="39" cy="35" r="2" fill="#fff"/>
-          <circle cx="69" cy="35" r="2" fill="#fff"/>
-        `;
+        eyesSVG = `<circle cx="35" cy="38" r="11" fill="#fff"/><circle cx="65" cy="38" r="11" fill="#fff"/><circle cx="37" cy="37" r="5.5" fill="#1e1e2f"/><circle cx="67" cy="37" r="5.5" fill="#1e1e2f"/><circle cx="39" cy="35" r="2" fill="#fff"/><circle cx="69" cy="35" r="2" fill="#fff"/>`;
       }
 
       let accSVG = '';
       if (activeAcc === 'crown') {
         accSVG = `<g transform="translate(0, -18)"><polygon points="20,22 32,4 50,16 68,4 80,22 75,28 25,28" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/><circle cx="50" cy="13" r="3.5" fill="#ff4757"/><circle cx="32" cy="10" r="2.5" fill="#2ed573"/><circle cx="68" cy="10" r="2.5" fill="#3742fa"/></g>`;
       } else if (activeAcc === 'glasses') {
-        accSVG = `<g transform="translate(0, -2)"><rect x="20" y="26" width="28" height="22" rx="6" fill="#2f3542"/><rect x="52" y="26" width="28" height="22" rx="6" fill="#2f3542"/><line x1="48" y1="36" x2="52" y2="36" stroke="#2f3542" stroke-width="4"/><line x1="8" y1="34" x2="20" y2="34" stroke="#2f3542" stroke-width="3"/><line x1="80" y1="34" x2="92" y2="34" stroke="#2f3542" stroke-width="3"/></g>`;
+        accSVG = `<g transform="translate(0, -2)"><rect x="20" y="26" width="28" height="22" rx="6" fill="#1e1e2f"/><rect x="52" y="26" width="28" height="22" rx="6" fill="#1e1e2f"/><line x1="48" y1="36" x2="52" y2="36" stroke="#1e1e2f" stroke-width="4"/></g>`;
       } else if (activeAcc === 'halo') {
         accSVG = `<g transform="translate(0, -16)"><ellipse cx="50" cy="10" rx="30" ry="8" fill="none" stroke="#f1c40f" stroke-width="5" opacity="0.9"/></g>`;
       } else if (activeAcc === 'bow') {
         accSVG = `<g transform="translate(0, 52)"><polygon points="50,22 30,10 30,34" fill="#ff6b81"/><polygon points="50,22 70,10 70,34" fill="#ff6b81"/><circle cx="50" cy="22" r="5" fill="#ff4757"/></g>`;
       } else if (activeAcc === 'headphones') {
-        accSVG = `<g><path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#2f3542" stroke-width="7" stroke-linecap="round"/><rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/><rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757" stroke="#2f3542" stroke-width="2"/></g>`;
+        accSVG = `<g><path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#1e1e2f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757"/><rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757"/></g>`;
       } else if (activeAcc === 'cat') {
-        accSVG = `<g transform="translate(0, -12)"><polygon points="12,28 26,-2 42,18" fill="${color}" stroke="#2f3542" stroke-width="2"/><polygon points="88,28 74,-2 58,18" fill="${color}" stroke="#2f3542" stroke-width="2"/><polygon points="18,24 26,4 36,16" fill="#ff6b81"/><polygon points="82,24 74,4 64,16" fill="#ff6b81"/></g>`;
+        accSVG = `<g transform="translate(0, -12)"><polygon points="12,28 26,-2 42,18" fill="${color}"/><polygon points="88,28 74,-2 58,18" fill="${color}"/></g>`;
       } else if (activeAcc === 'chef') {
-        accSVG = `<g transform="translate(0, -28)"><circle cx="36" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/><circle cx="64" cy="20" r="14" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/><circle cx="50" cy="12" r="16" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/><rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff" stroke="#dfe4ea" stroke-width="2"/></g>`;
-      } else if (activeAcc === 'wizard') {
-        accSVG = `<g transform="translate(0, -32)"><polygon points="50,-8 22,28 78,28" fill="#5352ed"/><ellipse cx="50" cy="28" rx="38" ry="8" fill="#3742fa"/><path d="M 42,12 L 46,16 L 54,14 L 48,20 L 52,26 L 44,22 L 38,26 Z" fill="#ffeaa7"/></g>`;
-      } else if (activeAcc === 'pirate') {
-        accSVG = `<g transform="translate(0, -22)"><path d="M 10,28 Q 50,-10 90,28 L 78,36 Q 50,20 22,36 Z" fill="#2f3542"/><circle cx="50" cy="18" r="5" fill="#ffffff"/><line x1="45" y1="13" x2="55" y2="23" stroke="#ffffff" stroke-width="2"/><line x1="55" y1="13" x2="45" y2="23" stroke="#ffffff" stroke-width="2"/></g>`;
-      } else if (activeAcc === 'scarf') {
-        accSVG = `<g transform="translate(0, 58)"><rect x="18" y="0" width="64" height="18" rx="9" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/><rect x="56" y="10" width="16" height="28" rx="6" fill="#ff7f50" stroke="#e67e22" stroke-width="2"/><line x1="56" y1="32" x2="72" y2="32" stroke="#ffffff" stroke-dasharray="3,3" stroke-width="2"/></g>`;
-      } else if (activeAcc === 'rock') {
-        accSVG = `<g transform="translate(0, 2)"><rect x="6" y="18" width="88" height="12" rx="4" fill="#ff4757" stroke="#2f3542" stroke-width="1.5"/><circle cx="50" cy="24" r="3" fill="#ffeaa7"/><path d="M 12,28 Q 8,45 16,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/><path d="M 88,28 Q 92,45 84,55" fill="none" stroke="#2f3542" stroke-width="3.5" stroke-linecap="round"/></g>`;
-      } else if (activeAcc === 'doctor') {
-        accSVG = `<g transform="translate(0, -18)"><rect x="30" y="8" width="40" height="20" rx="6" fill="#ffffff" stroke="#ced6e0" stroke-width="2"/><circle cx="50" cy="18" r="6" fill="#2ed573"/><rect x="48" y="14" width="4" height="8" fill="#ffffff"/><rect x="46" y="16" width="8" height="4" fill="#ffffff"/></g>`;
+        accSVG = `<g transform="translate(0, -28)"><circle cx="36" cy="20" r="14" fill="#ffffff"/><circle cx="64" cy="20" r="14" fill="#ffffff"/><circle cx="50" cy="12" r="16" fill="#ffffff"/><rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff"/></g>`;
       }
 
-      el.innerHTML = `
-        <svg viewBox="0 0 100 100" width="100%" height="100%" style="position:relative; overflow:visible;">
-          <circle cx="50" cy="50" r="45" fill="${color}"/>
-          ${eyesSVG}
-          <path d="${mouthPath}" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>
-          ${accSVG}
-        </svg>
-      `;
+      el.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow:visible;"><circle cx="50" cy="50" r="45" fill="${color}"/>${eyesSVG}<path d="${mouthPath}" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>${accSVG}</svg>`;
     }
 
     let currentMood = 'happy';
@@ -944,22 +904,12 @@
       if(wrapperEl) {
         wrapperEl.classList.remove('mascot-dance', 'mascot-thinking', 'mascot-sitem', 'mascot-sleep');
         void wrapperEl.offsetWidth;
-        if(mood === 'happy') {
-          wrapperEl.classList.add('mascot-dance');
-          setTimeout(() => wrapperEl.classList.remove('mascot-dance'), 1500);
-        } else if(mood === 'thinking') {
-          wrapperEl.classList.add('mascot-thinking');
-        } else if(mood === 'sitem' || mood === 'sad') {
-          wrapperEl.classList.add('mascot-sitem');
-          setTimeout(() => wrapperEl.classList.remove('mascot-sitem'), 1000);
-        } else if(mood === 'sleep') {
-          wrapperEl.classList.add('mascot-sleep');
-        }
+        if(mood === 'happy') wrapperEl.classList.add('mascot-dance');
+        else if(mood === 'thinking') wrapperEl.classList.add('mascot-thinking');
+        else if(mood === 'sitem' || mood === 'sad') wrapperEl.classList.add('mascot-sitem');
+        else if(mood === 'sleep') wrapperEl.classList.add('mascot-sleep');
       }
     }
-
-    function openLeagueModal() { renderLeaderboard(); document.getElementById('leagueModal').style.display = 'flex'; }
-    function closeLeagueModal() { document.getElementById('leagueModal').style.display = 'none'; }
 
     function renderLeaderboard() {
       const container = document.getElementById('leaderboardContainer');
@@ -980,9 +930,6 @@
       document.getElementById(`market-${tabName}`).classList.add('active');
     }
 
-    function openDailyRewardsModal() { renderDailyRewardsGrid(); document.getElementById('dailyRewardsModal').style.display = 'flex'; }
-    function closeDailyRewardsModal() { document.getElementById('dailyRewardsModal').style.display = 'none'; }
-
     function renderDailyRewardsGrid() {
       const container = document.getElementById('dailyRewardGridContainer');
       container.innerHTML = '';
@@ -992,7 +939,7 @@
         let boxClass = 'reward-day-box';
         if (i < currentRewardDay || (i === currentRewardDay && lastClaimDate === today)) boxClass += ' claimed';
         else if (i === currentRewardDay && lastClaimDate !== today) boxClass += ' active-day';
-        html += `<div class="${boxClass}"><span style="font-size:0.6rem;">GÜN ${i}</span><span>🪙</span><span style="font-size:0.7rem; font-weight:800;">+${i*20}</span></div>`;
+        html += `<div class="${boxClass}"><span style="font-size:0.65rem;">GÜN ${i}</span><span>🪙</span><span style="font-size:0.75rem; font-weight:800;">+${i*20}</span></div>`;
       }
       container.innerHTML = html;
       const claimBtn = document.getElementById('claimRewardBtn');
@@ -1017,33 +964,18 @@
     }
     function closeAppAlert() { document.getElementById('appAlertModal').style.display = 'none'; }
 
-    function openShop() { updateMarketUI(); document.getElementById('shopModal').style.display = 'flex'; }
-    function closeShop() { document.getElementById('shopModal').style.display = 'none'; }
-
     function updateMarketUI() {
       ['default', 'mint', 'royal'].forEach(id => {
         let el = document.getElementById(`skin-${id}`);
-        if(el) {
-          el.classList.remove('equipped', 'purchased');
-          if (activeSkin === id) el.classList.add('equipped');
-          else if (ownedSkins.includes(id)) el.classList.add('purchased');
-        }
+        if(el) { el.classList.remove('equipped', 'purchased'); if (activeSkin === id) el.classList.add('equipped'); else if (ownedSkins.includes(id)) el.classList.add('purchased'); }
       });
-      ['none', 'crown', 'glasses', 'halo', 'bow', 'headphones', 'cat', 'chef', 'wizard', 'pirate', 'scarf', 'rock', 'doctor'].forEach(id => {
+      ['none', 'crown', 'glasses', 'halo', 'bow', 'headphones', 'cat', 'chef'].forEach(id => {
         let el = document.getElementById(`acc-${id}`);
-        if(el) {
-          el.classList.remove('equipped', 'purchased');
-          if (activeAcc === id) el.classList.add('equipped');
-          else if (ownedAccs.includes(id)) el.classList.add('purchased');
-        }
+        if(el) { el.classList.remove('equipped', 'purchased'); if (activeAcc === id) el.classList.add('equipped'); else if (ownedAccs.includes(id)) el.classList.add('purchased'); }
       });
       ['classic', 'midnight', 'forest', 'royalgold'].forEach(id => {
         let el = document.getElementById(`boardtheme-${id}`);
-        if(el) {
-          el.classList.remove('equipped', 'purchased');
-          if (activeBoardTheme === id) el.classList.add('equipped');
-          else if (ownedBoardThemes.includes(id)) el.classList.add('purchased');
-        }
+        if(el) { el.classList.remove('equipped', 'purchased'); if (activeBoardTheme === id) el.classList.add('equipped'); else if (ownedBoardThemes.includes(id)) el.classList.add('purchased'); }
       });
     }
 
@@ -1072,7 +1004,7 @@
         userCoins -= price; ownedBoardThemes.push(id); activeBoardTheme = id;
         saveUserData(); updateStatsUI(); renderBoard();
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        showAppAlert("Profesyonel tahta teması uygulandı! 🧩✨");
+        showAppAlert("Sudo Market teması uygulandı! 🧩✨");
       }
     }
 
@@ -1082,50 +1014,27 @@
       showAppAlert("+3 İpucu alındı! 💡");
     }
 
-    function openGameSettingsModal() { isRankedMatch = false; document.getElementById('rankedVersusInfoBox').style.display = 'none'; document.getElementById('gameSettingsModal').style.display = 'flex'; }
-    function closeGameSettingsModal() { document.getElementById('gameSettingsModal').style.display = 'none'; }
     function setBoardSize(size, btn) { boardSize = size; document.querySelectorAll('#sizeOptions .option-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    function startConfiguredGame() { closeGameSettingsModal(); startNewSudokuDirectly(); }
-    function startNewSudokuDirectly() { document.getElementById('winModal').style.display = 'none'; initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false); }
+    function startConfiguredGame() { switchScreen('menuScreen'); initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false); }
 
-    function seededRandom(seed) {
-      let x = Math.sin(seed++) * 10000;
-      return x - Math.floor(x);
-    }
+    function seededRandom(seed) { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
 
     function generateSudoku(seed) {
       let baseTemplates = {
         6: [1,2,3,4,5,6, 4,5,6,1,2,3, 2,3,1,5,6,4, 5,6,4,2,3,1, 3,1,2,6,4,5, 6,4,5,3,1,2],
         9: [1,2,3,4,5,6,7,8,9, 4,5,6,7,8,9,1,2,3, 7,8,9,1,2,3,4,5,6, 2,3,1,5,6,4,8,9,7, 5,6,4,8,9,7,2,3,1, 8,9,7,2,3,1,5,6,4, 3,1,2,6,4,5,9,7,8, 6,4,5,9,7,8,3,1,2, 9,7,8,3,1,2,6,4,5],
-        12: [
-          1,2,3,4,5,6,7,8,9,10,11,12, 5,6,7,8,9,10,11,12,1,2,3,4, 9,10,11,12,1,2,3,4,5,6,7,8,
-          2,3,4,5,6,7,8,9,10,11,12,1, 6,7,8,9,10,11,12,1,2,3,4,5, 10,11,12,1,2,3,4,5,6,7,8,9,
-          3,4,5,6,7,8,9,10,11,12,1,2, 7,8,9,10,11,12,1,2,3,4,5,6, 11,12,1,2,3,4,5,6,7,8,9,10,
-          4,5,6,7,8,9,10,11,12,1,2,3, 8,9,10,11,12,1,2,3,4,5,6,7, 12,1,2,3,4,5,6,7,8,9,10,11
-        ],
-        16: [
-          1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 5,6,7,8,9,10,11,12,13,14,15,16,1,2,3,4,
-          9,10,11,12,13,14,15,16,1,2,3,4,5,6,7,8, 13,14,15,16,1,2,3,4,5,6,7,8,9,10,11,12,
-          2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,1, 6,7,8,9,10,11,12,13,14,15,16,1,2,3,4,5,
-          10,11,12,13,14,15,16,1,2,3,4,5,6,7,8,9, 14,15,16,1,2,3,4,5,6,7,8,9,10,11,12,13,
-          3,4,5,6,7,8,9,10,11,12,13,14,15,16,1,2, 7,8,9,10,11,12,13,14,15,16,1,2,3,4,5,6,
-          11,12,13,14,15,16,1,2,3,4,5,6,7,8,9,10, 15,16,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
-          4,5,6,7,8,9,10,11,12,13,14,15,16,1,2,3, 8,9,10,11,12,13,14,15,16,1,2,3,4,5,6,7,
-          12,13,14,15,16,1,2,3,4,5,6,7,8,9,10,11, 16,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
-        ]
+        12: [1,2,3,4,5,6,7,8,9,10,11,12, 5,6,7,8,9,10,11,12,1,2,3,4, 9,10,11,12,1,2,3,4,5,6,7,8, 2,3,4,5,6,7,8,9,10,11,12,1, 6,7,8,9,10,11,12,1,2,3,4,5, 10,11,12,1,2,3,4,5,6,7,8,9, 3,4,5,6,7,8,9,10,11,12,1,2, 7,8,9,10,11,12,1,2,3,4,5,6, 11,12,1,2,3,4,5,6,7,8,9,10, 4,5,6,7,8,9,10,11,12,1,2,3, 8,9,10,11,12,1,2,3,4,5,6,7, 12,1,2,3,4,5,6,7,8,9,10,11],
+        16: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 5,6,7,8,9,10,11,12,13,14,15,16,1,2,3,4, 9,10,11,12,13,14,15,16,1,2,3,4,5,6,7,8, 13,14,15,16,1,2,3,4,5,6,7,8,9,10,11,12, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,1, 6,7,8,9,10,11,12,13,14,15,16,1,2,3,4,5, 10,11,12,13,14,15,16,1,2,3,4,5,6,7,8,9, 14,15,16,1,2,3,4,5,6,7,8,9,10,11,12,13, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,1,2, 7,8,9,10,11,12,13,14,15,16,1,2,3,4,5,6, 11,12,13,14,15,16,1,2,3,4,5,6,7,8,9,10, 15,16,1,2,3,4,5,6,7,8,9,10,11,12,13,14, 4,5,6,7,8,9,10,11,12,13,14,15,16,1,2,3, 8,9,10,11,12,13,14,15,16,1,2,3,4,5,6,7, 12,13,14,15,16,1,2,3,4,5,6,7,8,9,10,11, 16,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
       };
 
       let currentSeed = seed;
       let solution = [...baseTemplates[boardSize]];
       let numMap = Array.from({length: boardSize}, (_, i) => i + 1);
-      
       for (let i = numMap.length - 1; i > 0; i--) {
         let j = Math.floor(seededRandom(currentSeed++) * (i + 1));
         [numMap[i], numMap[j]] = [numMap[j], numMap[i]];
       }
-
       solution = solution.map(val => numMap[val - 1]);
-
       let puzzle = [...solution];
       let removeCount = boardSize === 6 ? 18 : (boardSize === 9 ? 38 : (boardSize === 12 ? 55 : 95));
       for(let i=0; i<removeCount; i++) {
@@ -1133,14 +1042,6 @@
         puzzle[randIdx] = 0;
       }
       return { puzzle, solution };
-    }
-
-    function showMenu() {
-      stopTimer();
-      document.getElementById('winModal').style.display = 'none';
-      document.getElementById('gameScreen').classList.remove('active');
-      document.getElementById('menuScreen').classList.add('active');
-      updateStatsUI();
     }
 
     function initGame(seed, title, tutorialMode) {
@@ -1168,10 +1069,8 @@
       document.getElementById('boardTitle').innerText = `${boardSize}x${boardSize} - ${title}`;
       renderBoard();
       if (!tutorialMode) startTimer();
-      document.getElementById('menuScreen').classList.remove('active');
-      document.getElementById('gameScreen').classList.add('active');
+      switchScreen('gameScreen');
       updateStatsUI();
-      resetMascotPosition();
       setSudoEmotion('happy', "Hadi başlayalım! 🌸");
       startBlinkLoop();
       resetIdleTimer();
@@ -1192,7 +1091,6 @@
       let totalCells = boardSize * boardSize;
       let theme = boardThemesData[activeBoardTheme] || boardThemesData['classic'];
       container.style.backgroundColor = theme.border;
-
       let fontSize = boardSize === 16 ? '0.65rem' : (boardSize === 12 ? '0.82rem' : '1.3rem');
 
       for (let i = 0; i < totalCells; i++) {
@@ -1212,12 +1110,8 @@
           cell.style.color = theme.text;
         } else if (currentBoard[i] !== 0) {
           cell.innerText = currentBoard[i];
-          if (currentBoard[i] !== solutionBoard[i]) {
-            cell.classList.add('error');
-          } else {
-            cell.style.color = theme.userNum;
-            cell.style.fontWeight = '700';
-          }
+          if (currentBoard[i] !== solutionBoard[i]) cell.classList.add('error');
+          else { cell.style.color = theme.userNum; cell.style.fontWeight = '700'; }
         } else if (notesBoard[i].length > 0) {
           const notesGrid = document.createElement('div');
           notesGrid.className = 'notes-grid';
@@ -1242,21 +1136,17 @@
       resetIdleTimer();
       if (selectedCell === null || initialBoard[selectedCell] !== 0) return;
       if (currentBoard[selectedCell] === solutionBoard[selectedCell] && currentBoard[selectedCell] === num) return;
-
       saveHistory();
 
       if (isNotesMode) {
         currentBoard[selectedCell] = 0;
         let notes = notesBoard[selectedCell];
         const idx = notes.indexOf(num);
-        if (idx > -1) notes.splice(idx, 1);
-        else notes.push(num);
+        if (idx > -1) notes.splice(idx, 1); else notes.push(num);
       } else {
         notesBoard[selectedCell] = [];
         if (currentBoard[selectedCell] === num && num !== solutionBoard[selectedCell]) return;
-
         currentBoard[selectedCell] = num;
-
         if (num !== solutionBoard[selectedCell]) {
           mistakes++; streakCorrect = 0;
           document.getElementById('mistakeCounter').innerText = `Hata: ${mistakes}`;
@@ -1321,7 +1211,7 @@
       let wrapperEl = document.getElementById('guideMascotWrapper');
       let mascotRect = wrapperEl.getBoundingClientRect();
 
-      setSudoEmotion('thinking', "Yuvarlanıyorum!! 🌀✨");
+      setSudoEmotion('thinking', "Yuvarlanıyorum! 🌀✨");
 
       let dx = cellRect.left - mascotRect.left + (cellRect.width / 2) - (mascotRect.width / 2);
       let dy = cellRect.top - mascotRect.top + (cellRect.height / 2) - (mascotRect.height / 2);
@@ -1343,15 +1233,10 @@
 
     function resetMascotPosition() {
       let wrapperEl = document.getElementById('guideMascotWrapper');
-      if (wrapperEl) {
-        wrapperEl.classList.remove('rolling-motion');
-        wrapperEl.style.transform = 'translate(0px, 0px) scale(1)';
-      }
+      if (wrapperEl) { wrapperEl.classList.remove('rolling-motion'); wrapperEl.style.transform = 'translate(0px, 0px) scale(1)'; }
     }
 
-    function saveHistory() {
-      history.push({ board: [...currentBoard], notes: JSON.parse(JSON.stringify(notesBoard)) });
-    }
+    function saveHistory() { history.push({ board: [...currentBoard], notes: JSON.parse(JSON.stringify(notesBoard)) }); }
 
     function undo() {
       resetIdleTimer();
@@ -1379,17 +1264,14 @@
       for (let i = 0; i < totalCells; i++) { if (currentBoard[i] !== solutionBoard[i]) return; }
       stopTimer();
 
-      if (isRankedMatch && currentRoomId) {
-        socket.emit('game_won', { roomId: currentRoomId });
-      }
+      if (isRankedMatch && currentRoomId) socket.emit('game_won', { roomId: currentRoomId });
 
       renderMascotSVG('winMascot');
       confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
       
       let earnedScore = Math.max(30, 150 - (mistakes * 20));
       let earnedCoins = Math.max(10, 50 - (mistakes * 5));
-      userScore += earnedScore; 
-      userCoins += earnedCoins;
+      userScore += earnedScore; userCoins += earnedCoins;
 
       let rpGainText = "";
       if (isRankedMatch) {
@@ -1402,10 +1284,7 @@
       document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | Hata: ${mistakes} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
       document.getElementById('winModal').style.display = 'flex';
       updateStatsUI();
-
-      setTimeout(() => {
-        showMenu();
-      }, 3000);
+      setTimeout(() => { showMenu(); }, 3000);
     }
 
     checkDailyStreak();

@@ -6,7 +6,6 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 
-// Hızlı bağlantı kopması algılama (30 saniye gecikmeyi ortadan kaldırır)
 const io = new Server(server, {
   pingInterval: 2000,
   pingTimeout: 5000
