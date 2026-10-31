@@ -67,6 +67,19 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Oyuncu ana sayfaya döndüğünde maçı terk etmiş sayılır
+  socket.on('leave_match', (data) => {
+    const { roomId } = data;
+    if (activeRooms[roomId]) {
+      const room = activeRooms[roomId];
+      const remainingPlayer = room.players.find(p => p.id !== socket.id);
+      if (remainingPlayer) {
+        io.to(roomId).emit('game_over', { winner: remainingPlayer.id });
+      }
+      delete activeRooms[roomId];
+    }
+  });
+
   socket.on('disconnect', () => {
     if (waitingPlayer && waitingPlayer.socket.id === socket.id) {
       waitingPlayer = null;

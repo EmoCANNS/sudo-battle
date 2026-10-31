@@ -42,7 +42,6 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* TAM EKRAN DOLU MENÜ VE PENCERELER */
     .menu-card, .full-page-card {
       background: var(--card-bg);
       backdrop-filter: blur(25px);
@@ -109,6 +108,16 @@
       display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08);
     }
     .leaderboard-item.user-row { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); }
+
+    /* MAÇ GEÇMİŞİ LİSTESİ */
+    .match-history-container {
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 180px; padding-right: 2px;
+    }
+    .match-history-item {
+      display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 10px 14px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.08);
+    }
+    .match-win { border-left: 4px solid #2ed573; color: #2ed573; }
+    .match-lose { border-left: 4px solid #ff4757; color: #ff4757; }
 
     .daily-reward-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 4px; margin-bottom: 12px; }
     .reward-day-box {
@@ -254,8 +263,8 @@
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 16px; border-radius: 18px; font-weight: 700; color: var(--text-main); font-size: 0.88rem; display: block; margin-bottom: 12px; position: relative; line-height: 1.35; text-align: center;
     }
 
-    .setting-group { margin-bottom: 14px; text-align: left; }
-    .setting-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: block; letter-spacing: 0.5px; }
+    .setting-group { margin-bottom: 10px; text-align: left; }
+    .setting-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
     .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .option-btn {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); cursor: pointer; font-family: 'Quicksand', sans-serif; text-align: center;
@@ -270,12 +279,12 @@
       background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
       border: 1px solid rgba(255, 71, 87, 0.3);
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      border-radius: 20px; padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 14px; text-align: left;
+      border-radius: 20px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; text-align: left;
     }
-    .rank-badge-sm { width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
+    .rank-badge-sm { width: 60px; height: 60px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
     .rank-badge-sm svg, .vs-rank-icon svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
-    .progress-bar-container { background: rgba(255,255,255,0.1); border-radius: 8px; height: 10px; width: 100%; margin-top: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
+    .progress-bar-container { background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; width: 100%; margin-top: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
     .progress-bar { background: var(--primary-gradient); height: 100%; width: 0%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--primary); }
     
     .vs-match-box {
@@ -298,7 +307,7 @@
 
   <button class="music-toggle-btn" onclick="toggleChillMusic()" id="musicBtn">🎵 Müzik: Açık</button>
 
-  <!-- ANA MENÜ (DAHA DOLU VE CANLI) -->
+  <!-- ANA MENÜ -->
   <div id="menuScreen" class="screen active">
     <div class="menu-card">
       <div>
@@ -330,40 +339,49 @@
     </div>
   </div>
 
-  <!-- RANKED LOBİ EKRANI (TAM EKRAN) -->
+  <!-- RANKED LOBİ EKRANI (DÜZELTİLMİŞ BUTONLAR VE MAÇ GEÇMİŞİ) -->
   <div id="rankedLobbyScreen" class="screen">
     <div class="full-page-card">
       <div>
-        <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 16px;">Ranked 1v1 Düellosu ⚔️</h2>
+        <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px;">Ranked 1v1 Düellosu ⚔️</h2>
         
         <div class="setting-group" style="text-align: center;">
           <label class="setting-label">TAKMA ADINIZ</label>
-          <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:1rem; width:100%;">
+          <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:0.95rem; width:100%; padding:8px;">
         </div>
 
         <div class="ranked-card-box">
           <div class="rank-badge-sm" id="myRankIconBox"></div>
           <div style="flex:1;">
-            <div style="font-size: 0.72rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ</div>
-            <div id="myRankNameText" style="font-size: 1.1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
-            <div id="myRpText" style="font-size: 0.8rem; font-weight: 700; color: #fff;">0 RP</div>
+            <div style="font-size: 0.68rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ</div>
+            <div id="myRankNameText" style="font-size: 1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
+            <div id="myRpText" style="font-size: 0.75rem; font-weight: 700; color: #fff;">0 RP</div>
             <div class="progress-bar-container">
               <div id="rpProgressBar" class="progress-bar"></div>
             </div>
           </div>
         </div>
 
-        <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.9rem; margin-top: 10px;"></p>
+        <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.85rem; margin-top: 6px;"></p>
+
+        <!-- MAÇ GEÇMİŞİ BÖLÜMÜ -->
+        <div style="text-align: left; margin-top: 8px;">
+          <label class="setting-label">📜 SON MAÇ GEÇMİŞİ</label>
+          <div class="match-history-container" id="matchHistoryList">
+            <div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 10px;">Henüz ranked maç yapılmadı.</div>
+          </div>
+        </div>
       </div>
 
-      <div style="display: flex; gap: 10px;">
-        <button class="btn btn-guide" onclick="showMenu()">Geri</button>
-        <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex:2;">Rakip Ara 🚀</button>
+      <!-- BUTONLAR: Rakip Ara BÜYÜK, Geri KÜÇÜK -->
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn btn-guide" onclick="showMenu()" style="flex: 1; padding: 14px 10px; font-size: 0.9rem;">Geri</button>
+        <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex: 2.5; padding: 15px;">Rakip Ara 🚀</button>
       </div>
     </div>
   </div>
 
-  <!-- REHBER EKRANI (TAM EKRAN) -->
+  <!-- REHBER EKRANI -->
   <div id="tutorialScreen" class="screen">
     <div class="full-page-card" style="text-align: left; justify-content: flex-start; gap: 12px; overflow-y: auto;">
       <div style="text-align: center;"><div class="mascot-container" id="tutorialMascot" style="width: 75px; height: 75px; margin-bottom: 4px;"></div></div>
@@ -378,8 +396,8 @@
         <div class="guide-section-text">Ranked düellolarda ipucu yasaktır; tamamen kendi zekana güvenirsin! Hatalar puanını düşürür!</div>
       </div>
       <div class="guide-section-box">
-        <div class="guide-section-title">⚡ 3. Gerçek Zamanlı Rakip Tespiti</div>
-        <div class="guide-section-text">Rakibin oyunu terk ederse veya bağlantısı koparsa sistem otomatik olarak zaferi sana yazar!</div>
+        <div class="guide-section-title">⚡ 3. Anında Maç Sonu Tespiti</div>
+        <div class="guide-section-text">Rakip oyundan çıkarsa veya ana sayfaya dönerse sistem zaferi sana yazar!</div>
       </div>
       <div style="margin-top: auto; padding-top: 10px;">
         <button class="btn btn-primary" onclick="showMenu()">Anladım, Ana Sayfaya Dön! 🚀</button>
@@ -387,7 +405,7 @@
     </div>
   </div>
 
-  <!-- LİG EKRANI (TAM EKRAN) -->
+  <!-- LİG EKRANI -->
   <div id="leagueScreen" class="screen">
     <div class="full-page-card">
       <div>
@@ -398,7 +416,7 @@
     </div>
   </div>
 
-  <!-- OYUN AYARLARI EKRANI (TAM EKRAN) -->
+  <!-- OYUN AYARLARI EKRANI -->
   <div id="gameSettingsScreen" class="screen">
     <div class="full-page-card" style="justify-content: flex-start; gap: 16px;">
       <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-top: 10px;">Oyun Ayarları ⚙️</h2>
@@ -418,7 +436,7 @@
     </div>
   </div>
 
-  <!-- GÜNLÜK ÖDÜL EKRANI (TAM EKRAN) -->
+  <!-- GÜNLÜK ÖDÜL EKRANI -->
   <div id="dailyRewardsScreen" class="screen">
     <div class="full-page-card">
       <div>
@@ -432,7 +450,7 @@
     </div>
   </div>
 
-  <!-- SUDO MARKET EKRANI (TAM EKRAN) -->
+  <!-- SUDO MARKET EKRANI -->
   <div id="shopScreen" class="screen">
     <div class="full-page-card" style="justify-content: flex-start; gap: 12px;">
       <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Sudo Market 🛒</h2>
@@ -486,7 +504,7 @@
   <!-- OYUN EKRANI -->
   <div id="gameScreen" class="screen">
     <div class="game-header">
-      <button class="icon-btn" onclick="showMenu()">🏠</button>
+      <button class="icon-btn" onclick="handleExitMatch()">🏠</button>
       <div class="game-info">
         <div id="boardTitle" class="game-title">9x9 - KOLAY</div>
         <div id="timer" class="game-timer">00:00</div>
@@ -637,6 +655,7 @@
     let userRp = parseInt(localStorage.getItem('sudo_rp')) || 0;
     let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
     let isRankedMatch = false;
+    let matchHistory = JSON.parse(localStorage.getItem('sudo_match_history')) || [];
 
     function getRankSvgHtml(type) {
       if (type === 'bronze') return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e67e22"/><stop offset="100%" stop-color="#b33939"/></linearGradient></defs><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="#1e1e24" stroke="url(#br-g)" stroke-width="6"/><polygon points="50,15 80,30 80,70 50,85 20,70 20,30" fill="url(#br-g)" opacity="0.9"/><path d="M50,32 L64,50 L50,68 L36,50 Z" fill="#ffffff"/></svg>`;
@@ -677,9 +696,32 @@
       updateStatsUI();
     }
 
+    function handleExitMatch() {
+      if (isRankedMatch && currentRoomId) {
+        socket.emit('leave_match', { roomId: currentRoomId });
+      }
+      showMenu();
+    }
+
+    function renderMatchHistory() {
+      const listEl = document.getElementById('matchHistoryList');
+      if (!matchHistory || matchHistory.length === 0) {
+        listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 10px;">Henüz ranked maç yapılmadı.</div>`;
+        return;
+      }
+      let html = '';
+      matchHistory.slice(-5).reverse().forEach(m => {
+        let isWin = m.result === 'KAZANDIN';
+        let cls = isWin ? 'match-history-item match-win' : 'match-history-item match-lose';
+        html += `<div class="${cls}"><span>${m.result} (${m.duration})</span><span>${isWin ? '+' : ''}${m.rpChange} RP</span></div>`;
+      });
+      listEl.innerHTML = html;
+    }
+
     function openRankedLobby() {
       document.getElementById('rankedUsernameInput').value = userName;
       updateRankUI();
+      renderMatchHistory();
       document.getElementById('rankedStatusText').innerText = "";
       document.getElementById('rankedSearchBtn').disabled = false;
       document.getElementById('rankedSearchBtn').innerText = "Rakip Ara 🚀";
@@ -719,11 +761,21 @@
     socket.on('game_over', (data) => {
       if (isRankedMatch) {
         stopTimer();
+        let durationStr = document.getElementById('timer').innerText;
         if (data.winner === socket.id) {
-          showAppAlert("Rakip oyunu terk etti veya bağlantısı koptu! Hükmen kazandın! 🏆");
+          let rpGain = 20;
+          userRp += rpGain;
+          matchHistory.push({ result: 'KAZANDIN', duration: durationStr, rpChange: rpGain });
+          localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
+          showAppAlert("Rakip oyundan ayrıldı veya ana sayfaya döndü! Hükmen kazandın! 🏆");
         } else {
-          showAppAlert("Maçı kaybettin. 😢");
+          let rpLoss = -15;
+          userRp = Math.max(0, userRp + rpLoss);
+          matchHistory.push({ result: 'KAYBETTİN', duration: durationStr, rpChange: rpLoss });
+          localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
+          showAppAlert("Rakip bulmacayı tamamladı! Maçı kaybettin. 😢");
         }
+        saveUserData();
         document.getElementById('winModal').style.display = 'none';
         setTimeout(() => { showMenu(); }, 2500);
       }
@@ -828,6 +880,7 @@
       localStorage.setItem('sudo_active_board_theme', activeBoardTheme);
       localStorage.setItem('sudo_rp', userRp);
       localStorage.setItem('sudo_username', userName);
+      localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
     }
 
     function updateStatsUI() {
@@ -1264,7 +1317,14 @@
       for (let i = 0; i < totalCells; i++) { if (currentBoard[i] !== solutionBoard[i]) return; }
       stopTimer();
 
-      if (isRankedMatch && currentRoomId) socket.emit('game_won', { roomId: currentRoomId });
+      if (isRankedMatch && currentRoomId) {
+        let durationStr = document.getElementById('timer').innerText;
+        let rpGain = 25;
+        userRp += rpGain;
+        matchHistory.push({ result: 'KAZANDIN', duration: durationStr, rpChange: rpGain });
+        saveUserData();
+        socket.emit('game_won', { roomId: currentRoomId });
+      }
 
       renderMascotSVG('winMascot');
       confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
@@ -1273,12 +1333,7 @@
       let earnedCoins = Math.max(10, 50 - (mistakes * 5));
       userScore += earnedScore; userCoins += earnedCoins;
 
-      let rpGainText = "";
-      if (isRankedMatch) {
-        let rpGain = Math.max(5, 25 - (mistakes * 4));
-        userRp += rpGain;
-        rpGainText = ` | +${rpGain} RP 🏆`;
-      }
+      let rpGainText = isRankedMatch ? ` | +25 RP 🏆` : "";
 
       saveUserData();
       document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | Hata: ${mistakes} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
