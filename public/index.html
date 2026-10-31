@@ -1050,7 +1050,7 @@
     function buyOrEquipSkin(id, color, price) {
       if (ownedSkins.includes(id)) { activeSkin = id; saveUserData(); updateStatsUI(); }
       else {
-        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok Üstadım!");
+        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok!");
         userCoins -= price; ownedSkins.push(id); activeSkin = id;
         saveUserData(); updateStatsUI(); showAppAlert("Kostüm giyildi! 🌸");
       }
@@ -1059,7 +1059,7 @@
     function buyOrEquipAcc(id, price) {
       if (ownedAccs.includes(id)) { activeAcc = id; saveUserData(); updateStatsUI(); }
       else {
-        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok Üstadım!");
+        if (userCoins < price) return showAppAlert("Yeterli Coin'in yok!");
         userCoins -= price; ownedAccs.push(id); activeAcc = id;
         saveUserData(); updateStatsUI(); showAppAlert("Aksesuar takıldı! ✨");
       }
@@ -1068,7 +1068,7 @@
     function buyOrEquipBoardTheme(id, price) {
       if (ownedBoardThemes.includes(id)) { activeBoardTheme = id; saveUserData(); updateStatsUI(); renderBoard(); }
       else {
-        if (userCoins < price) return showAppAlert(`Bu tema için ${price} Coin gerekiyor Üstadım!`);
+        if (userCoins < price) return showAppAlert(`Bu tema için ${price} Coin gerekiyor!`);
         userCoins -= price; ownedBoardThemes.push(id); activeBoardTheme = id;
         saveUserData(); updateStatsUI(); renderBoard();
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
@@ -1077,7 +1077,7 @@
     }
 
     function buyHints() {
-      if (userCoins < 40) return showAppAlert("Yeterli Coin'in yok Üstadım!");
+      if (userCoins < 40) return showAppAlert("Yeterli Coin'in yok!");
       userCoins -= 40; hintCount += 3; saveUserData(); updateStatsUI();
       showAppAlert("+3 İpucu alındı! 💡");
     }
@@ -1172,7 +1172,7 @@
       document.getElementById('gameScreen').classList.add('active');
       updateStatsUI();
       resetMascotPosition();
-      setSudoEmotion('happy', "Hadi başlayalım Üstadım! 🌸");
+      setSudoEmotion('happy', "Hadi başlayalım! 🌸");
       startBlinkLoop();
       resetIdleTimer();
       if (!isMusicPlaying) {
@@ -1274,7 +1274,7 @@
     function triggerDuolingoRewardModal() {
       hintCount += 1; saveUserData(); updateStatsUI();
       renderMascotSVG('duoFlyingMascotContainer');
-      document.getElementById('duoRewardMessage').innerText = `Sana bir hediye verdim Üstadım: +1 İpucu! 🎁✨`;
+      document.getElementById('duoRewardMessage').innerText = `Sana bir hediye verdim: +1 İpucu! 🎁✨`;
       const modal = document.getElementById('duolingoRewardModal');
       modal.style.display = 'flex';
       setTimeout(() => { modal.classList.add('active'); }, 10);
@@ -1291,7 +1291,7 @@
       resetIdleTimer();
       isNotesMode = !isNotesMode;
       document.getElementById('notesBtn').classList.toggle('active', isNotesMode);
-      setSudoEmotion('thinking', isNotesMode ? "Not modu açık Üstadım! ✏️" : "Normal mod aktif.");
+      setSudoEmotion('thinking', isNotesMode ? "Not modu açık! ✏️" : "Normal mod aktif.");
     }
 
     function erase() {
@@ -1305,7 +1305,7 @@
 
     function getHint() {
       resetIdleTimer();
-      if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır Üstadım! ⚔️");
+      if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır! ⚔️");
       if (hintCount <= 0) return showAppAlert("İpucu kalmadı!");
       let totalCells = boardSize * boardSize;
       let emptyOrWrong = [];
@@ -1321,7 +1321,7 @@
       let wrapperEl = document.getElementById('guideMascotWrapper');
       let mascotRect = wrapperEl.getBoundingClientRect();
 
-      setSudoEmotion('thinking', "Yuvarlanıyorum Üstadım! 🌀✨");
+      setSudoEmotion('thinking', "Yuvarlanıyorum!! 🌀✨");
 
       let dx = cellRect.left - mascotRect.left + (cellRect.width / 2) - (mascotRect.width / 2);
       let dy = cellRect.top - mascotRect.top + (cellRect.height / 2) - (mascotRect.height / 2);

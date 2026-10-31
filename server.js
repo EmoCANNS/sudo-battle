@@ -5,25 +5,25 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
 
-// Statik dosyaları sunmak için public klasörünü tanıtıyoruz
+// Hızlı bağlantı kopması algılama (30 saniye gecikmeyi ortadan kaldırır)
+const io = new Server(server, {
+  pingInterval: 2000,
+  pingTimeout: 5000
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ana dizine girildiğinde public klasöründeki index.html dosyasını gönder
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Bekleyen ranked oyuncu kuyruğu
 let waitingPlayer = null;
-// Aktif oyun odaları
 const activeRooms = {};
 
 io.on('connection', (socket) => {
-  console.log(`Bir oyuncu bağlandı Üstadım: ${socket.id}`);
+  console.log(`Oyuncu bağlandı: ${socket.id}`);
 
-  // Ranked Rakip Arama
   socket.on('find_match', (data) => {
     const { username, rp } = data;
 
@@ -53,15 +53,13 @@ io.on('connection', (socket) => {
         opponent: { username: waitingPlayer.username, rp: waitingPlayer.rp }
       });
 
-      console.log(`Üstadım, ${roomId} odasında kapışma başladı!`);
       waitingPlayer = null;
     } else {
       waitingPlayer = { socket: socket, username: username, rp: rp };
-      socket.emit('waiting_opponent', 'Rakip bekleniyor Üstadım... ⚔️');
+      socket.emit('waiting_opponent', 'Rakip aranıyor...');
     }
   });
 
-  // Oyunu bitiren taraf
   socket.on('game_won', (data) => {
     const { roomId } = data;
     if (activeRooms[roomId]) {
@@ -70,10 +68,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Oyuncu oyundan ayrıldığında veya bağlantısı koptuğunda
   socket.on('disconnect', () => {
-    console.log(`Bir oyuncu ayrıldı Üstadım: ${socket.id}`);
-    
     if (waitingPlayer && waitingPlayer.socket.id === socket.id) {
       waitingPlayer = null;
     }
@@ -96,5 +91,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Sudo Battle sunucusu ${PORT} portunda ayakta Üstadım! 🚀`);
+  console.log(`Sunucu ${PORT} portunda çalışıyor.`);
 });
