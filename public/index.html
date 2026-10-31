@@ -222,30 +222,24 @@
       box-shadow: 0 25px 50px rgba(0,0,0,0.6);
     }
 
-    /* CANLI REHBER İNTERAKTİF DIALOG EKRANI (SAĞ/SOL DİNAMİK) */
+    /* İNTERAKTİF CANLI REHBER (Ekranda Gezinen Pozisyonlar) */
     .live-guide-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: flex-end; justify-content: center; z-index: 900; padding: 20px;
+      position: fixed; inset: 0; background: transparent; display: none; z-index: 900; pointer-events: auto;
+    }
+    .live-guide-wrapper {
+      position: absolute; display: flex; align-items: center; gap: 12px; width: 340px; max-width: 90vw; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
     }
-    .live-guide-container {
-      width: 100%; max-width: 440px; display: flex; align-items: flex-end; gap: 12px; margin-bottom: 20px; animation: slideUpGuide 0.3s ease-out;
-    }
-    .live-guide-container.right-side {
-      flex-direction: row-reverse;
-    }
-    @keyframes slideUpGuide {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
     .live-mascot-box {
-      width: 75px; height: 75px; flex-shrink: 0; animation: sudoAliveBreathing 2s ease-in-out infinite alternate;
+      width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+      animation: sudoAliveBreathing 2s ease-in-out infinite alternate;
     }
     .live-dialog-box {
-      background: rgba(30, 30, 42, 0.98); border: 2px solid var(--primary); padding: 14px 16px; border-radius: 20px; flex: 1; text-align: left;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: relative;
+      background: rgba(20, 20, 28, 0.98); border: 2px solid var(--primary); padding: 14px 16px; border-radius: 20px; flex: 1; text-align: left;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
     }
     .live-dialog-title { font-size: 0.78rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .live-dialog-text { font-size: 0.85rem; font-weight: 700; color: var(--text-main); line-height: 1.4; }
+    .live-dialog-text { font-size: 0.84rem; font-weight: 700; color: var(--text-main); line-height: 1.4; }
     .live-dialog-hint { font-size: 0.65rem; color: var(--text-muted); margin-top: 6px; text-align: right; font-weight: 600; }
 
     .duolingo-reward-popup {
@@ -340,13 +334,13 @@
     </div>
   </div>
 
-  <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI (SAĞ/SOL DEĞİŞKEN) -->
+  <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI (EKRANDA GEZİNEN POZİSYONLAR) -->
   <div id="liveGuideOverlay" class="live-guide-overlay" onclick="nextLiveGuideStep()">
-    <div class="live-guide-container" id="liveGuideContainerBox">
+    <div class="live-guide-wrapper" id="liveGuideWrapper">
       <div class="live-mascot-box" id="liveGuideMascotAvatar"></div>
       <div class="live-dialog-box">
         <div class="live-dialog-title" id="liveGuideStepTitle">Sudo Rehberi (1/6)</div>
-        <div class="live-dialog-text" id="liveGuideStepText">Merhabalar patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını anlatacağım. Devam etmek için ekrana dokun! 🌸</div>
+        <div class="live-dialog-text" id="liveGuideStepText">Merhabalar patron!</div>
         <div class="live-dialog-hint">Devam etmek için dokun 👆</div>
       </div>
     </div>
@@ -645,21 +639,21 @@
     let isRankedMatch = false;
     let matchHistory = JSON.parse(localStorage.getItem('sudo_match_history')) || [];
 
-    // CANLI REHBER ADIMLARI (Çift indeksler SOL, tek indeksler SAĞ)
+    // CANLI REHBER ADIMLARI (Her adımda farklı bir konuma, sağa/sola ve yukarı/aşağı gidiyor)
     const liveGuideSteps = [
-      { title: "Sudo Rehberi (1/6)", text: "Selam patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını ve sistemini adım adım anlatacağım. Devam etmek için ekrana dokun! 🌸", side: "left" },
-      { title: "Sudoku Nedir? (2/6)", text: "Sudoku, 9x9 (veya farklı boyutlardaki) tahtalarda her satır, sütun ve 3x3 kutucukta 1'den 9'a kadar olan sayıların tam birer kez yer alması gereken bir mantık bulmacasıdır! 🧠", side: "right" },
-      { title: "Ranked Modu (3/6)", text: "⚔️ Ranked (Dereceli) Mod tam sana göredir! Burada eş zamanlı olarak gerçek bir rakiple kapışırsın. En hızlı ve hatasız bitiren kazanır!", side: "left" },
-      { title: "İpucu ve Kurallar (4/6)", text: "Dikkat! Ranked maçlarda ipucu kullanmak kesinlikle **yasaktır**! Tamamen kendi zekana ve hızına güvenirsin. Hatalı hamleler moralini bozmasın!", side: "right" },
-      { title: "Rank Puanı - RP (5/6)", text: "Kazandığın her ranked maç sana **+20 / +25 RP** kazandırır ve Bronz, Gümüş, Altın, Platin, Elmas liglerine tırmanırsın! Kaybedersen RP düşer.", side: "left" },
-      { title: "Online Sistem (6/6)", text: "⚡ Canlı online altyapımız sayesinde rakip oyundan çıkar veya ana sayfaya dönerse maç anında biter ve zafer otomatik olarak sana yazılır! Hazırsın, bol şans! 🚀", side: "right" }
+      { title: "Sudo Rehberi (1/6)", text: "Selam patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını anlatacağım.", top: "15%", left: "5%" },
+      { title: "Sudoku Nedir? (2/6)", text: "Sudoku, satır, sütun ve kutucuklarda sayıların birer kez yer aldığı mantık bulmacasıdır! 🧠", top: "25%", right: "5%" },
+      { title: "Ranked Modu (3/6)", text: "⚔️ Ranked Mod tam sana göre! Eş zamanlı olarak gerçek bir rakiple kapışırsın.", top: "45%", left: "5%" },
+      { title: "İpucu ve Kurallar (4/6)", text: "Dikkat! Ranked maçlarda ipucu kullanmak yasaktır! Tamamen kendi zekana güvenirsin.", top: "55%", right: "5%" },
+      { title: "Rank Puanı - RP (5/6)", text: "Kazandığın her ranked maç sana +25 RP kazandırır ve liglerde tırmanırsın!", top: "70%", left: "5%" },
+      { title: "Online Sistem (6/6)", text: "⚡ Rakip oyundan çıkar veya ana sayfaya dönerse maç biter ve zafer sana yazılır! Bol şans! 🚀", top: "75%", right: "5%" }
     ];
     let currentLiveGuideIdx = 0;
 
     function startLiveGuide() {
       currentLiveGuideIdx = 0;
-      updateLiveGuideContent();
-      document.getElementById('liveGuideOverlay').style.display = 'flex';
+      updateLiveGuidePosition();
+      document.getElementById('liveGuideOverlay').style.display = 'block';
     }
 
     function nextLiveGuideStep() {
@@ -667,21 +661,20 @@
       if (currentLiveGuideIdx >= liveGuideSteps.length) {
         document.getElementById('liveGuideOverlay').style.display = 'none';
       } else {
-        updateLiveGuideContent();
+        updateLiveGuidePosition();
       }
     }
 
-    function updateLiveGuideContent() {
+    function updateLiveGuidePosition() {
       const step = liveGuideSteps[currentLiveGuideIdx];
       document.getElementById('liveGuideStepTitle').innerText = step.title;
       document.getElementById('liveGuideStepText').innerText = step.text;
       
-      const containerBox = document.getElementById('liveGuideContainerBox');
-      if (step.side === 'right') {
-        containerBox.classList.add('right-side');
-      } else {
-        containerBox.classList.remove('right-side');
-      }
+      const wrapper = document.getElementById('liveGuideWrapper');
+      wrapper.style.top = step.top || 'auto';
+      wrapper.style.bottom = step.bottom || 'auto';
+      wrapper.style.left = step.left || 'auto';
+      wrapper.style.right = step.right || 'auto';
 
       renderMascotSVG('liveGuideMascotAvatar', currentLiveGuideIdx % 2 === 0 ? 'happy' : 'thinking');
     }
