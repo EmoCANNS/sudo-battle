@@ -7,12 +7,12 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Statik dosyaları sunmak için
-app.use(express.static(path.join(__dirname)));
+// Statik dosyaları sunmak için public klasörünü tanıtıyoruz
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Ana dizine girildiğinde index.html dosyasını gönder
+// Ana dizine girildiğinde public klasöründeki index.html dosyasını gönder
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Bekleyen ranked oyuncu kuyruğu
@@ -23,6 +23,7 @@ const activeRooms = {};
 io.on('connection', (socket) => {
   console.log(`Bir oyuncu bağlandı Üstadım: ${socket.id}`);
 
+  // Ranked Rakip Arama
   socket.on('find_match', (data) => {
     const { username, rp } = data;
 
@@ -60,6 +61,7 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Oyunu bitiren taraf
   socket.on('game_won', (data) => {
     const { roomId } = data;
     if (activeRooms[roomId]) {
@@ -68,6 +70,7 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Oyuncu oyundan ayrıldığında veya bağlantısı koptuğunda
   socket.on('disconnect', () => {
     console.log(`Bir oyuncu ayrıldı Üstadım: ${socket.id}`);
     
