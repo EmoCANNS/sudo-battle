@@ -1,1570 +1,1570 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sudo Battle - Blitz & Ses Efektleri</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <style>
-    :root {
-      --card-bg: rgba(20, 20, 28, 0.95);
-      --primary-gradient: linear-gradient(135deg, #ff6b81 0%, #ff4757 100%);
-      --primary: #ff4757;
-      --secondary-gradient: linear-gradient(135deg, #5352ed 0%, #70a1ff 100%);
-      --accent-gradient: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%);
-      --league-gradient: linear-gradient(135deg, #3742fa 0%, #5352ed 100%);
-      --blitz-gradient: linear-gradient(135deg, #ff4757 0%, #ffa502 100%);
-      --promo-gradient: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
-      --text-main: #f1f2f6;
-      --text-muted: #a4b0be;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: radial-gradient(circle at center, #1e1e2f 0%, #0f0f17 100%);
-      min-height: 100vh;
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-    }
-    
-    .screen { width: 100%; max-width: 440px; display: none; flex-direction: column; gap: 12px; position: relative; }
-    .screen.active { display: flex; animation: fadeInScreen 0.3s ease-out; }
-
-    @keyframes fadeInScreen {
-      from { opacity: 0; transform: scale(0.98); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .menu-card, .full-page-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(25px);
-      border-radius: 28px;
-      padding: 24px 18px;
-      box-shadow: var(--shadow);
-      text-align: center;
-      border: var(--glass-border);
-      position: relative;
-      min-height: 88vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .app-title {
-      font-size: 2.4rem; font-weight: 800;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: 0.5px;
-    }
-    .app-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; }
-
-    .user-stats-bar {
-      display: flex; justify-content: space-around; background: rgba(255,255,255,0.05); padding: 12px 10px;
-      border-radius: 18px; margin-bottom: 14px; font-weight: 800; font-size: 0.82rem; color: var(--primary);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .menu-buttons-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-
-    .btn {
-      border: none; padding: 15px 20px; border-radius: 18px; font-weight: 800; font-size: 0.98rem; cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; font-family: 'Quicksand', sans-serif;
-    }
-    .btn:active { transform: scale(0.97); }
-    
-    .btn-play { background: var(--primary-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4); font-size: 1.05rem; }
-    .btn-blitz { background: var(--blitz-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 165, 2, 0.4); font-size: 1.05rem; border: 1px solid rgba(255,255,255,0.2); }
-    .btn-ranked { background: linear-gradient(135deg, #ff4757 0%, #c51162 100%); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5); font-size: 1.05rem; border: 1px solid rgba(255,255,255,0.2); }
-    .btn-league { background: var(--league-gradient); color: white; box-shadow: 0 8px 25px rgba(55, 66, 250, 0.35); }
-    .btn-daily { background: var(--accent-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 165, 2, 0.35); }
-    .btn-market { background: var(--secondary-gradient); color: white; box-shadow: 0 8px 25px rgba(83, 82, 237, 0.3); }
-    .btn-guide { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); }
-
-    .music-toggle-btn {
-      position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px;
-      padding: 6px 12px; font-size: 0.75rem; font-weight: 800; color: var(--primary); cursor: pointer; z-index: 10;
-    }
-
-    .promo-container {
-      display: flex; gap: 8px; margin-top: 10px; background: rgba(255,255,255,0.04); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);
-    }
-    .promo-input {
-      flex: 1; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px;
-      font-family: 'Quicksand', sans-serif; font-weight: 700; color: var(--text-main); font-size: 0.85rem; outline: none;
-    }
-    .promo-input:focus { border-color: var(--primary); }
-    .btn-promo { background: var(--promo-gradient); color: white; width: auto; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; }
-
-    .league-header { background: var(--league-gradient); color: white; padding: 14px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; font-size: 1rem; }
-    .leaderboard-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-    .leaderboard-item {
-      display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08);
-    }
-    .leaderboard-item.user-row { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); }
-
-    .match-history-container {
-      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 180px; padding-right: 2px;
-    }
-    .match-history-item {
-      display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 10px 14px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.08);
-    }
-    .match-win { border-left: 4px solid #2ed573; color: #2ed573; }
-    .match-lose { border-left: 4px solid #ff4757; color: #ff4757; }
-
-    .daily-reward-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 4px; margin-bottom: 12px; }
-    .reward-day-box {
-      background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 4px; text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .reward-day-box.claimed { background: rgba(46,213,115,0.1); border-color: #2ed573; color: #2ed573; opacity: 0.8; }
-    .reward-day-box.active-day { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 15px rgba(255,71,87,0.25); }
-
-    .market-tabs { display: flex; gap: 4px; margin-bottom: 12px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 16px; }
-    .market-tab { flex: 1; padding: 10px 6px; border: none; background: transparent; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); border-radius: 12px; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all 0.2s; white-space: nowrap; }
-    .market-tab.active { background: rgba(255,255,255,0.15); color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-
-    .market-section { display: none; flex: 1; overflow-y: auto; padding-right: 2px; }
-    .market-section.active { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-content: start; }
-
-    .shop-item {
-      background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;
-    }
-    .shop-item.equipped { border-color: var(--primary); background: rgba(255,71,87,0.15); }
-    .shop-item.purchased { border-color: #70a1ff; background: rgba(112,161,255,0.1); }
-
-    .game-header {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--card-bg); backdrop-filter: blur(10px); padding: 10px 16px; border-radius: 20px; box-shadow: var(--shadow); border: var(--glass-border);
-    }
-    .icon-btn {
-      background: rgba(255, 71, 87, 0.15); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: var(--primary);
-    }
-    .game-info { text-align: center; }
-    .game-title { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .game-timer { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
-
-    .sudoku-board-container {
-      width: 100%; aspect-ratio: 1; background: var(--card-bg); border: 3px solid rgba(255,255,255,0.2); border-radius: 24px; overflow: hidden; display: grid; gap: 1px; box-shadow: var(--shadow); position: relative;
-    }
-    
-    .cell {
-      background: var(--cell-bg); display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; position: relative; transition: background 0.15s; line-height: 1;
-    }
-    .cell.fixed { font-weight: 800; }
-    .cell.error { background: #ff4757 !important; color: white !important; animation: shake 0.2s ease-in-out; }
-
-    .notes-grid { display: grid; width: 100%; height: 100%; padding: 1px; pointer-events: none; }
-    .note-num { font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: center; line-height: 1; }
-
-    .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .tool-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); cursor: pointer; font-family: 'Quicksand', sans-serif;
-    }
-    .tool-btn.active { background: rgba(255,71,87,0.2); border-color: var(--primary); color: var(--primary); }
-    .tool-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .numpad { display: grid; gap: 4px; }
-    .num-btn {
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Quicksand', sans-serif; transition: all 0.15s;
-    }
-    .num-btn:active { transform: scale(0.95); background: rgba(255,71,87,0.2); color: var(--primary); }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-4px); }
-      40%, 80% { transform: translateX(4px); }
-    }
-
-    .side-guide-bar {
-      display: flex; align-items: center; gap: 12px; padding: 6px 4px; width: 100%; z-index: 50; position: relative;
-    }
-
-    .guide-bubble {
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,71,87,0.4); padding: 10px 14px; border-radius: 16px; font-weight: 700; font-size: 0.82rem; color: var(--text-main); line-height: 1.3; text-align: left; flex: 1; position: relative;
-    }
-
-    .guide-mascot-wrapper {
-      width: 58px; height: 58px; flex-shrink: 0; position: relative; z-index: 100;
-      animation: sudoAliveBreathing 2.5s ease-in-out infinite alternate;
-      cursor: pointer;
-    }
-
-    .rolling-motion {
-      animation: sudoRollToTarget 0.85s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards !important;
-      z-index: 9999;
-    }
-    @keyframes sudoRollToTarget {
-      0% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
-      50% { transform: translate(var(--dx), var(--dy)) rotate(540deg) scale(1.25); }
-      100% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(1); }
-    }
-
-    .guide-mascot-avatar { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); }
-
-    @keyframes sudoAliveBreathing {
-      0% { transform: translateY(0px) scale(1) rotate(0deg); }
-      50% { transform: translateY(-6px) scale(1.03) rotate(1deg); }
-      100% { transform: translateY(-10px) scale(1.05) rotate(-1deg); }
-    }
-
-    .mascot-dance { animation: sudoDanceParty 0.4s ease-in-out infinite alternate !important; }
-    @keyframes sudoDanceParty {
-      0% { transform: translateY(0) scale(1) rotate(-12deg); }
-      100% { transform: translateY(-22px) scale(1.22) rotate(12deg); }
-    }
-
-    .mascot-thinking { animation: sudoThinkingTilt 0.8s ease-in-out infinite alternate !important; }
-    @keyframes sudoThinkingTilt {
-      0% { transform: rotate(-8deg) scale(1); }
-      100% { transform: rotate(8deg) scale(1.03); }
-    }
-
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 600; padding: 20px;
-    }
-    .modal-card-small {
-      background: var(--card-bg); border: var(--glass-border); padding: 24px 20px; border-radius: 28px; text-align: center; max-width: 360px; width: 100%;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-    }
-
-    .all-ranks-container {
-      max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 12px 0; padding-right: 4px; text-align: left;
-    }
-    .rank-row-item {
-      display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 10px 14px; border-radius: 14px;
-    }
-    .rank-row-icon { width: 44px; height: 44px; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
-    .rank-row-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
-
-    .live-guide-overlay {
-      position: fixed; inset: 0; background: transparent; display: none; z-index: 900; pointer-events: auto;
-    }
-    .live-guide-wrapper {
-      position: absolute; display: flex; align-items: center; gap: 12px; width: 340px; max-width: 90vw; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-    }
-    .live-mascot-box {
-      width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
-      animation: sudoAliveBreathing 2s ease-in-out infinite alternate;
-    }
-    .live-dialog-box {
-      background: rgba(20, 20, 28, 0.98); border: 2px solid var(--primary); padding: 14px 16px; border-radius: 20px; flex: 1; text-align: left;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
-    }
-    .live-dialog-title { font-size: 0.78rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .live-dialog-text { font-size: 0.84rem; font-weight: 700; color: var(--text-main); line-height: 1.4; }
-    .live-dialog-hint { font-size: 0.65rem; color: var(--text-muted); margin-top: 6px; text-align: right; font-weight: 600; }
-
-    .duolingo-reward-popup {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500;
-    }
-    .duolingo-card {
-      background: var(--card-bg); border: var(--glass-border); padding: 32px 24px; border-radius: 32px; text-align: center; max-width: 320px; width: 90%;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(120px) scale(0.4); opacity: 0;
-      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-    }
-    .duolingo-reward-popup.active .duolingo-card { transform: translateY(0) scale(1); opacity: 1; }
-    
-    .duolingo-mascot-flying {
-      width: 120px; height: 120px; margin: 0 auto 12px; animation: duoJumpBounce 0.4s infinite alternate ease-in-out;
-    }
-    @keyframes duoJumpBounce {
-      0% { transform: translateY(0) scale(1) rotate(-10deg); }
-      100% { transform: translateY(-20px) scale(1.18) rotate(10deg); }
-    }
-
-    .mascot-container {
-      width: 80px; height: 80px; margin: 0 auto 8px; cursor: pointer;
-      animation: sudoAliveBreathing 2.5s ease-in-out infinite alternate;
-    }
-
-    .speech-bubble {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 16px; border-radius: 18px; font-weight: 700; color: var(--text-main); font-size: 0.88rem; display: block; margin-bottom: 12px; position: relative; line-height: 1.35; text-align: center;
-    }
-
-    .setting-group { margin-bottom: 10px; text-align: left; }
-    .setting-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
-    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .option-btn {
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); cursor: pointer; font-family: 'Quicksand', sans-serif; text-align: center;
-    }
-    .option-btn.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 14px rgba(255, 71, 87, 0.3); }
-
-    .ranked-card-box {
-      background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
-      border: 1px solid rgba(255, 71, 87, 0.3);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      border-radius: 20px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer; transition: transform 0.1s;
-    }
-    .ranked-card-box:active { transform: scale(0.98); }
-    .rank-badge-sm { width: 60px; height: 60px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
-    .rank-badge-sm svg, .vs-rank-icon svg { width: 100%; height: 100%; overflow: visible; display: block; }
-
-    .progress-bar-container { background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; width: 100%; margin-top: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
-    .progress-bar { background: var(--primary-gradient); height: 100%; width: 0%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--primary); }
-    
-    .vs-match-box {
-      display: flex; justify-content: space-around; align-items: center; margin: 15px 0;
-      background: linear-gradient(135deg, #1e1e24, #121216); padding: 16px; border-radius: 18px;
-      border: 1px solid rgba(255, 71, 87, 0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-    }
-    .vs-player-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40%; color: #fff; }
-    .vs-rank-icon { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
-  </style>
-</head>
-<body onclick="resetIdleTimer()" onmousemove="resetIdleTimer()">
-
-  <button class="music-toggle-btn" onclick="toggleChillMusic()" id="musicBtn">🎵 Müzik: Açık</button>
-
-  <!-- ANA MENÜ -->
-  <div id="menuScreen" class="screen active">
-    <div class="menu-card">
-      <div>
-        <div class="user-stats-bar">
-          <span>⭐ Level: <strong id="userLevel">1</strong></span>
-          <span>🔥 Seri: <strong id="userStreak">1 Gün</strong></span>
-          <span>🪙 Coin: <strong id="userCoins">800</strong></span>
-        </div>
-
-        <div class="mascot-container" id="menuMascot" onclick="triggerMascotClick()"></div>
-
-        <h1 class="app-title">Sudo Battle</h1>
-        <p class="app-subtitle">Zekânı Konuştur, Rakibini Alt Et! ⚡</p>
-      </div>
-
-      <div class="menu-buttons-grid">
-        <button class="btn btn-play" onclick="openGameSettingsModal()">🎮 Klasik Oyna</button>
-        <button class="btn btn-blitz" onclick="startBlitzGame()">⚡ Blitz Modu (Süreli ⏱️)</button>
-        <button class="btn btn-ranked" onclick="openRankedLobby()">⚔️ Ranked 1v1 Düello</button>
-        <button class="btn btn-league" onclick="openLeagueModal()">🏆 Haftalık Ligler</button>
-        <button class="btn btn-daily" onclick="openDailyRewardsModal()">🎁 Günlük Ödül Takvimi</button>
-        <button class="btn btn-market" onclick="openShop()">🛒 Sudo Market</button>
-        <button class="btn btn-guide" onclick="startLiveGuide()">❓ Sudo Canlı Rehber</button>
-      </div>
-
-      <div class="promo-container">
-        <input type="text" id="promoInput" class="promo-input" placeholder="Promo Kod (800 veya 500)">
-        <button class="btn btn-promo" onclick="redeemPromoCode()">Kullan 🎁</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI -->
-  <div id="liveGuideOverlay" class="live-guide-overlay" onclick="nextLiveGuideStep()">
-    <div class="live-guide-wrapper" id="liveGuideWrapper">
-      <div class="live-mascot-box" id="liveGuideMascotAvatar"></div>
-      <div class="live-dialog-box">
-        <div class="live-dialog-title" id="liveGuideStepTitle">Sudo Rehberi (1/6)</div>
-        <div class="live-dialog-text" id="liveGuideStepText">Merhabalar patron!</div>
-        <div class="live-dialog-hint">Devam etmek için dokun 👆</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- KLASİK OYNA AYARLARI -->
-  <div id="gameSettingsModal" class="modal-overlay">
-    <div class="modal-card-small">
-      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">Oyun Ayarları ⚙️</h2>
-      <div class="setting-group">
-        <label class="setting-label">BOYUT SEÇ</label>
-        <div class="options-grid" id="sizeOptions">
-          <button class="option-btn active" onclick="setBoardSize(9, this)">9x9 (Klasik)</button>
-          <button class="option-btn" onclick="setBoardSize(6, this)">6x6 (Mini)</button>
-          <button class="option-btn" onclick="setBoardSize(12, this)">12x12 (Usta 🔥)</button>
-          <button class="option-btn" onclick="setBoardSize(16, this)">16x16 (Efsanevi ⚡)</button>
-        </div>
-      </div>
-      <div style="display: flex; gap: 8px; margin-top: 16px;">
-        <button class="btn btn-guide" onclick="closeGameSettingsModal()" style="flex:1;">İptal</button>
-        <button class="btn btn-primary" onclick="startConfiguredGame()" style="flex:2;">Başla 🚀</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RANKED LOBİ EKRANI -->
-  <div id="rankedLobbyScreen" class="screen">
-    <div class="full-page-card">
-      <div>
-        <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px;">Ranked 1v1 Düellosu ⚔️</h2>
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <title>Sudo Battle - Blitz & Ses Efektleri</title>
+      <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+      <style>
+        :root {
+          --card-bg: rgba(20, 20, 28, 0.95);
+          --primary-gradient: linear-gradient(135deg, #ff6b81 0%, #ff4757 100%);
+          --primary: #ff4757;
+          --secondary-gradient: linear-gradient(135deg, #5352ed 0%, #70a1ff 100%);
+          --accent-gradient: linear-gradient(135deg, #ffa502 0%, #ff7f50 100%);
+          --league-gradient: linear-gradient(135deg, #3742fa 0%, #5352ed 100%);
+          --blitz-gradient: linear-gradient(135deg, #ff4757 0%, #ffa502 100%);
+          --promo-gradient: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+          --text-main: #f1f2f6;
+          --text-muted: #a4b0be;
+          --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+          --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         
-        <div class="setting-group" style="text-align: center;">
-          <label class="setting-label">TAKMA ADINIZ</label>
-          <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:0.95rem; width:100%; padding:8px;">
-        </div>
+        body {
+          font-family: 'Quicksand', sans-serif;
+          background: radial-gradient(circle at center, #1e1e2f 0%, #0f0f17 100%);
+          min-height: 100vh;
+          color: var(--text-main);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 10px;
+        }
+        
+        .screen { width: 100%; max-width: 440px; display: none; flex-direction: column; gap: 12px; position: relative; }
+        .screen.active { display: flex; animation: fadeInScreen 0.3s ease-out; }
 
-        <div class="ranked-card-box" onclick="openAllRanksModal()">
-          <div class="rank-badge-sm" id="myRankIconBox"></div>
-          <div style="flex:1;">
-            <div style="font-size: 0.68rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ (Tümünü Gör 👆)</div>
-            <div id="myRankNameText" style="font-size: 1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
-            <div id="myRpText" style="font-size: 0.75rem; font-weight: 700; color: #fff;">0 RP</div>
-            <div class="progress-bar-container">
-              <div id="rpProgressBar" class="progress-bar"></div>
+        @keyframes fadeInScreen {
+          from { opacity: 0; transform: scale(0.98); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        .menu-card, .full-page-card {
+          background: var(--card-bg);
+          backdrop-filter: blur(25px);
+          border-radius: 28px;
+          padding: 24px 18px;
+          box-shadow: var(--shadow);
+          text-align: center;
+          border: var(--glass-border);
+          position: relative;
+          min-height: 88vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .app-title {
+          font-size: 2.4rem; font-weight: 800;
+          background: var(--primary-gradient);
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+          letter-spacing: 0.5px;
+        }
+        .app-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; }
+
+        .user-stats-bar {
+          display: flex; justify-content: space-around; background: rgba(255,255,255,0.05); padding: 12px 10px;
+          border-radius: 18px; margin-bottom: 14px; font-weight: 800; font-size: 0.82rem; color: var(--primary);
+          border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .menu-buttons-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+
+        .btn {
+          border: none; padding: 15px 20px; border-radius: 18px; font-weight: 800; font-size: 0.98rem; cursor: pointer;
+          transition: transform 0.1s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; font-family: 'Quicksand', sans-serif;
+        }
+        .btn:active { transform: scale(0.97); }
+        
+        .btn-play { background: var(--primary-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.4); font-size: 1.05rem; }
+        .btn-blitz { background: var(--blitz-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 165, 2, 0.4); font-size: 1.05rem; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-ranked { background: linear-gradient(135deg, #ff4757 0%, #c51162 100%); color: white; box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5); font-size: 1.05rem; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-league { background: var(--league-gradient); color: white; box-shadow: 0 8px 25px rgba(55, 66, 250, 0.35); }
+        .btn-daily { background: var(--accent-gradient); color: white; box-shadow: 0 8px 25px rgba(255, 165, 2, 0.35); }
+        .btn-market { background: var(--secondary-gradient); color: white; box-shadow: 0 8px 25px rgba(83, 82, 237, 0.3); }
+        .btn-guide { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: var(--text-muted); }
+
+        .music-toggle-btn {
+          position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px;
+          padding: 6px 12px; font-size: 0.75rem; font-weight: 800; color: var(--primary); cursor: pointer; z-index: 10;
+        }
+
+        .promo-container {
+          display: flex; gap: 8px; margin-top: 10px; background: rgba(255,255,255,0.04); padding: 8px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .promo-input {
+          flex: 1; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 12px;
+          font-family: 'Quicksand', sans-serif; font-weight: 700; color: var(--text-main); font-size: 0.85rem; outline: none;
+        }
+        .promo-input:focus { border-color: var(--primary); }
+        .btn-promo { background: var(--promo-gradient); color: white; width: auto; padding: 10px 16px; border-radius: 12px; font-size: 0.85rem; }
+
+        .league-header { background: var(--league-gradient); color: white; padding: 14px; border-radius: 16px; margin-bottom: 12px; font-weight: 800; font-size: 1rem; }
+        .leaderboard-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .leaderboard-item {
+          display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 12px 16px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .leaderboard-item.user-row { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); }
+
+        .match-history-container {
+          flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 10px 0; max-height: 180px; padding-right: 2px;
+        }
+        .match-history-item {
+          display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 10px 14px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .match-win { border-left: 4px solid #2ed573; color: #2ed573; }
+        .match-lose { border-left: 4px solid #ff4757; color: #ff4757; }
+
+        .daily-reward-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; overflow-y: auto; padding: 4px; margin-bottom: 12px; }
+        .reward-day-box {
+          background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 10px 4px; text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .reward-day-box.claimed { background: rgba(46,213,115,0.1); border-color: #2ed573; color: #2ed573; opacity: 0.8; }
+        .reward-day-box.active-day { background: rgba(255,71,87,0.15); border-color: var(--primary); color: var(--primary); box-shadow: 0 4px 15px rgba(255,71,87,0.25); }
+
+        .market-tabs { display: flex; gap: 4px; margin-bottom: 12px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 16px; }
+        .market-tab { flex: 1; padding: 10px 6px; border: none; background: transparent; font-weight: 700; font-size: 0.75rem; color: var(--text-muted); border-radius: 12px; cursor: pointer; font-family: 'Quicksand', sans-serif; transition: all 0.2s; white-space: nowrap; }
+        .market-tab.active { background: rgba(255,255,255,0.15); color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        .market-section { display: none; flex: 1; overflow-y: auto; padding-right: 2px; }
+        .market-section.active { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-content: start; }
+
+        .shop-item {
+          background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .shop-item.equipped { border-color: var(--primary); background: rgba(255,71,87,0.15); }
+        .shop-item.purchased { border-color: #70a1ff; background: rgba(112,161,255,0.1); }
+
+        .game-header {
+          display: flex; justify-content: space-between; align-items: center;
+          background: var(--card-bg); backdrop-filter: blur(10px); padding: 10px 16px; border-radius: 20px; box-shadow: var(--shadow); border: var(--glass-border);
+        }
+        .icon-btn {
+          background: rgba(255, 71, 87, 0.15); border: none; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; color: var(--primary);
+        }
+        .game-info { text-align: center; }
+        .game-title { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .game-timer { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+
+        .sudoku-board-container {
+          width: 100%; aspect-ratio: 1; background: var(--card-bg); border: 3px solid rgba(255,255,255,0.2); border-radius: 24px; overflow: hidden; display: grid; gap: 1px; box-shadow: var(--shadow); position: relative;
+        }
+        
+        .cell {
+          background: var(--cell-bg); display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; position: relative; transition: background 0.15s; line-height: 1;
+        }
+        .cell.fixed { font-weight: 800; }
+        .cell.error { background: #ff4757 !important; color: white !important; animation: shake 0.2s ease-in-out; }
+
+        .notes-grid { display: grid; width: 100%; height: 100%; padding: 1px; pointer-events: none; }
+        .note-num { font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: center; line-height: 1; }
+
+        .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .tool-btn {
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); cursor: pointer; font-family: 'Quicksand', sans-serif;
+        }
+        .tool-btn.active { background: rgba(255,71,87,0.2); border-color: var(--primary); color: var(--primary); }
+        .tool-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .numpad { display: grid; gap: 4px; }
+        .num-btn {
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-weight: 800; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Quicksand', sans-serif; transition: all 0.15s;
+        }
+        .num-btn:active { transform: scale(0.95); background: rgba(255,71,87,0.2); color: var(--primary); }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20%, 60% { transform: translateX(-4px); }
+          40%, 80% { transform: translateX(4px); }
+        }
+
+        .side-guide-bar {
+          display: flex; align-items: center; gap: 12px; padding: 6px 4px; width: 100%; z-index: 50; position: relative;
+        }
+
+        .guide-bubble {
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,71,87,0.4); padding: 10px 14px; border-radius: 16px; font-weight: 700; font-size: 0.82rem; color: var(--text-main); line-height: 1.3; text-align: left; flex: 1; position: relative;
+        }
+
+        .guide-mascot-wrapper {
+          width: 58px; height: 58px; flex-shrink: 0; position: relative; z-index: 100;
+          animation: sudoAliveBreathing 2.5s ease-in-out infinite alternate;
+          cursor: pointer;
+        }
+
+        .rolling-motion {
+          animation: sudoRollToTarget 0.85s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards !important;
+          z-index: 9999;
+        }
+        @keyframes sudoRollToTarget {
+          0% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+          50% { transform: translate(var(--dx), var(--dy)) rotate(540deg) scale(1.25); }
+          100% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(1); }
+        }
+
+        .guide-mascot-avatar { width: 100%; height: 100%; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)); }
+
+        @keyframes sudoAliveBreathing {
+          0% { transform: translateY(0px) scale(1) rotate(0deg); }
+          50% { transform: translateY(-6px) scale(1.03) rotate(1deg); }
+          100% { transform: translateY(-10px) scale(1.05) rotate(-1deg); }
+        }
+
+        .mascot-dance { animation: sudoDanceParty 0.4s ease-in-out infinite alternate !important; }
+        @keyframes sudoDanceParty {
+          0% { transform: translateY(0) scale(1) rotate(-12deg); }
+          100% { transform: translateY(-22px) scale(1.22) rotate(12deg); }
+        }
+
+        .mascot-thinking { animation: sudoThinkingTilt 0.8s ease-in-out infinite alternate !important; }
+        @keyframes sudoThinkingTilt {
+          0% { transform: rotate(-8deg) scale(1); }
+          100% { transform: rotate(8deg) scale(1.03); }
+        }
+
+        .modal-overlay {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 600; padding: 20px;
+        }
+        .modal-card-small {
+          background: var(--card-bg); border: var(--glass-border); padding: 24px 20px; border-radius: 28px; text-align: center; max-width: 360px; width: 100%;
+          box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        }
+
+        .all-ranks-container {
+          max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 12px 0; padding-right: 4px; text-align: left;
+        }
+        .rank-row-item {
+          display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 10px 14px; border-radius: 14px;
+        }
+        .rank-row-icon { width: 44px; height: 44px; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .rank-row-icon svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+        .live-guide-overlay {
+          position: fixed; inset: 0; background: transparent; display: none; z-index: 900; pointer-events: auto;
+        }
+        .live-guide-wrapper {
+          position: absolute; display: flex; align-items: center; gap: 12px; width: 340px; max-width: 90vw; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          cursor: pointer;
+        }
+        .live-mascot-box {
+          width: 70px; height: 70px; flex-shrink: 0; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+          animation: sudoAliveBreathing 2s ease-in-out infinite alternate;
+        }
+        .live-dialog-box {
+          background: rgba(20, 20, 28, 0.98); border: 2px solid var(--primary); padding: 14px 16px; border-radius: 20px; flex: 1; text-align: left;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: relative;
+        }
+        .live-dialog-title { font-size: 0.78rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .live-dialog-text { font-size: 0.84rem; font-weight: 700; color: var(--text-main); line-height: 1.4; }
+        .live-dialog-hint { font-size: 0.65rem; color: var(--text-muted); margin-top: 6px; text-align: right; font-weight: 600; }
+
+        .duolingo-reward-popup {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500;
+        }
+        .duolingo-card {
+          background: var(--card-bg); border: var(--glass-border); padding: 32px 24px; border-radius: 32px; text-align: center; max-width: 320px; width: 90%;
+          box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(120px) scale(0.4); opacity: 0;
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        }
+        .duolingo-reward-popup.active .duolingo-card { transform: translateY(0) scale(1); opacity: 1; }
+        
+        .duolingo-mascot-flying {
+          width: 120px; height: 120px; margin: 0 auto 12px; animation: duoJumpBounce 0.4s infinite alternate ease-in-out;
+        }
+        @keyframes duoJumpBounce {
+          0% { transform: translateY(0) scale(1) rotate(-10deg); }
+          100% { transform: translateY(-20px) scale(1.18) rotate(10deg); }
+        }
+
+        .mascot-container {
+          width: 80px; height: 80px; margin: 0 auto 8px; cursor: pointer;
+          animation: sudoAliveBreathing 2.5s ease-in-out infinite alternate;
+        }
+
+        .speech-bubble {
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 16px; border-radius: 18px; font-weight: 700; color: var(--text-main); font-size: 0.88rem; display: block; margin-bottom: 12px; position: relative; line-height: 1.35; text-align: center;
+        }
+
+        .setting-group { margin-bottom: 10px; text-align: left; }
+        .setting-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; display: block; letter-spacing: 0.5px; }
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .option-btn {
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; color: var(--text-main); cursor: pointer; font-family: 'Quicksand', sans-serif; text-align: center;
+        }
+        .option-btn.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 4px 14px rgba(255, 71, 87, 0.3); }
+
+        .ranked-card-box {
+          background: linear-gradient(135deg, rgba(26, 26, 34, 0.95), rgba(18, 18, 24, 0.98));
+          border: 1px solid rgba(255, 71, 87, 0.3);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+          border-radius: 20px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer; transition: transform 0.1s;
+        }
+        .ranked-card-box:active { transform: scale(0.98); }
+        .rank-badge-sm { width: 60px; height: 60px; flex-shrink: 0; filter: drop-shadow(0 0 12px rgba(255,71,87,0.6)); }
+        .rank-badge-sm svg, .vs-rank-icon svg { width: 100%; height: 100%; overflow: visible; display: block; }
+
+        .progress-bar-container { background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; width: 100%; margin-top: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
+        .progress-bar { background: var(--primary-gradient); height: 100%; width: 0%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--primary); }
+        
+        .vs-match-box {
+          display: flex; justify-content: space-around; align-items: center; margin: 15px 0;
+          background: linear-gradient(135deg, #1e1e24, #121216); padding: 16px; border-radius: 18px;
+          border: 1px solid rgba(255, 71, 87, 0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        .vs-player-col { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 40%; color: #fff; }
+        .vs-rank-icon { width: 55px; height: 55px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+      </style>
+    </head>
+    <body onclick="resetIdleTimer()" onmousemove="resetIdleTimer()">
+
+      <button class="music-toggle-btn" onclick="toggleChillMusic()" id="musicBtn">🎵 Müzik: Açık</button>
+
+      <!-- ANA MENÜ -->
+      <div id="menuScreen" class="screen active">
+        <div class="menu-card">
+          <div>
+            <div class="user-stats-bar">
+              <span>⭐ Level: <strong id="userLevel">1</strong></span>
+              <span>🔥 Seri: <strong id="userStreak">1 Gün</strong></span>
+              <span>🪙 Coin: <strong id="userCoins">800</strong></span>
+            </div>
+
+            <div class="mascot-container" id="menuMascot" onclick="triggerMascotClick()"></div>
+
+            <h1 class="app-title">Sudo Battle</h1>
+            <p class="app-subtitle">Zekânı Konuştur, Rakibini Alt Et! ⚡</p>
+          </div>
+
+          <div class="menu-buttons-grid">
+            <button class="btn btn-play" onclick="openGameSettingsModal()">🎮 Klasik Oyna</button>
+            <button class="btn btn-blitz" onclick="startBlitzGame()">⚡ Blitz Modu (Süreli ⏱️)</button>
+            <button class="btn btn-ranked" onclick="openRankedLobby()">⚔️ Ranked 1v1 Düello</button>
+            <button class="btn btn-league" onclick="openLeagueModal()">🏆 Haftalık Ligler</button>
+            <button class="btn btn-daily" onclick="openDailyRewardsModal()">🎁 Günlük Ödül Takvimi</button>
+            <button class="btn btn-market" onclick="openShop()">🛒 Sudo Market</button>
+            <button class="btn btn-guide" onclick="startLiveGuide()">❓ Sudo Canlı Rehber</button>
+          </div>
+
+          <div class="promo-container">
+            <input type="text" id="promoInput" class="promo-input" placeholder="Promo Kod (800 veya 500)">
+            <button class="btn btn-promo" onclick="redeemPromoCode()">Kullan 🎁</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CANLI REHBER İNTERAKTİF DIALOG EKRANI -->
+      <div id="liveGuideOverlay" class="live-guide-overlay" onclick="nextLiveGuideStep()">
+        <div class="live-guide-wrapper" id="liveGuideWrapper">
+          <div class="live-mascot-box" id="liveGuideMascotAvatar"></div>
+          <div class="live-dialog-box">
+            <div class="live-dialog-title" id="liveGuideStepTitle">Sudo Rehberi (1/6)</div>
+            <div class="live-dialog-text" id="liveGuideStepText">Merhabalar patron!</div>
+            <div class="live-dialog-hint">Devam etmek için dokun 👆</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KLASİK OYNA AYARLARI -->
+      <div id="gameSettingsModal" class="modal-overlay">
+        <div class="modal-card-small">
+          <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 14px;">Oyun Ayarları ⚙️</h2>
+          <div class="setting-group">
+            <label class="setting-label">BOYUT SEÇ</label>
+            <div class="options-grid" id="sizeOptions">
+              <button class="option-btn active" onclick="setBoardSize(9, this)">9x9 (Klasik)</button>
+              <button class="option-btn" onclick="setBoardSize(6, this)">6x6 (Mini)</button>
+              <button class="option-btn" onclick="setBoardSize(12, this)">12x12 (Usta 🔥)</button>
+              <button class="option-btn" onclick="setBoardSize(16, this)">16x16 (Efsanevi ⚡)</button>
             </div>
           </div>
-        </div>
-
-        <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.85rem; margin-top: 6px;"></p>
-
-        <div style="text-align: left; margin-top: 8px;">
-          <label class="setting-label">📜 SON MAÇ GEÇMİŞİ</label>
-          <div class="match-history-container" id="matchHistoryList">
-            <div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 10px;">Henüz ranked maç yapılmadı.</div>
+          <div style="display: flex; gap: 8px; margin-top: 16px;">
+            <button class="btn btn-guide" onclick="closeGameSettingsModal()" style="flex:1;">İptal</button>
+            <button class="btn btn-primary" onclick="startConfiguredGame()" style="flex:2;">Başla 🚀</button>
           </div>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <button class="btn btn-guide" onclick="showMenu()" style="flex: 1; padding: 14px 10px; font-size: 0.9rem;">Geri</button>
-        <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex: 2.5; padding: 15px;">Rakip Ara 🚀</button>
-      </div>
-    </div>
-  </div>
+      <!-- RANKED LOBİ EKRANI -->
+      <div id="rankedLobbyScreen" class="screen">
+        <div class="full-page-card">
+          <div>
+            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px;">Ranked 1v1 Düellosu ⚔️</h2>
+            
+            <div class="setting-group" style="text-align: center;">
+              <label class="setting-label">TAKMA ADINIZ</label>
+              <input type="text" id="rankedUsernameInput" class="promo-input" placeholder="Takma adınızı girin" maxlength="15" style="text-align:center; font-size:0.95rem; width:100%; padding:8px;">
+            </div>
 
-  <!-- TÜM RANKLARI GÖSTEREN MODAL -->
-  <div id="allRanksModal" class="modal-overlay">
-    <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 24px;">
-      <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Tüm Ligler ve Ranklar 🏆</h2>
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">RP toplayarak tırmanabileceğin 3D parıldayan ligler:</p>
-      
-      <div class="all-ranks-container" id="allRanksListContainer"></div>
+            <div class="ranked-card-box" onclick="openAllRanksModal()">
+              <div class="rank-badge-sm" id="myRankIconBox"></div>
+              <div style="flex:1;">
+                <div style="font-size: 0.68rem; font-weight: 800; color: #a4b0be;">MEVCUT RANKINIZ (Tümünü Gör 👆)</div>
+                <div id="myRankNameText" style="font-size: 1rem; font-weight: 800; color: #ff4757;">BRONZ</div>
+                <div id="myRpText" style="font-size: 0.75rem; font-weight: 700; color: #fff;">0 RP</div>
+                <div class="progress-bar-container">
+                  <div id="rpProgressBar" class="progress-bar"></div>
+                </div>
+              </div>
+            </div>
 
-      <button class="btn btn-primary" onclick="closeAllRanksModal()" style="margin-top: 10px;">Kapat 👍</button>
-    </div>
-  </div>
+            <p id="rankedStatusText" style="font-weight: 700; color: var(--primary); font-size: 0.85rem; margin-top: 6px;"></p>
 
-  <!-- LİG EKRANI -->
-  <div id="leagueScreen" class="screen">
-    <div class="full-page-card">
-      <div>
-        <div class="league-header">🛡️ Bronz Lig - 3. Gün</div>
-        <div class="leaderboard-list" id="leaderboardContainer"></div>
-      </div>
-      <button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button>
-    </div>
-  </div>
+            <div style="text-align: left; margin-top: 8px;">
+              <label class="setting-label">📜 SON MAÇ GEÇMİŞİ</label>
+              <div class="match-history-container" id="matchHistoryList">
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 10px;">Henüz ranked maç yapılmadı.</div>
+              </div>
+            </div>
+          </div>
 
-  <!-- GÜNLÜK ÖDÜL EKRANI -->
-  <div id="dailyRewardsScreen" class="screen">
-    <div class="full-page-card">
-      <div>
-        <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">Günlük Ödüller 🎁</h2>
-        <div class="daily-reward-grid" id="dailyRewardGridContainer"></div>
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button class="btn btn-guide" onclick="showMenu()">Geri</button>
-        <button class="btn btn-primary" onclick="claimDailyReward()" id="claimRewardBtn" style="flex:2;">Bugünkü Ödülü Al ✨</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUDO MARKET EKRANI -->
-  <div id="shopScreen" class="screen">
-    <div class="full-page-card" style="justify-content: flex-start; gap: 12px;">
-      <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Sudo Market 🛒</h2>
-      
-      <div class="market-tabs">
-        <button class="market-tab active" onclick="switchMarketTab('skins', this)">🎨 Kostüm</button>
-        <button class="market-tab" onclick="switchMarketTab('accessories', this)">🎩 Aksesuar</button>
-        <button class="market-tab" onclick="switchMarketTab('boards', this)">🧩 Tahta</button>
-        <button class="market-tab" onclick="switchMarketTab('boosters', this)">💡 Güçler</button>
-      </div>
-
-      <div id="market-skins" class="market-section active">
-        <div class="shop-item equipped" id="skin-default" onclick="buyOrEquipSkin('default', '#ff4757', 0)"><div style="font-size:1.6rem;">🌸</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Klasik</div></div>
-        <div class="shop-item" id="skin-mint" onclick="buyOrEquipSkin('mint', '#2ed573', 120)"><div style="font-size:1.6rem;">🍃</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Nane</div></div>
-        <div class="shop-item" id="skin-royal" onclick="buyOrEquipSkin('royal', '#5352ed', 200)"><div style="font-size:1.6rem;">👑</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Kraliyet</div></div>
-      </div>
-
-      <div id="market-accessories" class="market-section">
-        <div class="shop-item" id="acc-none" onclick="buyOrEquipAcc('none', 0)"><div style="font-size:1.5rem;">🚫</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Yok</div></div>
-        <div class="shop-item" id="acc-crown" onclick="buyOrEquipAcc('crown', 250)"><div style="font-size:1.5rem;">👑</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Altın Taç</div><div style="font-size:0.65rem;color:var(--primary);">250 Coin</div></div>
-        <div class="shop-item" id="acc-glasses" onclick="buyOrEquipAcc('glasses', 180)"><div style="font-size:1.5rem;">🕶️</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Gözlük</div><div style="font-size:0.65rem;color:var(--primary);">180 Coin</div></div>
-        <div class="shop-item" id="acc-halo" onclick="buyOrEquipAcc('halo', 300)"><div style="font-size:1.5rem;">😇</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Melek Halesi</div><div style="font-size:0.65rem;color:var(--primary);">300 Coin</div></div>
-        <div class="shop-item" id="acc-bow" onclick="buyOrEquipAcc('bow', 150)"><div style="font-size:1.5rem;">🎀</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Papyon</div><div style="font-size:0.65rem;color:var(--primary);">150 Coin</div></div>
-        <div class="shop-item" id="acc-headphones" onclick="buyOrEquipAcc('headphones', 220)"><div style="font-size:1.5rem;">🎧</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Kulaklık</div><div style="font-size:0.65rem;color:var(--primary);">220 Coin</div></div>
-        <div class="shop-item" id="acc-cat" onclick="buyOrEquipAcc('cat', 280)"><div style="font-size:1.5rem;">🐱</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Kedi Kulağı</div><div style="font-size:0.65rem;color:var(--primary);">280 Coin</div></div>
-        <div class="shop-item" id="acc-chef" onclick="buyOrEquipAcc('chef', 200)"><div style="font-size:1.5rem;">👨‍🍳</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Şef Şapkası</div><div style="font-size:0.65rem;color:var(--primary);">200 Coin</div></div>
-      </div>
-
-      <div id="market-boards" class="market-section">
-        <div class="shop-item equipped" id="boardtheme-classic" onclick="buyOrEquipBoardTheme('classic', 0)"><div style="font-size:1.5rem;">⬜</div><div style="font-size:0.78rem; margin-top:4px;">Klasik</div></div>
-        <div class="shop-item" id="boardtheme-midnight" onclick="buyOrEquipBoardTheme('midnight', 1500)"><div style="font-size:1.5rem;">🌙</div><div style="font-size:0.78rem; margin-top:4px;">Gece (1.5K)</div></div>
-        <div class="shop-item" id="boardtheme-forest" onclick="buyOrEquipBoardTheme('forest', 2500)"><div style="font-size:1.5rem;">🌲</div><div style="font-size:0.78rem; margin-top:4px;">Orman (2.5K)</div></div>
-        <div class="shop-item" id="boardtheme-royalgold" onclick="buyOrEquipBoardTheme('royalgold', 4000)"><div style="font-size:1.5rem;">👑</div><div style="font-size:0.78rem; margin-top:4px;">Altın (4K)</div></div>
-      </div>
-
-      <div id="market-boosters" class="market-section" style="grid-template-columns: 1fr;">
-        <div style="background: rgba(255,71,87,0.08); border: 1px dashed var(--primary); border-radius: 16px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div><div style="font-weight: 800; font-size: 0.85rem;">+3 İpucu Paketi 💡</div></div>
-          <button class="btn btn-accent" style="width: auto; padding: 8px 14px; font-size: 0.8rem;" onclick="buyHints()">40 Coin 🪙</button>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="btn btn-guide" onclick="showMenu()" style="flex: 1; padding: 14px 10px; font-size: 0.9rem;">Geri</button>
+            <button class="btn btn-ranked" id="rankedSearchBtn" onclick="startRankedMatchmaking()" style="flex: 2.5; padding: 15px;">Rakip Ara 🚀</button>
+          </div>
         </div>
       </div>
 
-      <div style="margin-top: auto;"><button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button></div>
-    </div>
-  </div>
+      <!-- TÜM RANKLARI GÖSTEREN MODAL -->
+      <div id="allRanksModal" class="modal-overlay">
+        <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 24px;">
+          <h2 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Tüm Ligler ve Ranklar 🏆</h2>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">RP toplayarak tırmanabileceğin 3D parıldayan ligler:</p>
+          
+          <div class="all-ranks-container" id="allRanksListContainer"></div>
 
-  <!-- OYUN EKRANI -->
-  <div id="gameScreen" class="screen">
-    <div class="game-header">
-      <button class="icon-btn" onclick="handleExitMatch()">🏠</button>
-      <div class="game-info">
-        <div id="boardTitle" class="game-title">9x9 - KOLAY</div>
-        <div id="timer" class="game-timer">00:00</div>
+          <button class="btn btn-primary" onclick="closeAllRanksModal()" style="margin-top: 10px;">Kapat 👍</button>
+        </div>
       </div>
-      <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);" id="mistakeCounter">Hata: 0</div>
-    </div>
 
-    <div id="rankedVersusInfoBox" class="vs-match-box" style="display:none; margin: 4px 0;">
-      <div class="vs-player-col">
-        <strong id="vsMyName" style="font-size:0.8rem;">Sen</strong>
-        <div class="vs-rank-icon" id="vsMyRankSvg"></div>
+      <!-- LİG EKRANI -->
+      <div id="leagueScreen" class="screen">
+        <div class="full-page-card">
+          <div>
+            <div class="league-header">🛡️ Bronz Lig - 3. Gün</div>
+            <div class="leaderboard-list" id="leaderboardContainer"></div>
+          </div>
+          <button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button>
+        </div>
       </div>
-      <div style="font-weight:800; color:#ff4757; font-size:1.2rem; text-shadow: 0 0 8px rgba(255,71,87,0.5);">VS</div>
-      <div class="vs-player-col">
-        <strong id="vsOppName" style="font-size:0.8rem;">Rakip</strong>
-        <div class="vs-rank-icon" id="vsOppRankSvg"></div>
+
+      <!-- GÜNLÜK ÖDÜL EKRANI -->
+      <div id="dailyRewardsScreen" class="screen">
+        <div class="full-page-card">
+          <div>
+            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main);">Günlük Ödüller 🎁</h2>
+            <div class="daily-reward-grid" id="dailyRewardGridContainer"></div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn btn-guide" onclick="showMenu()">Geri</button>
+            <button class="btn btn-primary" onclick="claimDailyReward()" id="claimRewardBtn" style="flex:2;">Bugünkü Ödülü Al ✨</button>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="side-guide-bar">
-      <div class="guide-mascot-wrapper" id="guideMascotWrapper" onclick="triggerMascotClick()">
-        <div class="guide-mascot-avatar" id="mascotEmotionAvatar"></div>
+      <!-- SUDO MARKET EKRANI -->
+      <div id="shopScreen" class="screen">
+        <div class="full-page-card" style="justify-content: flex-start; gap: 12px;">
+          <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Sudo Market 🛒</h2>
+          
+          <div class="market-tabs">
+            <button class="market-tab active" onclick="switchMarketTab('skins', this)">🎨 Kostüm</button>
+            <button class="market-tab" onclick="switchMarketTab('accessories', this)">🎩 Aksesuar</button>
+            <button class="market-tab" onclick="switchMarketTab('boards', this)">🧩 Tahta</button>
+            <button class="market-tab" onclick="switchMarketTab('boosters', this)">💡 Güçler</button>
+          </div>
+
+          <div id="market-skins" class="market-section active">
+            <div class="shop-item equipped" id="skin-default" onclick="buyOrEquipSkin('default', '#ff4757', 0)"><div style="font-size:1.6rem;">🌸</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Klasik</div></div>
+            <div class="shop-item" id="skin-mint" onclick="buyOrEquipSkin('mint', '#2ed573', 120)"><div style="font-size:1.6rem;">🍃</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Nane</div></div>
+            <div class="shop-item" id="skin-royal" onclick="buyOrEquipSkin('royal', '#5352ed', 200)"><div style="font-size:1.6rem;">👑</div><div style="font-weight:700;font-size:0.8rem; margin-top:4px;">Kraliyet</div></div>
+          </div>
+
+          <div id="market-accessories" class="market-section">
+            <div class="shop-item" id="acc-none" onclick="buyOrEquipAcc('none', 0)"><div style="font-size:1.5rem;">🚫</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Yok</div></div>
+            <div class="shop-item" id="acc-crown" onclick="buyOrEquipAcc('crown', 250)"><div style="font-size:1.5rem;">👑</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Altın Taç</div><div style="font-size:0.65rem;color:var(--primary);">250 Coin</div></div>
+            <div class="shop-item" id="acc-glasses" onclick="buyOrEquipAcc('glasses', 180)"><div style="font-size:1.5rem;">🕶️</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Gözlük</div><div style="font-size:0.65rem;color:var(--primary);">180 Coin</div></div>
+            <div class="shop-item" id="acc-halo" onclick="buyOrEquipAcc('halo', 300)"><div style="font-size:1.5rem;">😇</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Melek Halesi</div><div style="font-size:0.65rem;color:var(--primary);">300 Coin</div></div>
+            <div class="shop-item" id="acc-bow" onclick="buyOrEquipAcc('bow', 150)"><div style="font-size:1.5rem;">🎀</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Papyon</div><div style="font-size:0.65rem;color:var(--primary);">150 Coin</div></div>
+            <div class="shop-item" id="acc-headphones" onclick="buyOrEquipAcc('headphones', 220)"><div style="font-size:1.5rem;">🎧</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Kulaklık</div><div style="font-size:0.65rem;color:var(--primary);">220 Coin</div></div>
+            <div class="shop-item" id="acc-cat" onclick="buyOrEquipAcc('cat', 280)"><div style="font-size:1.5rem;">🐱</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Kedi Kulağı</div><div style="font-size:0.65rem;color:var(--primary);">280 Coin</div></div>
+            <div class="shop-item" id="acc-chef" onclick="buyOrEquipAcc('chef', 200)"><div style="font-size:1.5rem;">👨‍🍳</div><div style="font-size:0.75rem;font-weight:700; margin-top:4px;">Şef Şapkası</div><div style="font-size:0.65rem;color:var(--primary);">200 Coin</div></div>
+          </div>
+
+          <div id="market-boards" class="market-section">
+            <div class="shop-item equipped" id="boardtheme-classic" onclick="buyOrEquipBoardTheme('classic', 0)"><div style="font-size:1.5rem;">⬜</div><div style="font-size:0.78rem; margin-top:4px;">Klasik</div></div>
+            <div class="shop-item" id="boardtheme-midnight" onclick="buyOrEquipBoardTheme('midnight', 1500)"><div style="font-size:1.5rem;">🌙</div><div style="font-size:0.78rem; margin-top:4px;">Gece (1.5K)</div></div>
+            <div class="shop-item" id="boardtheme-forest" onclick="buyOrEquipBoardTheme('forest', 2500)"><div style="font-size:1.5rem;">🌲</div><div style="font-size:0.78rem; margin-top:4px;">Orman (2.5K)</div></div>
+            <div class="shop-item" id="boardtheme-royalgold" onclick="buyOrEquipBoardTheme('royalgold', 4000)"><div style="font-size:1.5rem;">👑</div><div style="font-size:0.78rem; margin-top:4px;">Altın (4K)</div></div>
+          </div>
+
+          <div id="market-boosters" class="market-section" style="grid-template-columns: 1fr;">
+            <div style="background: rgba(255,71,87,0.08); border: 1px dashed var(--primary); border-radius: 16px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+              <div><div style="font-weight: 800; font-size: 0.85rem;">+3 İpucu Paketi 💡</div></div>
+              <button class="btn btn-accent" style="width: auto; padding: 8px 14px; font-size: 0.8rem;" onclick="buyHints()">40 Coin 🪙</button>
+            </div>
+          </div>
+
+          <div style="margin-top: auto;"><button class="btn btn-primary" onclick="showMenu()">Ana Sayfaya Dön</button></div>
+        </div>
       </div>
-      <div class="guide-bubble" id="mascotEmotionText">Harika gidiyorsun! ✨</div>
-    </div>
 
-    <div style="position: relative;">
-      <div id="board" class="sudoku-board-container"></div>
-    </div>
+      <!-- OYUN EKRANI -->
+      <div id="gameScreen" class="screen">
+        <div class="game-header">
+          <button class="icon-btn" onclick="handleExitMatch()">🏠</button>
+          <div class="game-info">
+            <div id="boardTitle" class="game-title">9x9 - KOLAY</div>
+            <div id="timer" class="game-timer">00:00</div>
+          </div>
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);" id="mistakeCounter">Hata: 0</div>
+        </div>
 
-    <div class="tools-bar">
-      <button class="tool-btn" onclick="undo()"><span>↩️</span> Geri Al</button>
-      <button class="tool-btn" onclick="erase()"><span>🧹</span> Sil</button>
-      <button id="notesBtn" class="tool-btn" onclick="toggleNotes()"><span>✏️</span> Notlar</button>
-      <button class="tool-btn" id="hintBtn" onclick="getHint()"><span>💡</span> İpucu (3)</button>
-    </div>
+        <div id="rankedVersusInfoBox" class="vs-match-box" style="display:none; margin: 4px 0;">
+          <div class="vs-player-col">
+            <strong id="vsMyName" style="font-size:0.8rem;"></strong>
+            <div class="vs-rank-icon" id="vsMyRankSvg"></div>
+          </div>
+          <div style="font-weight:800; color:#ff4757; font-size:1.2rem; text-shadow: 0 0 8px rgba(255,71,87,0.5);">VS</div>
+          <div class="vs-player-col">
+            <strong id="vsOppName" style="font-size:0.8rem;">Rakip</strong>
+            <div class="vs-rank-icon" id="vsOppRankSvg"></div>
+          </div>
+        </div>
 
-    <div class="numpad" id="numpadContainer"></div>
-  </div>
+        <div class="side-guide-bar">
+          <div class="guide-mascot-wrapper" id="guideMascotWrapper" onclick="triggerMascotClick()">
+            <div class="guide-mascot-avatar" id="mascotEmotionAvatar"></div>
+          </div>
+          <div class="guide-bubble" id="mascotEmotionText">Harika gidiyorsun! ✨</div>
+        </div>
 
-  <div id="duolingoRewardModal" class="duolingo-reward-popup">
-    <div class="duolingo-card">
-      <div class="duolingo-mascot-flying" id="duoFlyingMascotContainer"></div>
-      <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 6px;">Harika Seri! 🎉</h3>
-      <div class="speech-bubble" id="duoRewardMessage" style="font-size: 0.82rem; margin-bottom: 16px;">Sana bir hediye verdim: +1 İpucu! 🎁</div>
-      <button class="btn btn-primary" onclick="closeDuolingoRewardModal()">Harika, Devam Et! ✨</button>
-    </div>
-  </div>
+        <div style="position: relative;">
+          <div id="board" class="sudoku-board-container"></div>
+        </div>
 
-  <div id="appAlertModal" class="modal-overlay" style="display:none;">
-    <div class="menu-card" style="min-height: auto; max-width: 340px; width: 100%; padding: 24px;">
-      <div class="mascot-container" id="alertMascot" style="width: 75px; height: 75px; margin-bottom: 6px;"></div>
-      <div class="speech-bubble" id="alertMessageText" style="margin-bottom: 16px;">Mesaj içeriği</div>
-      <button class="btn btn-primary" onclick="closeAppAlert()">Tamam 👍</button>
-    </div>
-  </div>
+        <div class="tools-bar">
+          <button class="tool-btn" onclick="undo()"><span>↩️</span> Geri Al</button>
+          <button class="tool-btn" onclick="erase()"><span>🧹</span> Sil</button>
+          <button id="notesBtn" class="tool-btn" onclick="toggleNotes()"><span>✏️</span> Notlar</button>
+          <button class="tool-btn" id="hintBtn" onclick="getHint()"><span>💡</span> İpucu (3)</button>
+        </div>
 
-  <div id="winModal" class="modal-overlay" style="display:none;">
-    <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 28px;">
-      <div class="mascot-container" id="winMascot" style="width: 85px; height: 85px; margin-bottom: 6px;"></div>
-      <div class="speech-bubble">Muhteşemsin! 🎉</div>
-      <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Bulmaca Tamamlandı!</h2>
-      <div style="background: rgba(255,71,87,0.1); padding: 12px; border-radius: 16px; margin: 12px 0; font-weight: 800; color: var(--primary);" id="winStatsText">Süre: 00:00</div>
-      <button class="btn btn-primary" onclick="showMenu()">🏠 Ana Sayfaya Dön</button>
-    </div>
-  </div>
+        <div class="numpad" id="numpadContainer"></div>
+      </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
+      <div id="duolingoRewardModal" class="duolingo-reward-popup">
+        <div class="duolingo-card">
+          <div class="duolingo-mascot-flying" id="duoFlyingMascotContainer"></div>
+          <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 6px;">Harika Seri! 🎉</h3>
+          <div class="speech-bubble" id="duoRewardMessage" style="font-size: 0.82rem; margin-bottom: 16px;">Sana bir hediye verdim: +1 İpucu! 🎁</div>
+          <button class="btn btn-primary" onclick="closeDuolingoRewardModal()">Harika, Devam Et! ✨</button>
+        </div>
+      </div>
 
-    let audioCtx = null;
-    let isMusicPlaying = false;
-    let musicTimer = null;
-    let chordIndex = 0;
-    let currentRoomId = null;
+      <div id="appAlertModal" class="modal-overlay" style="display:none;">
+        <div class="menu-card" style="min-height: auto; max-width: 340px; width: 100%; padding: 24px;">
+          <div class="mascot-container" id="alertMascot" style="width: 75px; height: 75px; margin-bottom: 6px;"></div>
+          <div class="speech-bubble" id="alertMessageText" style="margin-bottom: 16px;">Mesaj içeriği</div>
+          <button class="btn btn-primary" onclick="closeAppAlert()">Tamam 👍</button>
+        </div>
+      </div>
 
-    // --- KÜÇÜK, TOK VE HAFİF KISIK SES EFEKTLERİ (Web Audio API) ---
-    function playTokSound(type = 'click') {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+      <div id="winModal" class="modal-overlay" style="display:none;">
+        <div class="menu-card" style="min-height: auto; max-width: 360px; width: 100%; padding: 28px;">
+          <div class="mascot-container" id="winMascot" style="width: 85px; height: 85px; margin-bottom: 6px;"></div>
+          <div class="speech-bubble">Muhteşemsin! 🎉</div>
+          <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 4px;">Bulmaca Tamamlandı!</h2>
+          <div style="background: rgba(255,71,87,0.1); padding: 12px; border-radius: 16px; margin: 12px 0; font-weight: 800; color: var(--primary);" id="winStatsText">Süre: 00:00</div>
+          <button class="btn btn-primary" onclick="showMenu()">🏠 Ana Sayfaya Dön</button>
+        </div>
+      </div>
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        const socket = io();
 
-        let freq = 180;
-        let duration = 0.08;
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicTimer = null;
+        let chordIndex = 0;
+        let currentRoomId = null;
 
-        if (type === 'success') { freq = 320; duration = 0.12; }
-        else if (type === 'error') { freq = 90; duration = 0.15; }
-        else if (type === 'blitz_tick') { freq = 440; duration = 0.05; }
+        // --- KÜÇÜK, TOK VE HAFİF KISIK SES EFEKTLERİ (Web Audio API) ---
+        function playTokSound(type = 'click') {
+          try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        osc.type = 'triangle'; // Tok ve yumuşak dalga boyu
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        if(type === 'success') {
-          osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + duration);
-        } else {
-          osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + duration);
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            let freq = 180;
+            let duration = 0.08;
+
+            if (type === 'success') { freq = 320; duration = 0.12; }
+            else if (type === 'error') { freq = 90; duration = 0.15; }
+            else if (type === 'blitz_tick') { freq = 440; duration = 0.05; }
+
+            osc.type = 'triangle'; // Tok ve yumuşak dalga boyu
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            if(type === 'success') {
+              osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + duration);
+            } else {
+              osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + duration);
+            }
+
+            // Kısık ve kulak tırmalamayan ses seviyesi (Gain)
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+          } catch(e) {}
         }
 
-        // Kısık ve kulak tırmalamayan ses seviyesi (Gain)
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        const chillChords = [
+          [261.63, 329.63, 392.00, 493.88],
+          [220.00, 261.63, 329.63, 392.00],
+          [174.61, 220.00, 261.63, 329.63],
+          [196.00, 246.94, 293.66, 349.23]
+        ];
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch(e) {}
-    }
-
-    const chillChords = [
-      [261.63, 329.63, 392.00, 493.88],
-      [220.00, 261.63, 329.63, 392.00],
-      [174.61, 220.00, 261.63, 329.63],
-      [196.00, 246.94, 293.66, 349.23]
-    ];
-
-    function playChillNote() {
-      if (!isMusicPlaying) return;
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-
-      const currentChord = chillChords[chordIndex];
-      chordIndex = (chordIndex + 1) % chillChords.length;
-
-      currentChord.forEach((freq, idx) => {
-        setTimeout(() => {
+        function playChillNote() {
           if (!isMusicPlaying) return;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-
-          osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-          gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 0.5);
-          gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.8);
-
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-
-          osc.start();
-          osc.stop(audioCtx.currentTime + 2.9);
-        }, idx * 250);
-      });
-    }
-
-    function startMusicLoop() {
-      if (musicTimer) clearInterval(musicTimer);
-      musicTimer = setInterval(playChillNote, 2800);
-    }
-
-    function toggleChillMusic() {
-      playTokSound('click');
-      isMusicPlaying = !isMusicPlaying;
-      const btn = document.getElementById('musicBtn');
-      if (isMusicPlaying) {
-        btn.innerText = "🎵 Müzik: Açık";
-        btn.style.color = "var(--primary)";
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        playChillNote();
-        startMusicLoop();
-      } else {
-        btn.innerText = "🔇 Müzik: Kapalı";
-        btn.style.color = "var(--text-muted)";
-        if (musicTimer) clearInterval(musicTimer);
-      }
-    }
-
-    let userScore = parseInt(localStorage.getItem('sudo_score')) || 1200;
-    let userCoins = localStorage.getItem('sudo_coins') !== null ? parseInt(localStorage.getItem('sudo_coins')) : 800;
-    let userLevel = parseInt(localStorage.getItem('sudo_level')) || 1;
-    let hintCount = parseInt(localStorage.getItem('sudo_hints')) || 3;
-    let streakDays = parseInt(localStorage.getItem('sudo_streak')) || 1;
-    let lastLoginDate = localStorage.getItem('sudo_last_login') || '';
-    
-    let userRp = parseInt(localStorage.getItem('sudo_rp')) || 0;
-    let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
-    let isRankedMatch = false;
-    let isBlitzMode = false;
-    let blitzTimeLeft = 60; // 60 saniye blitz süresi
-    let blitzInterval = null;
-    let matchHistory = JSON.parse(localStorage.getItem('sudo_match_history')) || [];
-
-    const liveGuideSteps = [
-      { title: "Sudo Rehberi (1/6)", text: "Selam patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını anlatacağım.", top: "15%", left: "5%" },
-      { title: "Sudoku Nedir? (2/6)", text: "Sudoku, satır, sütun ve kutucuklarda sayıların birer kez yer aldığı mantık bulmacasıdır! 🧠", top: "25%", right: "5%" },
-      { title: "Blitz Modu (3/6)", text: "⚡ Blitz Modu tam bir heyecan fırtınası! Süre bitmeden bulmacayı tamamla!", top: "35%", left: "5%" },
-      { title: "Ranked Modu (4/6)", text: "⚔️ Gerçek bir rakiple eş zamanlı kapışarak RP topla ve liglerde yüksel!", top: "45%", right: "5%" },
-      { title: "Rank Puanı - RP (5/6)", text: "Kazandığın her ranked maç sana +25 RP kazandırır ve liglerde tırmanırsın!", top: "70%", left: "5%" },
-      { title: "Online Sistem (6/6)", text: "⚡ Bol şans! İstediğin zaman ana menüye dönebilirsin. 🚀", top: "75%", right: "5%" }
-    ];
-    let currentLiveGuideIdx = 0;
-
-    function startLiveGuide() {
-      playTokSound('click');
-      currentLiveGuideIdx = 0;
-      updateLiveGuidePosition();
-      document.getElementById('liveGuideOverlay').style.display = 'block';
-    }
-
-    function nextLiveGuideStep() {
-      playTokSound('click');
-      currentLiveGuideIdx++;
-      if (currentLiveGuideIdx >= liveGuideSteps.length) {
-        document.getElementById('liveGuideOverlay').style.display = 'none';
-      } else {
-        updateLiveGuidePosition();
-      }
-    }
-
-    function updateLiveGuidePosition() {
-      const step = liveGuideSteps[currentLiveGuideIdx];
-      document.getElementById('liveGuideStepTitle').innerText = step.title;
-      document.getElementById('liveGuideStepText').innerText = step.text;
-      
-      const wrapper = document.getElementById('liveGuideWrapper');
-      wrapper.style.top = step.top || 'auto';
-      wrapper.style.bottom = step.bottom || 'auto';
-      wrapper.style.left = step.left || 'auto';
-      wrapper.style.right = step.right || 'auto';
-
-      renderMascotSVG('liveGuideMascotAvatar', currentLiveGuideIdx % 2 === 0 ? 'happy' : 'thinking');
-    }
-
-    function getRankSvgHtml(type) {
-      if (type === 'bronze') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f39c12"/><stop offset="50%" stop-color="#d35400"/><stop offset="100%" stop-color="#78281f"/></linearGradient><filter id="sh-br"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/></filter></defs><polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1b1b22" stroke="url(#br-3d)" stroke-width="7" filter="url(#sh-br)"/><polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="url(#br-3d)"/><path d="M50,32 L65,50 L50,68 L35,50 Z" fill="#ffeaa7" opacity="0.9"/></svg>`;
-      }
-      if (type === 'silver') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#b2bec3"/><stop offset="100%" stop-color="#636e72"/></linearGradient><filter id="sh-sl"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/></filter></defs><polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#141a20" stroke="url(#sl-3d)" stroke-width="7" filter="url(#sh-sl)"/><polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="url(#sl-3d)"/><path d="M50,30 L66,50 L50,70 L34,50 Z" fill="#1e272c"/></svg>`;
-      }
-      if (type === 'gold') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff200"/><stop offset="50%" stop-color="#f39c12"/><stop offset="100%" stop-color="#b7950b"/></linearGradient><filter id="sh-go"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#f1c40f" flood-opacity="0.8"/></filter></defs><polygon points="50,2 96,25 96,75 50,98 4,75 4,25" fill="#2c220f" stroke="url(#go-3d)" stroke-width="7" filter="url(#sh-go)"/><polygon points="50,12 86,30 86,70 50,88 14,70 14,30" fill="url(#go-3d)"/><polygon points="50,30 68,50 50,70 32,50" fill="#ffffff"/></svg>`;
-      }
-      if (type === 'platinum') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#55efc4"/><stop offset="50%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient><filter id="sh-pl"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00cec9" flood-opacity="0.8"/></filter></defs><path d="M50,2 L98,48 L50,96 L2,48 Z" fill="#091d2a" stroke="url(#pl-3d)" stroke-width="7" filter="url(#sh-pl)"/><path d="M50,14 86,48 50,82 14,48 Z" fill="url(#pl-3d)"/><polygon points="50,32 68,48 50,64 32,48" fill="#ffffff"/></svg>`;
-      }
-      if (type === 'diamond') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff9ff3"/><stop offset="50%" stop-color="#f368e0"/><stop offset="100%" stop-color="#5f27cd"/></linearGradient><filter id="sh-di"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f368e0" flood-opacity="0.9"/></filter></defs><path d="M50,2 L96,30 80,94 20,94 4,30 Z" fill="#230833" stroke="url(#di-3d)" stroke-width="7" filter="url(#sh-di)"/><polygon points="50,12 86,34 72,84 28,84 14,34" fill="url(#di-3d)"/><polygon points="50,28 70,50 50,72 30,50" fill="#ffffff"/></svg>`;
-      }
-      if (type === 'master') {
-        return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff6b6b"/><stop offset="50%" stop-color="#ee5253"/><stop offset="100%" stop-color="#b33939"/></linearGradient><filter id="sh-ma"><feDropShadow dx="0" dy="0" stdDeviation="7" flood-color="#ff4757" flood-opacity="1"/></filter></defs><path d="M50,2 L98,22 98,68 50,98 2,68 2,22 Z" fill="#2b0a0e" stroke="url(#ma-3d)" stroke-width="8" filter="url(#sh-ma)"/><path d="M50,12 L88,28 88,62 50,88 12,62 12,28 Z" fill="url(#ma-3d)"/><polygon points="50,26 68,48 50,74 32,48" fill="#ffffff"/><circle cx="50" cy="50" r="7" fill="#ffeaa7"/></svg>`;
-      }
-      return `<svg viewBox="0 0 100 100"><defs><linearGradient id="gm-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a29bfe"/><stop offset="35%" stop-color="#fd79a8"/><stop offset="70%" stop-color="#ffeaa7"/><stop offset="100%" stop-color="#00cec9"/></linearGradient><filter id="sh-gm"><feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#a29bfe" flood-opacity="1"/></filter></defs><polygon points="50,1 99,28 84,91 16,91 1,28" fill="#0c071d" stroke="url(#gm-3d)" stroke-width="8" filter="url(#sh-gm)"/><polygon points="50,12 88,34 76,82 24,82 12,34" fill="url(#gm-3d)" opacity="0.9"/><polygon points="50,26 70,50 50,74 30,50" fill="#ffffff"/><circle cx="50" cy="18" r="6" fill="#fff"/><circle cx="32" cy="54" r="5" fill="#fff"/><circle cx="68" cy="54" r="5" fill="#fff"/></svg>`;
-    }
-
-    function getRankDetails(rp) {
-      if (rp < 100) return { name: 'BRONZ', type: 'bronze', max: 100 };
-      if (rp < 300) return { name: 'GÜMÜŞ', type: 'silver', max: 300 };
-      if (rp < 600) return { name: 'ALTIN', type: 'gold', max: 600 };
-      if (rp < 1000) return { name: 'PLATİN', type: 'platinum', max: 1000 };
-      if (rp < 1500) return { name: 'ELMAS', type: 'diamond', max: 1500 };
-      if (rp < 2000) return { name: 'ÜSTAT 👑', type: 'master', max: 2000 };
-      return { name: 'GRANDMASTER ⚡', type: 'grandmaster', max: 2500 };
-    }
-
-    function updateRankUI() {
-      const rank = getRankDetails(userRp);
-      document.getElementById('myRankNameText').innerText = rank.name;
-      document.getElementById('myRpText').innerText = `${userRp} RP`;
-      document.getElementById('myRankIconBox').innerHTML = getRankSvgHtml(rank.type);
-      const pct = Math.min(100, (userRp / rank.max) * 100);
-      document.getElementById('rpProgressBar').style.width = `${pct}%`;
-    }
-
-    function openAllRanksModal() {
-      playTokSound('click');
-      const container = document.getElementById('allRanksListContainer');
-      const ranksData = [
-        { name: 'BRONZ', type: 'bronze', range: '0 - 99 RP' },
-        { name: 'GÜMÜŞ', type: 'silver', range: '100 - 299 RP' },
-        { name: 'ALTIN', type: 'gold', range: '300 - 599 RP' },
-        { name: 'PLATİN', type: 'platinum', range: '600 - 999 RP' },
-        { name: 'ELMAS', type: 'diamond', range: '1000 - 1499 RP' },
-        { name: 'ÜSTAT 👑', type: 'master', range: '1500 - 1999 RP' },
-        { name: 'GRANDMASTER ⚡', type: 'grandmaster', range: '2000+ RP (Zirve)' }
-      ];
-      let html = '';
-      ranksData.forEach(r => {
-        let isCurrent = getRankDetails(userRp).name === r.name;
-        let bgStyle = isCurrent ? 'background: rgba(255,71,87,0.15); border-color: var(--primary);' : '';
-        html += `<div class="rank-row-item" style="${bgStyle}">
-          <div class="rank-row-icon">${getRankSvgHtml(r.type)}</div>
-          <div style="flex:1;">
-            <div style="font-size:0.9rem; font-weight:800; color:var(--text-main);">${r.name} ${isCurrent ? '⭐ (Mevcut)' : ''}</div>
-            <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Gereksinim: ${r.range}</div>
-          </div>
-        </div>`;
-      });
-      container.innerHTML = html;
-      document.getElementById('allRanksModal').style.display = 'flex';
-    }
-
-    function closeAllRanksModal() {
-      playTokSound('click');
-      document.getElementById('allRanksModal').style.display = 'none';
-    }
-
-    function switchScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
-    }
-
-    function showMenu() {
-      playTokSound('click');
-      stopTimer();
-      document.getElementById('winModal').style.display = 'none';
-      switchScreen('menuScreen');
-      updateStatsUI();
-    }
-
-    function openGameSettingsModal() {
-      playTokSound('click');
-      isRankedMatch = false;
-      isBlitzMode = false;
-      document.getElementById('rankedVersusInfoBox').style.display = 'none';
-      document.getElementById('gameSettingsModal').style.display = 'flex';
-    }
-
-    function closeGameSettingsModal() {
-      playTokSound('click');
-      document.getElementById('gameSettingsModal').style.display = 'none';
-    }
-
-    // --- BLITZ MODU BAŞLATICI ---
-    function startBlitzGame() {
-      playTokSound('click');
-      isRankedMatch = false;
-      isBlitzMode = true;
-      blitzTimeLeft = 90; // 90 saniye blitz
-      document.getElementById('rankedVersusInfoBox').style.display = 'none';
-      initGame(Math.floor(Math.random()*900000)+100, "BLITZ ⚡", false);
-    }
-
-    function handleExitMatch() {
-      playTokSound('click');
-      if (isRankedMatch && currentRoomId) {
-        socket.emit('leave_match', { roomId: currentRoomId });
-      }
-      showMenu();
-    }
-
-    function renderMatchHistory() {
-      const listEl = document.getElementById('matchHistoryList');
-      if (!matchHistory || matchHistory.length === 0) {
-        listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 10px;">Henüz ranked maç yapılmadı.</div>`;
-        return;
-      }
-      let html = '';
-      matchHistory.slice(-5).reverse().forEach(m => {
-        let isWin = m.result === 'KAZANDIN';
-        let cls = isWin ? 'match-history-item match-win' : 'match-history-item match-lose';
-        html += `<div class="${cls}"><span>${m.result} (${m.duration})</span><span>${isWin ? '+' : ''}${m.rpChange} RP</span></div>`;
-      });
-      listEl.innerHTML = html;
-    }
-
-    function openRankedLobby() {
-      playTokSound('click');
-      document.getElementById('rankedUsernameInput').value = userName;
-      updateRankUI();
-      renderMatchHistory();
-      document.getElementById('rankedStatusText').innerText = "";
-      document.getElementById('rankedSearchBtn').disabled = false;
-      document.getElementById('rankedSearchBtn').innerText = "Rakip Ara 🚀";
-      switchScreen('rankedLobbyScreen');
-    }
-
-    function startRankedMatchmaking() {
-      playTokSound('click');
-      const inputVal = document.getElementById('rankedUsernameInput').value.trim();
-      if (inputVal) { userName = inputVal; localStorage.setItem('sudo_username', userName); }
-      const searchBtn = document.getElementById('rankedSearchBtn');
-      searchBtn.disabled = true;
-      searchBtn.innerText = "Rakip Aranıyor... ⏳";
-      document.getElementById('rankedStatusText').innerText = "Rakip aranıyor... ⚔️";
-      socket.emit('find_match', { username: userName, rp: userRp });
-    }
-
-    socket.on('waiting_opponent', (msg) => {
-      document.getElementById('rankedStatusText').innerText = msg;
-    });
-
-    socket.on('match_found', (data) => {
-      isRankedMatch = true;
-      isBlitzMode = false;
-      document.getElementById('rankedVersusInfoBox').style.display = 'flex';
-      
-      document.getElementById('vsMyName').innerText = userName;
-      const myRank = getRankDetails(userRp);
-      document.getElementById('vsMyRankSvg').innerHTML = getRankSvgHtml(myRank.type);
-
-      document.getElementById('vsOppName').innerText = data.opponent.username;
-      const oppRank = getRankDetails(data.opponent.rp || 0);
-      document.getElementById('vsOppRankSvg').innerHTML = getRankSvgHtml(oppRank.type);
-
-      initGame(data.seed, "RANKED 1v1", false);
-    });
-
-    socket.on('game_over', (data) => {
-      if (isRankedMatch) {
-        stopTimer();
-        let durationStr = document.getElementById('timer').innerText;
-        if (data.winner === socket.id) {
-          let rpGain = 20;
-          userRp += rpGain;
-          matchHistory.push({ result: 'KAZANDIN', duration: durationStr, rpChange: rpGain });
-          localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
-          playTokSound('success');
-          showAppAlert("Rakip oyundan ayrıldı veya ana sayfaya döndü! Hükmen kazandın! 🏆");
-        } else {
-          let rpLoss = -15;
-          userRp = Math.max(0, userRp + rpLoss);
-          matchHistory.push({ result: 'KAYBETTİN', duration: durationStr, rpChange: rpLoss });
-          localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
-          playTokSound('error');
-          showAppAlert("Rakip bulmacayı tamamladı! Maçı kaybettin. 😢");
-        }
-        saveUserData();
-        document.getElementById('winModal').style.display = 'none';
-        setTimeout(() => { showMenu(); }, 2500);
-      }
-    });
-
-    let currentRewardDay = parseInt(localStorage.getItem('sudo_reward_day')) || 1;
-    let lastClaimDate = localStorage.getItem('sudo_last_claim_date') || '';
-
-    let ownedSkins = JSON.parse(localStorage.getItem('sudo_owned_skins')) || ['default'];
-    let activeSkin = localStorage.getItem('sudo_active_skin') || 'default';
-    let skinColors = { default: '#ff4757', mint: '#2ed573', royal: '#5352ed' };
-
-    let ownedAccs = JSON.parse(localStorage.getItem('sudo_owned_accs')) || ['none'];
-    let activeAcc = localStorage.getItem('sudo_active_acc') || 'none';
-
-    let ownedBoardThemes = JSON.parse(localStorage.getItem('sudo_owned_board_themes')) || ['classic'];
-    let activeBoardTheme = localStorage.getItem('sudo_active_board_theme') || 'classic';
-    
-    const boardThemesData = {
-      classic: { bg: '#14141c', text: '#f1f2f6', border: 'rgba(255,255,255,0.15)', highlight: '#222230', selected: '#3a3a55', userNum: '#ff4757' },
-      midnight: { bg: '#1e272c', text: '#d2ddef', border: '#485460', highlight: '#2f3542', selected: '#3742fa', userNum: '#ff6b81' },
-      forest: { bg: '#1e3d2f', text: '#e8f8f0', border: '#2e6950', highlight: '#264d3d', selected: '#2ed573', userNum: '#ffd166' },
-      royalgold: { bg: '#2b221e', text: '#fbf8cc', border: '#bc6c25', highlight: '#3d322c', selected: '#e58e26', userNum: '#f4a261' }
-    };
-
-    let mistakes = 0, streakCorrect = 0, boardSize = 9;
-    let initialBoard = [], solutionBoard = [], currentBoard = [], notesBoard = [], history = [];
-    let selectedCell = null, isNotesMode = false, timerInterval = null, secondsElapsed = 0;
-    let blinkInterval = null, idleTimer = null, isSleeping = false;
-
-    const successPhrases = ["Süpersin! ✨", "Zihninin zembereği çalıştı! 🧠", "Harika hamle! 🔥", "İşte budur! 🚀"];
-    const errorPhrases = ["Eyvah, yanlış hamle! 🥺", "Hmm, orası öyle değil 🤔", "Küçük kaza! 🙈"];
-    const clickPhrases = ["Beni mi tıkladın? 🌸", "Hadi bulmacayı çözelim! 🧩", "Harika görünüyorsun! ✨", "Süper bir gün! 🚀"];
-    const sleepPhrases = ["Zzz... Düşünüyorum... 💤", "Burası çok huzurlu... 🌙", "Bekliyorum patron! 😴"];
-
-    function resetIdleTimer() {
-      if (isSleeping) { isSleeping = false; setSudoEmotion('happy', "Uyandım! Devam edelim! 🚀"); }
-      if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => {
-        if (document.getElementById('gameScreen').classList.contains('active')) {
-          isSleeping = true;
-          setSudoEmotion('sleep', getRandomPhrase(sleepPhrases));
-        }
-      }, 12000);
-    }
-
-    function getRandomPhrase(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-    function triggerMascotClick() {
-      playTokSound('click');
-      resetIdleTimer();
-      setSudoEmotion('happy', getRandomPhrase(clickPhrases));
-      const wrappers = document.querySelectorAll('.guide-mascot-wrapper, .mascot-container');
-      wrappers.forEach(w => {
-        w.classList.add('mascot-dance');
-        setTimeout(() => { w.classList.remove('mascot-dance'); }, 1500);
-      });
-    }
-
-    function redeemPromoCode() {
-      playTokSound('click');
-      const inputVal = document.getElementById('promoInput').value.trim();
-      if (inputVal === "800") {
-        userCoins += 800; saveUserData(); updateStatsUI();
-        playTokSound('success');
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        showAppAlert("Tebrikler! Sınırsız promo kod ile +800 Coin eklendi! 🎉🪙");
-        document.getElementById('promoInput').value = "";
-      } else if (inputVal === "500") {
-        userCoins += 4000; saveUserData(); updateStatsUI();
-        playTokSound('success');
-        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
-        showAppAlert("Tebrikler! Sınırsız özel kod ile +4.000 Coin yüklendi! 🚀🪙");
-        document.getElementById('promoInput').value = "";
-      } else {
-        playTokSound('error');
-        showAppAlert("Geçersiz promo kod! (800 veya 500 deneyebilirsin) ❌");
-      }
-    }
-
-    function checkDailyStreak() {
-      const today = new Date().toDateString();
-      if (lastLoginDate) {
-        const last = new Date(lastLoginDate);
-        const diffDays = Math.floor((new Date() - last) / (1000 * 60 * 60 * 24));
-        if (diffDays === 1) streakDays++;
-        else if (diffDays > 1) streakDays = 1;
-      }
-      lastLoginDate = today;
-      saveUserData();
-    }
-
-    function saveUserData() {
-      localStorage.setItem('sudo_score', userScore);
-      localStorage.setItem('sudo_coins', userCoins);
-      localStorage.setItem('sudo_level', userLevel);
-      localStorage.setItem('sudo_hints', hintCount);
-      localStorage.setItem('sudo_streak', streakDays);
-      localStorage.setItem('sudo_last_login', lastLoginDate);
-      localStorage.setItem('sudo_reward_day', currentRewardDay);
-      localStorage.setItem('sudo_last_claim_date', lastClaimDate);
-      localStorage.setItem('sudo_owned_skins', JSON.stringify(ownedSkins));
-      localStorage.setItem('sudo_active_skin', activeSkin);
-      localStorage.setItem('sudo_owned_accs', JSON.stringify(ownedAccs));
-      localStorage.setItem('sudo_active_acc', activeAcc);
-      localStorage.setItem('sudo_owned_board_themes', JSON.stringify(ownedBoardThemes));
-      localStorage.setItem('sudo_active_board_theme', activeBoardTheme);
-      localStorage.setItem('sudo_rp', userRp);
-      localStorage.setItem('sudo_username', userName);
-      localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
-    }
-
-    function updateStatsUI() {
-      document.getElementById('userLevel').innerText = userLevel;
-      document.getElementById('userCoins').innerText = userCoins;
-      document.getElementById('userStreak').innerText = `${streakDays} Gün`;
-      const hintBtn = document.getElementById('hintBtn');
-      if(hintBtn) {
-        if (isRankedMatch) { hintBtn.innerHTML = `<span>💡</span> Yasak`; hintBtn.disabled = true; }
-        else { hintBtn.innerHTML = `<span>💡</span> İpucu (${hintCount})`; hintBtn.disabled = false; }
-      }
-      renderMascotSVG('menuMascot');
-      updateMarketUI();
-    }
-
-    function openLeagueModal() { playTokSound('click'); renderLeaderboard(); switchScreen('leagueScreen'); }
-    function openDailyRewardsModal() { playTokSound('click'); renderDailyRewardsGrid(); switchScreen('dailyRewardsScreen'); }
-    function openShop() { playTokSound('click'); updateMarketUI(); switchScreen('shopScreen'); }
-
-    function renderMascotSVG(containerId, mood = 'happy', isBlinking = false) {
-      const el = document.getElementById(containerId);
-      if (!el) return;
-      let color = skinColors[activeSkin] || '#ff4757';
-      let mouthPath = "M 38 62 Q 50 74 62 62";
-      if (mood === 'sad' || mood === 'sitem') mouthPath = "M 38 66 Q 50 54 62 66";
-      else if (mood === 'thinking') mouthPath = "M 42 62 Q 50 60 58 62";
-      else if (mood === 'sleep') mouthPath = "M 42 64 Q 50 68 58 64";
-
-      let eyesSVG = '';
-      if (mood === 'sleep' || isBlinking) {
-        eyesSVG = `<path d="M 31 38 Q 37 43 43 38" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M 61 38 Q 67 43 73 38" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
-      } else {
-        eyesSVG = `<circle cx="35" cy="38" r="11" fill="#fff"/><circle cx="65" cy="38" r="11" fill="#fff"/><circle cx="37" cy="37" r="5.5" fill="#1e1e2f"/><circle cx="67" cy="37" r="5.5" fill="#1e1e2f"/><circle cx="39" cy="35" r="2" fill="#fff"/><circle cx="69" cy="35" r="2" fill="#fff"/>`;
-      }
-
-      let accSVG = '';
-      if (activeAcc === 'crown') {
-        accSVG = `<g transform="translate(0, -18)"><polygon points="20,22 32,4 50,16 68,4 80,22 75,28 25,28" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/><circle cx="50" cy="13" r="3.5" fill="#ff4757"/><circle cx="32" cy="10" r="2.5" fill="#2ed573"/><circle cx="68" cy="10" r="2.5" fill="#3742fa"/></g>`;
-      } else if (activeAcc === 'glasses') {
-        accSVG = `<g transform="translate(0, -2)"><rect x="20" y="26" width="28" height="22" rx="6" fill="#1e1e2f"/><rect x="52" y="26" width="28" height="22" rx="6" fill="#1e1e2f"/><line x1="48" y1="36" x2="52" y2="36" stroke="#1e1e2f" stroke-width="4"/></g>`;
-      } else if (activeAcc === 'halo') {
-        accSVG = `<g transform="translate(0, -16)"><ellipse cx="50" cy="10" rx="30" ry="8" fill="none" stroke="#f1c40f" stroke-width="5" opacity="0.9"/></g>`;
-      } else if (activeAcc === 'bow') {
-        accSVG = `<g transform="translate(0, 52)"><polygon points="50,22 30,10 30,34" fill="#ff6b81"/><polygon points="50,22 70,10 70,34" fill="#ff6b81"/><circle cx="50" cy="22" r="5" fill="#ff4757"/></g>`;
-      } else if (activeAcc === 'headphones') {
-        accSVG = `<g><path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#1e1e2f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757"/><rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757"/></g>`;
-      } else if (activeAcc === 'cat') {
-        accSVG = `<g transform="translate(0, -12)"><polygon points="12,28 26,-2 42,18" fill="${color}"/><polygon points="88,28 74,-2 58,18" fill="${color}"/></g>`;
-      } else if (activeAcc === 'chef') {
-        accSVG = `<g transform="translate(0, -28)"><circle cx="36" cy="20" r="14" fill="#ffffff"/><circle cx="64" cy="20" r="14" fill="#ffffff"/><circle cx="50" cy="12" r="16" fill="#ffffff"/><rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff"/></g>`;
-      }
-
-      el.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow:visible;"><circle cx="50" cy="50" r="45" fill="${color}"/>${eyesSVG}<path d="${mouthPath}" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>${accSVG}</svg>`;
-    }
-
-    let currentMood = 'happy';
-    function startBlinkLoop() {
-      if (blinkInterval) clearInterval(blinkInterval);
-      blinkInterval = setInterval(() => {
-        if (isSleeping) return;
-        renderMascotSVG('mascotEmotionAvatar', currentMood, true);
-        setTimeout(() => { renderMascotSVG('mascotEmotionAvatar', currentMood, false); }, 180);
-      }, 3000);
-    }
-
-    function setSudoEmotion(mood, text) {
-      currentMood = mood;
-      renderMascotSVG('mascotEmotionAvatar', mood, false);
-      const textEl = document.getElementById('mascotEmotionText');
-      const wrapperEl = document.getElementById('guideMascotWrapper');
-      if(textEl) textEl.innerText = text;
-      if(wrapperEl) {
-        wrapperEl.classList.remove('mascot-dance', 'mascot-thinking', 'mascot-sitem', 'mascot-sleep');
-        void wrapperEl.offsetWidth;
-        if(mood === 'happy') wrapperEl.classList.add('mascot-dance');
-        else if(mood === 'thinking') wrapperEl.classList.add('mascot-thinking');
-        else if(mood === 'sitem' || mood === 'sad') wrapperEl.classList.add('mascot-sitem');
-        else if(mood === 'sleep') wrapperEl.classList.add('mascot-sleep');
-      }
-    }
-
-    function renderLeaderboard() {
-      const container = document.getElementById('leaderboardContainer');
-      let dummyPlayers = [{ name: "Zeynep K.", score: 2450 }, { name: userName, score: userScore, isUser: true }, { name: "Ahmet Y.", score: 2100 }];
-      dummyPlayers.sort((a, b) => b.score - a.score);
-      let html = '';
-      dummyPlayers.forEach((p, idx) => {
-        let rowClass = p.isUser ? 'leaderboard-item user-row' : 'leaderboard-item';
-        html += `<div class="${rowClass}"><span>${idx+1}. ${p.name}</span><span>⭐ ${p.score}</span></div>`;
-      });
-      container.innerHTML = html;
-    }
-
-    function switchMarketTab(tabName, btn) {
-      playTokSound('click');
-      document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.market-section').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(`market-${tabName}`).classList.add('active');
-    }
-
-    function renderDailyRewardsGrid() {
-      const container = document.getElementById('dailyRewardGridContainer');
-      container.innerHTML = '';
-      const today = new Date().toDateString();
-      let html = '';
-      for (let i = 1; i <= 15; i++) {
-        let boxClass = 'reward-day-box';
-        if (i < currentRewardDay || (i === currentRewardDay && lastClaimDate === today)) boxClass += ' claimed';
-        else if (i === currentRewardDay && lastClaimDate !== today) boxClass += ' active-day';
-        html += `<div class="${boxClass}"><span style="font-size:0.65rem;">GÜN ${i}</span><span>🪙</span><span style="font-size:0.75rem; font-weight:800;">+${i*20}</span></div>`;
-      }
-      container.innerHTML = html;
-      const claimBtn = document.getElementById('claimRewardBtn');
-      if (lastClaimDate === today) { claimBtn.innerText = "Alındı ✔️"; claimBtn.disabled = true; }
-      else { claimBtn.innerText = "Bugünkü Ödülü Al ✨"; claimBtn.disabled = false; }
-    }
-
-    function claimDailyReward() {
-      playTokSound('success');
-      const today = new Date().toDateString();
-      if (lastClaimDate === today) return;
-      let earned = currentRewardDay * 20;
-      userCoins += earned; lastClaimDate = today; currentRewardDay++;
-      saveUserData(); updateStatsUI(); renderDailyRewardsGrid();
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      showAppAlert(`Tebrikler! +${earned} Coin eklendi! 🎉`);
-    }
-
-    function showAppAlert(msg) {
-      renderMascotSVG('alertMascot');
-      document.getElementById('alertMessageText').innerText = msg;
-      document.getElementById('appAlertModal').style.display = 'flex';
-    }
-    function closeAppAlert() { playTokSound('click'); document.getElementById('appAlertModal').style.display = 'none'; }
-
-    function updateMarketUI() {
-      ['default', 'mint', 'royal'].forEach(id => {
-        let el = document.getElementById(`skin-${id}`);
-        if(el) { el.classList.remove('equipped', 'purchased'); if (activeSkin === id) el.classList.add('equipped'); else if (ownedSkins.includes(id)) el.classList.add('purchased'); }
-      });
-      ['none', 'crown', 'glasses', 'halo', 'bow', 'headphones', 'cat', 'chef'].forEach(id => {
-        let el = document.getElementById(`acc-${id}`);
-        if(el) { el.classList.remove('equipped', 'purchased'); if (activeAcc === id) el.classList.add('equipped'); else if (ownedAccs.includes(id)) el.classList.add('purchased'); }
-      });
-      ['classic', 'midnight', 'forest', 'royalgold'].forEach(id => {
-        let el = document.getElementById(`boardtheme-${id}`);
-        if(el) { el.classList.remove('equipped', 'purchased'); if (activeBoardTheme === id) el.classList.add('equipped'); else if (ownedBoardThemes.includes(id)) el.classList.add('purchased'); }
-      });
-    }
-
-    function buyOrEquipSkin(id, color, price) {
-      playTokSound('click');
-      if (ownedSkins.includes(id)) { activeSkin = id; saveUserData(); updateStatsUI(); }
-      else {
-        if (userCoins < price) { playTokSound('error'); return showAppAlert("Yeterli Coin'in yok!"); }
-        userCoins -= price; ownedSkins.push(id); activeSkin = id;
-        playTokSound('success');
-        saveUserData(); updateStatsUI(); showAppAlert("Kostüm giyildi! 🌸");
-      }
-    }
-
-    function buyOrEquipAcc(id, price) {
-      playTokSound('click');
-      if (ownedAccs.includes(id)) { activeAcc = id; saveUserData(); updateStatsUI(); }
-      else {
-        if (userCoins < price) { playTokSound('error'); return showAppAlert("Yeterli Coin'in yok!"); }
-        userCoins -= price; ownedAccs.push(id); activeAcc = id;
-        playTokSound('success');
-        saveUserData(); updateStatsUI(); showAppAlert("Aksesuar takıldı! ✨");
-      }
-    }
-
-    function buyOrEquipBoardTheme(id, price) {
-      playTokSound('click');
-      if (ownedBoardThemes.includes(id)) { activeBoardTheme = id; saveUserData(); updateStatsUI(); renderBoard(); }
-      else {
-        if (userCoins < price) { playTokSound('error'); return showAppAlert(`Bu tema için ${price} Coin gerekiyor!`); }
-        userCoins -= price; ownedBoardThemes.push(id); activeBoardTheme = id;
-        playTokSound('success');
-        saveUserData(); updateStatsUI(); renderBoard();
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-        showAppAlert("Sudo Market teması uygulandı! 🧩✨");
-      }
-    }
-
-    function buyHints() {
-      playTokSound('click');
-      if (userCoins < 40) { playTokSound('error'); return showAppAlert("Yeterli Coin'in yok!"); }
-      userCoins -= 40; hintCount += 3; saveUserData(); updateStatsUI();
-      playTokSound('success');
-      showAppAlert("+3 İpucu alındı! 💡");
-    }
-
-    function setBoardSize(size, btn) {
-      playTokSound('click');
-      boardSize = size; 
-      document.querySelectorAll('#sizeOptions .option-btn').forEach(b => b.classList.remove('active')); 
-      btn.classList.add('active'); 
-    }
-    
-    function startConfiguredGame() {
-      playTokSound('click');
-      isBlitzMode = false;
-      closeGameSettingsModal();
-      initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false);
-    }
-
-    function seededRandom(seed) { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
-
-    function generateSudoku(seed) {
-      let baseTemplates = {
-        6: [1,2,3,4,5,6, 4,5,6,1,2,3, 2,3,1,5,6,4, 5,6,4,2,3,1, 3,1,2,6,4,5, 6,4,5,3,1,2],
-        9: [1,2,3,4,5,6,7,8,9, 4,5,6,7,8,9,1,2,3, 7,8,9,1,2,3,4,5,6, 2,3,1,5,6,4,8,9,7, 5,6,4,8,9,7,2,3,1, 8,9,7,2,3,1,5,6,4, 3,1,2,6,4,5,9,7,8, 6,4,5,9,7,8,3,1,2, 9,7,8,3,1,2,6,4,5],
-        12: [1,2,3,4,5,6,7,8,9,10,11,12, 5,6,7,8,9,10,11,12,1,2,3,4, 9,10,11,12,1,2,3,4,5,6,7,8, 2,3,4,5,6,7,8,9,10,11,12,1, 6,7,8,9,10,11,12,1,2,3,4,5, 10,11,12,1,2,3,4,5,6,7,8,9, 3,4,5,6,7,8,9,10,11,12,1,2, 7,8,9,10,11,12,1,2,3,4,5,6, 11,12,1,2,3,4,5,6,7,8,9,10, 4,5,6,7,8,9,10,11,12,1,2,3, 8,9,10,11,12,1,2,3,4,5,6,7, 12,1,2,3,4,5,6,7,8,9,10,11],
-        16: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 5,6,7,8,9,10,11,12,13,14,15,16,1,2,3,4, 9,10,11,12,13,14,15,16,1,2,3,4,5,6,7,8, 13,14,15,16,1,2,3,4,5,6,7,8,9,10,11,12, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,1, 6,7,8,9,10,11,12,13,14,15,16,1,2,3,4,5, 10,11,12,13,14,15,16,1,2,3,4,5,6,7,8,9, 14,15,16,1,2,3,4,5,6,7,8,9,10,11,12,13, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,1,2, 7,8,9,10,11,12,13,14,15,16,1,2,3,4,5,6, 11,12,13,14,15,16,1,2,3,4,5,6,7,8,9,10, 15,16,1,2,3,4,5,6,7,8,9,10,11,12,13,14, 4,5,6,7,8,9,10,11,12,13,14,15,16,1,2,3, 8,9,10,11,12,13,14,15,16,1,2,3,4,5,6,7, 12,13,14,15,16,1,2,3,4,5,6,7,8,9,10,11, 16,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
-      };
-
-      let currentSeed = seed;
-      let solution = [...baseTemplates[boardSize]];
-      let numMap = Array.from({length: boardSize}, (_, i) => i + 1);
-      for (let i = numMap.length - 1; i > 0; i--) {
-        let j = Math.floor(seededRandom(currentSeed++) * (i + 1));
-        [numMap[i], numMap[j]] = [numMap[j], numMap[i]];
-      }
-      solution = solution.map(val => numMap[val - 1]);
-      let puzzle = [...solution];
-      let removeCount = boardSize === 6 ? 18 : (boardSize === 9 ? 38 : (boardSize === 12 ? 55 : 95));
-      for(let i=0; i<removeCount; i++) {
-        let randIdx = Math.floor(seededRandom(currentSeed++) * puzzle.length);
-        puzzle[randIdx] = 0;
-      }
-      return { puzzle, solution };
-    }
-
-    function initGame(seed, title, tutorialMode) {
-      mistakes = 0; streakCorrect = 0;
-      document.getElementById('mistakeCounter').innerText = `Hata: 0`;
-      
-      const data = generateSudoku(seed);
-      initialBoard = [...data.puzzle]; currentBoard = [...data.puzzle]; solutionBoard = [...data.solution];
-      notesBoard = Array(boardSize * boardSize).fill().map(() => []);
-      history = []; selectedCell = null; isNotesMode = false;
-      document.getElementById('notesBtn').classList.remove('active');
-
-      const numpadContainer = document.getElementById('numpadContainer');
-      numpadContainer.style.gridTemplateColumns = boardSize > 9 ? `repeat(6, 1fr)` : `repeat(${boardSize}, 1fr)`;
-      numpadContainer.innerHTML = '';
-      let btnH = boardSize === 16 ? '34px' : (boardSize === 12 ? '38px' : '48px');
-      let btnF = boardSize === 16 ? '0.85rem' : (boardSize === 12 ? '0.95rem' : '1.2rem');
-
-      for (let i = 1; i <= boardSize; i++) {
-        numpadContainer.innerHTML += `<button class="num-btn" style="height:${btnH}; font-size:${btnF};" onclick="inputNumberToCell(${i})">${i}</button>`;
-      }
-
-      const boardEl = document.getElementById('board');
-      boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
-      document.getElementById('boardTitle').innerText = `${boardSize}x${boardSize} - ${title}`;
-      renderBoard();
-      if (!tutorialMode) startTimer();
-      switchScreen('gameScreen');
-      updateStatsUI();
-      setSudoEmotion('happy', isBlitzMode ? "Blitz başladı! Acele et! ⚡" : "Hadi başlayalım! 🌸");
-      startBlinkLoop();
-      resetIdleTimer();
-      if (!isMusicPlaying) {
-        isMusicPlaying = true;
-        document.getElementById('musicBtn').innerText = "🎵 Müzik: Açık";
-        document.getElementById('musicBtn').style.color = "var(--primary)";
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        playChillNote();
-        startMusicLoop();
-      }
-    }
-
-    function renderBoard() {
-      const container = document.getElementById('board');
-      container.innerHTML = '';
-      let totalCells = boardSize * boardSize;
-      let theme = boardThemesData[activeBoardTheme] || boardThemesData['classic'];
-      container.style.backgroundColor = theme.border;
-      let fontSize = boardSize === 16 ? '0.65rem' : (boardSize === 12 ? '0.82rem' : '1.3rem');
-
-      for (let i = 0; i < totalCells; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.style.fontSize = fontSize;
-        cell.style.backgroundColor = theme.bg;
-        cell.style.color = theme.text;
-        cell.dataset.index = i;
-
-        if (selectedCell === i) cell.style.backgroundColor = theme.selected;
-
-        if (initialBoard[i] !== 0) {
-          cell.classList.add('fixed');
-          cell.innerText = initialBoard[i];
-          cell.style.fontWeight = '800';
-          cell.style.color = theme.text;
-        } else if (currentBoard[i] !== 0) {
-          cell.innerText = currentBoard[i];
-          if (currentBoard[i] !== solutionBoard[i]) cell.classList.add('error');
-          else { cell.style.color = theme.userNum; cell.style.fontWeight = '700'; }
-        } else if (notesBoard[i].length > 0) {
-          const notesGrid = document.createElement('div');
-          notesGrid.className = 'notes-grid';
-          let subCols = boardSize === 6 ? 2 : (boardSize === 12 || boardSize === 16 ? 4 : 3);
-          notesGrid.style.gridTemplateColumns = `repeat(${subCols}, 1fr)`;
-          for (let n = 1; n <= boardSize; n++) {
-            const noteNum = document.createElement('div');
-            noteNum.className = 'note-num';
-            noteNum.style.fontSize = boardSize === 16 ? '0.35rem' : '0.55rem';
-            noteNum.innerText = notesBoard[i].includes(n) ? n : '';
-            notesGrid.appendChild(noteNum);
-          }
-          cell.appendChild(notesGrid);
+          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+
+          const currentChord = chillChords[chordIndex];
+          chordIndex = (chordIndex + 1) % chillChords.length;
+
+          currentChord.forEach((freq, idx) => {
+            setTimeout(() => {
+              if (!isMusicPlaying) return;
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+
+              osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+              osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+              gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+              gain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 0.5);
+              gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.8);
+
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+
+              osc.start();
+              osc.stop(audioCtx.currentTime + 2.9);
+            }, idx * 250);
+          });
         }
 
-        cell.addEventListener('click', () => { 
+        function startMusicLoop() {
+          if (musicTimer) clearInterval(musicTimer);
+          musicTimer = setInterval(playChillNote, 2800);
+        }
+
+        function toggleChillMusic() {
           playTokSound('click');
-          selectedCell = i; 
-          renderBoard(); 
-        });
-        container.appendChild(cell);
-      }
-    }
-
-    function inputNumberToCell(num) {
-      playTokSound('click');
-      resetIdleTimer();
-      if (selectedCell === null || initialBoard[selectedCell] !== 0) return;
-      if (currentBoard[selectedCell] === solutionBoard[selectedCell] && currentBoard[selectedCell] === num) return;
-      saveHistory();
-
-      if (isNotesMode) {
-        currentBoard[selectedCell] = 0;
-        let notes = notesBoard[selectedCell];
-        const idx = notes.indexOf(num);
-        if (idx > -1) notes.splice(idx, 1); else notes.push(num);
-      } else {
-        notesBoard[selectedCell] = [];
-        if (currentBoard[selectedCell] === num && num !== solutionBoard[selectedCell]) return;
-        currentBoard[selectedCell] = num;
-        if (num !== solutionBoard[selectedCell]) {
-          mistakes++; streakCorrect = 0;
-          document.getElementById('mistakeCounter').innerText = `Hata: ${mistakes}`;
-          playTokSound('error');
-          setSudoEmotion('sitem', getRandomPhrase(errorPhrases));
-        } else {
-          streakCorrect++;
-          playTokSound('success');
-          setSudoEmotion('happy', getRandomPhrase(successPhrases));
-          if (streakCorrect >= 5) { streakCorrect = 0; triggerDuolingoRewardModal(); }
-        }
-      }
-      renderBoard();
-      checkWin();
-    }
-
-    function triggerDuolingoRewardModal() {
-      hintCount += 1; saveUserData(); updateStatsUI();
-      renderMascotSVG('duoFlyingMascotContainer');
-      document.getElementById('duoRewardMessage').innerText = `Sana bir hediye verdim: +1 İpucu! 🎁✨`;
-      const modal = document.getElementById('duolingoRewardModal');
-      modal.style.display = 'flex';
-      setTimeout(() => { modal.classList.add('active'); }, 10);
-      playTokSound('success');
-      confetti({ particleCount: 130, spread: 85, origin: { y: 0.6 } });
-    }
-
-    function closeDuolingoRewardModal() {
-      playTokSound('click');
-      const modal = document.getElementById('duolingoRewardModal');
-      modal.classList.remove('active');
-      setTimeout(() => { modal.style.display = 'none'; }, 300);
-    }
-
-    function toggleNotes() {
-      playTokSound('click');
-      resetIdleTimer();
-      isNotesMode = !isNotesMode;
-      document.getElementById('notesBtn').classList.toggle('active', isNotesMode);
-      setSudoEmotion('thinking', isNotesMode ? "Not modu açık! ✏️" : "Normal mod aktif.");
-    }
-
-    function erase() {
-      playTokSound('click');
-      resetIdleTimer();
-      if (selectedCell === null || initialBoard[selectedCell] !== 0) return;
-      saveHistory();
-      currentBoard[selectedCell] = 0;
-      notesBoard[selectedCell] = [];
-      renderBoard();
-    }
-
-    function getHint() {
-      playTokSound('click');
-      resetIdleTimer();
-      if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır! ⚔️");
-      if (hintCount <= 0) return showAppAlert("İpucu kalmadı!");
-      let totalCells = boardSize * boardSize;
-      let emptyOrWrong = [];
-      for (let i = 0; i < totalCells; i++) {
-        if (initialBoard[i] === 0 && currentBoard[i] !== solutionBoard[i]) emptyOrWrong.push(i);
-      }
-      if (emptyOrWrong.length === 0) return;
-
-      hintCount--; saveUserData(); updateStatsUI();
-      let targetIndex = emptyOrWrong[Math.floor(Math.random() * emptyOrWrong.length)];
-      let targetCell = document.querySelector(`.cell[data-index="${targetIndex}"]`);
-      let cellRect = targetCell.getBoundingClientRect();
-      let wrapperEl = document.getElementById('guideMascotWrapper');
-      let mascotRect = wrapperEl.getBoundingClientRect();
-
-      setSudoEmotion('thinking', "Yuvarlanıyorum! 🌀✨");
-
-      let dx = cellRect.left - mascotRect.left + (cellRect.width / 2) - (mascotRect.width / 2);
-      let dy = cellRect.top - mascotRect.top + (cellRect.height / 2) - (mascotRect.height / 2);
-
-      wrapperEl.style.setProperty('--dx', `${dx}px`);
-      wrapperEl.style.setProperty('--dy', `${dy}px`);
-      wrapperEl.classList.add('rolling-motion');
-
-      setTimeout(() => {
-        saveHistory();
-        currentBoard[targetIndex] = solutionBoard[targetIndex];
-        notesBoard[targetIndex] = [];
-        renderBoard();
-        selectedCell = targetIndex;
-        checkWin();
-        resetMascotPosition();
-      }, 850);
-    }
-
-    function resetMascotPosition() {
-      let wrapperEl = document.getElementById('guideMascotWrapper');
-      if (wrapperEl) { wrapperEl.classList.remove('rolling-motion'); wrapperEl.style.transform = 'translate(0px, 0px) scale(1)'; }
-    }
-
-    function saveHistory() { history.push({ board: [...currentBoard], notes: JSON.parse(JSON.stringify(notesBoard)) }); }
-
-    function undo() {
-      playTokSound('click');
-      resetIdleTimer();
-      if (history.length === 0) return;
-      let last = history.pop();
-      currentBoard = [...last.board];
-      notesBoard = JSON.parse(JSON.stringify(last.notes));
-      renderBoard();
-    }
-
-    function startTimer() {
-      stopTimer(); 
-      secondsElapsed = 0;
-      if (isBlitzMode) {
-        timerInterval = setInterval(() => {
-          blitzTimeLeft--;
-          let m = Math.floor(blitzTimeLeft / 60).toString().padStart(2, '0');
-          let s = (blitzTimeLeft % 60).toString().padStart(2, '0');
-          document.getElementById('timer').innerText = `${m}:${s}`;
-          if (blitzTimeLeft <= 10 && blitzTimeLeft > 0) playTokSound('blitz_tick');
-
-          if (blitzTimeLeft <= 0) {
-            stopTimer();
-            playTokSound('error');
-            showAppAlert("Süre bitti! Blitz modunu kaybettin! ⏱️❌");
-            setTimeout(() => { showMenu(); }, 2000);
+          isMusicPlaying = !isMusicPlaying;
+          const btn = document.getElementById('musicBtn');
+          if (isMusicPlaying) {
+            btn.innerText = "🎵 Müzik: Açık";
+            btn.style.color = "var(--primary)";
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            playChillNote();
+            startMusicLoop();
+          } else {
+            btn.innerText = "🔇 Müzik: Kapalı";
+            btn.style.color = "var(--text-muted)";
+            if (musicTimer) clearInterval(musicTimer);
           }
-        }, 1000);
-      } else {
-        timerInterval = setInterval(() => {
-          secondsElapsed++;
-          let m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-          let s = (secondsElapsed % 60).toString().padStart(2, '0');
-          document.getElementById('timer').innerText = `${m}:${s}`;
-        }, 1000);
-      }
-    }
+        }
 
-    function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
+        let userScore = parseInt(localStorage.getItem('sudo_score')) || 1200;
+        let userCoins = localStorage.getItem('sudo_coins') !== null ? parseInt(localStorage.getItem('sudo_coins')) : 800;
+        let userLevel = parseInt(localStorage.getItem('sudo_level')) || 1;
+        let hintCount = parseInt(localStorage.getItem('sudo_hints')) || 3;
+        let streakDays = parseInt(localStorage.getItem('sudo_streak')) || 1;
+        let lastLoginDate = localStorage.getItem('sudo_last_login') || '';
+        
+        let userRp = parseInt(localStorage.getItem('sudo_rp')) || 0;
+        let userName = localStorage.getItem('sudo_username') || 'Oyuncu';
+        let isRankedMatch = false;
+        let isBlitzMode = false;
+        let blitzTimeLeft = 60; // 60 saniye blitz süresi
+        let blitzInterval = null;
+        let matchHistory = JSON.parse(localStorage.getItem('sudo_match_history')) || [];
 
-    function checkWin() {
-      let totalCells = boardSize * boardSize;
-      for (let i = 0; i < totalCells; i++) { if (currentBoard[i] !== solutionBoard[i]) return; }
-      stopTimer();
+        const liveGuideSteps = [
+          { title: "Sudo Rehberi (1/6)", text: "Selam patron! Sudo Battle dünyasına hoş geldin! Sana oyunun kurallarını anlatacağım.", top: "15%", left: "5%" },
+          { title: "Sudoku Nedir? (2/6)", text: "Sudoku, satır, sütun ve kutucuklarda sayıların birer kez yer aldığı mantık bulmacasıdır! 🧠", top: "25%", right: "5%" },
+          { title: "Blitz Modu (3/6)", text: "⚡ Blitz Modu tam bir heyecan fırtınası! Süre bitmeden bulmacayı tamamla!", top: "35%", left: "5%" },
+          { title: "Ranked Modu (4/6)", text: "⚔️ Gerçek bir rakiple eş zamanlı kapışarak RP topla ve liglerde yüksel!", top: "45%", right: "5%" },
+          { title: "Rank Puanı - RP (5/6)", text: "Kazandığın her ranked maç sana +25 RP kazandırır ve liglerde tırmanırsın!", top: "70%", left: "5%" },
+          { title: "Online Sistem (6/6)", text: "⚡ Bol şans! İstediğin zaman ana menüye dönebilirsin. 🚀", top: "75%", right: "5%" }
+        ];
+        let currentLiveGuideIdx = 0;
 
-      if (isRankedMatch && currentRoomId) {
-        let durationStr = document.getElementById('timer').innerText;
-        let rpGain = 25;
-        userRp += rpGain;
-        matchHistory.push({ result: 'KAZANDIN', duration: durationStr, rpChange: rpGain });
-        saveUserData();
-        socket.emit('game_won', { roomId: currentRoomId });
-      }
+        function startLiveGuide() {
+          playTokSound('click');
+          currentLiveGuideIdx = 0;
+          updateLiveGuidePosition();
+          document.getElementById('liveGuideOverlay').style.display = 'block';
+        }
 
-      renderMascotSVG('winMascot');
-      playTokSound('success');
-      confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
-      
-      let earnedScore = isBlitzMode ? 300 : Math.max(30, 150 - (mistakes * 20));
-      let earnedCoins = isBlitzMode ? 80 : Math.max(10, 50 - (mistakes * 5));
-      userScore += earnedScore; userCoins += earnedCoins;
+        function nextLiveGuideStep() {
+          playTokSound('click');
+          currentLiveGuideIdx++;
+          if (currentLiveGuideIdx >= liveGuideSteps.length) {
+            document.getElementById('liveGuideOverlay').style.display = 'none';
+          } else {
+            updateLiveGuidePosition();
+          }
+        }
 
-      let rpGainText = isRankedMatch ? ` | +25 RP 🏆` : "";
+        function updateLiveGuidePosition() {
+          const step = liveGuideSteps[currentLiveGuideIdx];
+          document.getElementById('liveGuideStepTitle').innerText = step.title;
+          document.getElementById('liveGuideStepText').innerText = step.text;
+          
+          const wrapper = document.getElementById('liveGuideWrapper');
+          wrapper.style.top = step.top || 'auto';
+          wrapper.style.bottom = step.bottom || 'auto';
+          wrapper.style.left = step.left || 'auto';
+          wrapper.style.right = step.right || 'auto';
 
-      saveUserData();
-      document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | Hata: ${mistakes} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
-      document.getElementById('winModal').style.display = 'flex';
-      updateStatsUI();
-      setTimeout(() => { showMenu(); }, 3000);
-    }
+          renderMascotSVG('liveGuideMascotAvatar', currentLiveGuideIdx % 2 === 0 ? 'happy' : 'thinking');
+        }
 
-    checkDailyStreak();
-    updateStatsUI();
-  </script>
-</body>
-</html>
+        function getRankSvgHtml(type) {
+          if (type === 'bronze') {
+            return `<svg viewBox="0 0 100 100"><defs><linearGradient id="br-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f39c12"/><stop offset="50%" stop-color="#d35400"/><stop offset="100%" stop-color="#78281f"/></linearGradient><filter id="sh-br"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/></filter></defs><polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#1b1b22" stroke="url(#br-3d)" stroke-width="7" filter="url(#sh-br)"/><polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="url(#br-3d)"/><path d="M50,32 L65,50 L50,68 L35,50 Z" fill="#ffeaa7" opacity="0.9"/></svg>`;
+          }
+          if (type === 'silver') {
+            return `<svg viewBox="0 0 100 100"><defs><linearGradient id="sl-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffffff"/><stop offset="50%" stop-color="#b2bec3"/><stop offset="100%" stop-color="#636e72"/></linearGradient><filter id="sh-sl"><feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.6"/></filter></defs><polygon points="50,4 92,26 92,74 50,96 8,74 8,26" fill="#141a20" stroke="url(#sl-3d)" stroke-width="7" filter="url(#sh-sl)"/><polygon points="50,14 82,32 82,68 50,86 18,68 18,32" fill="url(#sl-3d)"/><path d="M50,30 L66,50 L50,70 L34,50 Z" fill="#1e272c"/></svg>`;
+          }
+          if (type === 'gold') {
+            return `<svg viewBox="0 0 100 100"><defs><linearGradient id="go-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff200"/><stop offset="50%" stop-color="#f39c12"/><stop offset="100%" stop-color="#b7950b"/></linearGradient><filter id="sh-go"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#f1c40f" flood-opacity="0.8"/></filter></defs><polygon points="50,2 96,25 96,75 50,98 4,75 4,25" fill="#2c220f" stroke="url(#go-3d)" stroke-width="7" filter="url(#sh-go)"/><polygon points="50,12 86,30 86,70 50,88 14,70 14,30" fill="url(#go-3d)"/><polygon points="50,30 68,50 50,70 32,50" fill="#ffffff"/></svg>`;
+          }
+          if (type === 'platinum') {
+            return `<svg viewBox="0 0 100 100"><defs><linearGradient id="pl-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#55efc4"/><stop offset="50%" stop-color="#00cec9"/><stop offset="100%" stop-color="#0984e3"/></linearGradient><filter id="sh-pl"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00cec9" flood-opacity="0.8"/></filter></defs><path d="M50,2 L98,48 L50,96 L2,48 Z" fill="#091d2a" stroke="url(#pl-3d)" stroke-width="7" filter="url(#sh-pl)"/><path d="M50,14 86,48 50,82 14,48 Z" fill="url(#pl-3d)"/><polygon points="50,32 68,48 50,64 32,48" fill="#ffffff"/></svg>`;
+          }
+          if (type === 'diamond') {
+            return `<svg viewBox="0 0 100 100"><defs><linearGradient id="di-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff9ff3"/><stop offset="50%" stop-color="#f368e0"/><stop offset="100%" stop-color="#5f27cd"/></linearGradient><filter id="sh-di"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f368e0" flood-opacity="0.9"/></filter></defs><path d="M50,2 L96,30 80,94 20,94 4,30 Z" fill="#230833" stroke="url(#di-3d)" stroke-width="7" filter="url(#sh-di)"/><polygon points="50,12 86,34 72,84 28,84 14,34" fill="url(#di-3d)"/><polygon points="50,28 70,50 50,72 30,50" fill="#ffffff"/></svg>`;
+          }
+          if (type === 'master') {
+            return `<svg viewBox="0 0 100 100"><defs><linearGradient id="ma-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff6b6b"/><stop offset="50%" stop-color="#ee5253"/><stop offset="100%" stop-color="#b33939"/></linearGradient><filter id="sh-ma"><feDropShadow dx="0" dy="0" stdDeviation="7" flood-color="#ff4757" flood-opacity="1"/></filter></defs><path d="M50,2 L98,22 98,68 50,98 2,68 2,22 Z" fill="#2b0a0e" stroke="url(#ma-3d)" stroke-width="8" filter="url(#sh-ma)"/><path d="M50,12 L88,28 88,62 50,88 12,62 12,28 Z" fill="url(#ma-3d)"/><polygon points="50,26 68,48 50,74 32,48" fill="#ffffff"/><circle cx="50" cy="50" r="7" fill="#ffeaa7"/></svg>`;
+          }
+          return `<svg viewBox="0 0 100 100"><defs><linearGradient id="gm-3d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a29bfe"/><stop offset="35%" stop-color="#fd79a8"/><stop offset="70%" stop-color="#ffeaa7"/><stop offset="100%" stop-color="#00cec9"/></linearGradient><filter id="sh-gm"><feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#a29bfe" flood-opacity="1"/></filter></defs><polygon points="50,1 99,28 84,91 16,91 1,28" fill="#0c071d" stroke="url(#gm-3d)" stroke-width="8" filter="url(#sh-gm)"/><polygon points="50,12 88,34 76,82 24,82 12,34" fill="url(#gm-3d)" opacity="0.9"/><polygon points="50,26 70,50 50,74 30,50" fill="#ffffff"/><circle cx="50" cy="18" r="6" fill="#fff"/><circle cx="32" cy="54" r="5" fill="#fff"/><circle cx="68" cy="54" r="5" fill="#fff"/></svg>`;
+        }
+
+        function getRankDetails(rp) {
+          if (rp < 100) return { name: 'BRONZ', type: 'bronze', max: 100 };
+          if (rp < 300) return { name: 'GÜMÜŞ', type: 'silver', max: 300 };
+          if (rp < 600) return { name: 'ALTIN', type: 'gold', max: 600 };
+          if (rp < 1000) return { name: 'PLATİN', type: 'platinum', max: 1000 };
+          if (rp < 1500) return { name: 'ELMAS', type: 'diamond', max: 1500 };
+          if (rp < 2000) return { name: 'ÜSTAT 👑', type: 'master', max: 2000 };
+          return { name: 'GRANDMASTER ⚡', type: 'grandmaster', max: 2500 };
+        }
+
+        function updateRankUI() {
+          const rank = getRankDetails(userRp);
+          document.getElementById('myRankNameText').innerText = rank.name;
+          document.getElementById('myRpText').innerText = `${userRp} RP`;
+          document.getElementById('myRankIconBox').innerHTML = getRankSvgHtml(rank.type);
+          const pct = Math.min(100, (userRp / rank.max) * 100);
+          document.getElementById('rpProgressBar').style.width = `${pct}%`;
+        }
+
+        function openAllRanksModal() {
+          playTokSound('click');
+          const container = document.getElementById('allRanksListContainer');
+          const ranksData = [
+            { name: 'BRONZ', type: 'bronze', range: '0 - 99 RP' },
+            { name: 'GÜMÜŞ', type: 'silver', range: '100 - 299 RP' },
+            { name: 'ALTIN', type: 'gold', range: '300 - 599 RP' },
+            { name: 'PLATİN', type: 'platinum', range: '600 - 999 RP' },
+            { name: 'ELMAS', type: 'diamond', range: '1000 - 1499 RP' },
+            { name: 'ÜSTAT 👑', type: 'master', range: '1500 - 1999 RP' },
+            { name: 'GRANDMASTER ⚡', type: 'grandmaster', range: '2000+ RP (Zirve)' }
+          ];
+          let html = '';
+          ranksData.forEach(r => {
+            let isCurrent = getRankDetails(userRp).name === r.name;
+            let bgStyle = isCurrent ? 'background: rgba(255,71,87,0.15); border-color: var(--primary);' : '';
+            html += `<div class="rank-row-item" style="${bgStyle}">
+              <div class="rank-row-icon">${getRankSvgHtml(r.type)}</div>
+              <div style="flex:1;">
+                <div style="font-size:0.9rem; font-weight:800; color:var(--text-main);">${r.name} ${isCurrent ? '⭐ (Mevcut)' : ''}</div>
+                <div style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Gereksinim: ${r.range}</div>
+              </div>
+            </div>`;
+          });
+          container.innerHTML = html;
+          document.getElementById('allRanksModal').style.display = 'flex';
+        }
+
+        function closeAllRanksModal() {
+          playTokSound('click');
+          document.getElementById('allRanksModal').style.display = 'none';
+        }
+
+        function switchScreen(screenId) {
+          document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+          document.getElementById(screenId).classList.add('active');
+        }
+
+        function showMenu() {
+          playTokSound('click');
+          stopTimer();
+          document.getElementById('winModal').style.display = 'none';
+          switchScreen('menuScreen');
+          updateStatsUI();
+        }
+
+        function openGameSettingsModal() {
+          playTokSound('click');
+          isRankedMatch = false;
+          isBlitzMode = false;
+          document.getElementById('rankedVersusInfoBox').style.display = 'none';
+          document.getElementById('gameSettingsModal').style.display = 'flex';
+        }
+
+        function closeGameSettingsModal() {
+          playTokSound('click');
+          document.getElementById('gameSettingsModal').style.display = 'none';
+        }
+
+        // --- BLITZ MODU BAŞLATICI ---
+        function startBlitzGame() {
+          playTokSound('click');
+          isRankedMatch = false;
+          isBlitzMode = true;
+          blitzTimeLeft = 90; // 90 saniye blitz
+          document.getElementById('rankedVersusInfoBox').style.display = 'none';
+          initGame(Math.floor(Math.random()*900000)+100, "BLITZ ⚡", false);
+        }
+
+        function handleExitMatch() {
+          playTokSound('click');
+          if (isRankedMatch && currentRoomId) {
+            socket.emit('leave_match', { roomId: currentRoomId });
+          }
+          showMenu();
+        }
+
+        function renderMatchHistory() {
+          const listEl = document.getElementById('matchHistoryList');
+          if (!matchHistory || matchHistory.length === 0) {
+            listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 10px;">Henüz ranked maç yapılmadı.</div>`;
+            return;
+          }
+          let html = '';
+          matchHistory.slice(-5).reverse().forEach(m => {
+            let isWin = m.result === 'KAZANDIN';
+            let cls = isWin ? 'match-history-item match-win' : 'match-history-item match-lose';
+            html += `<div class="${cls}"><span>${m.result} (${m.duration})</span><span>${isWin ? '+' : ''}${m.rpChange} RP</span></div>`;
+          });
+          listEl.innerHTML = html;
+        }
+
+        function openRankedLobby() {
+          playTokSound('click');
+          document.getElementById('rankedUsernameInput').value = userName;
+          updateRankUI();
+          renderMatchHistory();
+          document.getElementById('rankedStatusText').innerText = "";
+          document.getElementById('rankedSearchBtn').disabled = false;
+          document.getElementById('rankedSearchBtn').innerText = "Rakip Ara 🚀";
+          switchScreen('rankedLobbyScreen');
+        }
+
+        function startRankedMatchmaking() {
+          playTokSound('click');
+          const inputVal = document.getElementById('rankedUsernameInput').value.trim();
+          if (inputVal) { userName = inputVal; localStorage.setItem('sudo_username', userName); }
+          const searchBtn = document.getElementById('rankedSearchBtn');
+          searchBtn.disabled = true;
+          searchBtn.innerText = "Rakip Aranıyor... ⏳";
+          document.getElementById('rankedStatusText').innerText = "Rakip aranıyor... ⚔️";
+          socket.emit('find_match', { username: userName, rp: userRp });
+        }
+
+        socket.on('waiting_opponent', (msg) => {
+          document.getElementById('rankedStatusText').innerText = msg;
+        });
+
+        socket.on('match_found', (data) => {
+          isRankedMatch = true;
+          isBlitzMode = false;
+          document.getElementById('rankedVersusInfoBox').style.display = 'flex';
+          
+          document.getElementById('vsMyName').innerText = userName;
+          const myRank = getRankDetails(userRp);
+          document.getElementById('vsMyRankSvg').innerHTML = getRankSvgHtml(myRank.type);
+
+          document.getElementById('vsOppName').innerText = data.opponent.username;
+          const oppRank = getRankDetails(data.opponent.rp || 0);
+          document.getElementById('vsOppRankSvg').innerHTML = getRankSvgHtml(oppRank.type);
+
+          initGame(data.seed, "RANKED 1v1", false);
+        });
+
+        socket.on('game_over', (data) => {
+          if (isRankedMatch) {
+            stopTimer();
+            let durationStr = document.getElementById('timer').innerText;
+            if (data.winner === socket.id) {
+              let rpGain = 20;
+              userRp += rpGain;
+              matchHistory.push({ result: 'KAZANDIN', duration: durationStr, rpChange: rpGain });
+              localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
+              playTokSound('success');
+              showAppAlert("Rakip oyundan ayrıldı veya ana sayfaya döndü! Hükmen kazandın! 🏆");
+            } else {
+              let rpLoss = -15;
+              userRp = Math.max(0, userRp + rpLoss);
+              matchHistory.push({ result: 'KAYBETTİN', duration: durationStr, rpChange: rpLoss });
+              localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
+              playTokSound('error');
+              showAppAlert("Rakip bulmacayı tamamladı! Maçı kaybettin. 😢");
+            }
+            saveUserData();
+            document.getElementById('winModal').style.display = 'none';
+            setTimeout(() => { showMenu(); }, 2500);
+          }
+        });
+
+        let currentRewardDay = parseInt(localStorage.getItem('sudo_reward_day')) || 1;
+        let lastClaimDate = localStorage.getItem('sudo_last_claim_date') || '';
+
+        let ownedSkins = JSON.parse(localStorage.getItem('sudo_owned_skins')) || ['default'];
+        let activeSkin = localStorage.getItem('sudo_active_skin') || 'default';
+        let skinColors = { default: '#ff4757', mint: '#2ed573', royal: '#5352ed' };
+
+        let ownedAccs = JSON.parse(localStorage.getItem('sudo_owned_accs')) || ['none'];
+        let activeAcc = localStorage.getItem('sudo_active_acc') || 'none';
+
+        let ownedBoardThemes = JSON.parse(localStorage.getItem('sudo_owned_board_themes')) || ['classic'];
+        let activeBoardTheme = localStorage.getItem('sudo_active_board_theme') || 'classic';
+        
+        const boardThemesData = {
+          classic: { bg: '#14141c', text: '#f1f2f6', border: 'rgba(255,255,255,0.15)', highlight: '#222230', selected: '#3a3a55', userNum: '#ff4757' },
+          midnight: { bg: '#1e272c', text: '#d2ddef', border: '#485460', highlight: '#2f3542', selected: '#3742fa', userNum: '#ff6b81' },
+          forest: { bg: '#1e3d2f', text: '#e8f8f0', border: '#2e6950', highlight: '#264d3d', selected: '#2ed573', userNum: '#ffd166' },
+          royalgold: { bg: '#2b221e', text: '#fbf8cc', border: '#bc6c25', highlight: '#3d322c', selected: '#e58e26', userNum: '#f4a261' }
+        };
+
+        let mistakes = 0, streakCorrect = 0, boardSize = 9;
+        let initialBoard = [], solutionBoard = [], currentBoard = [], notesBoard = [], history = [];
+        let selectedCell = null, isNotesMode = false, timerInterval = null, secondsElapsed = 0;
+        let blinkInterval = null, idleTimer = null, isSleeping = false;
+
+        const successPhrases = ["Süpersin! ✨", "Zihninin zembereği çalıştı! 🧠", "Harika hamle! 🔥", "İşte budur! 🚀"];
+        const errorPhrases = ["Eyvah, yanlış hamle! 🥺", "Hmm, orası öyle değil 🤔", "Küçük kaza! 🙈"];
+        const clickPhrases = ["Beni mi tıkladın? 🌸", "Hadi bulmacayı çözelim! 🧩", "Harika görünüyorsun! ✨", "Süper bir gün! 🚀"];
+        const sleepPhrases = ["Zzz... Düşünüyorum... 💤", "Burası çok huzurlu... 🌙", "Bekliyorum patron! 😴"];
+
+        function resetIdleTimer() {
+          if (isSleeping) { isSleeping = false; setSudoEmotion('happy', "Uyandım! Devam edelim! 🚀"); }
+          if (idleTimer) clearTimeout(idleTimer);
+          idleTimer = setTimeout(() => {
+            if (document.getElementById('gameScreen').classList.contains('active')) {
+              isSleeping = true;
+              setSudoEmotion('sleep', getRandomPhrase(sleepPhrases));
+            }
+          }, 12000);
+        }
+
+        function getRandomPhrase(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        function triggerMascotClick() {
+          playTokSound('click');
+          resetIdleTimer();
+          setSudoEmotion('happy', getRandomPhrase(clickPhrases));
+          const wrappers = document.querySelectorAll('.guide-mascot-wrapper, .mascot-container');
+          wrappers.forEach(w => {
+            w.classList.add('mascot-dance');
+            setTimeout(() => { w.classList.remove('mascot-dance'); }, 1500);
+          });
+        }
+
+        function redeemPromoCode() {
+          playTokSound('click');
+          const inputVal = document.getElementById('promoInput').value.trim();
+          if (inputVal === "800") {
+            userCoins += 800; saveUserData(); updateStatsUI();
+            playTokSound('success');
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            showAppAlert("Tebrikler! Sınırsız promo kod ile +800 Coin eklendi! 🎉🪙");
+            document.getElementById('promoInput').value = "";
+          } else if (inputVal === "500") {
+            userCoins += 4000; saveUserData(); updateStatsUI();
+            playTokSound('success');
+            confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+            showAppAlert("Tebrikler! Sınırsız özel kod ile +4.000 Coin yüklendi! 🚀🪙");
+            document.getElementById('promoInput').value = "";
+          } else {
+            playTokSound('error');
+            showAppAlert("Geçersiz promo kod! (800 veya 500 deneyebilirsin) ❌");
+          }
+        }
+
+        function checkDailyStreak() {
+          const today = new Date().toDateString();
+          if (lastLoginDate) {
+            const last = new Date(lastLoginDate);
+            const diffDays = Math.floor((new Date() - last) / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) streakDays++;
+            else if (diffDays > 1) streakDays = 1;
+          }
+          lastLoginDate = today;
+          saveUserData();
+        }
+
+        function saveUserData() {
+          localStorage.setItem('sudo_score', userScore);
+          localStorage.setItem('sudo_coins', userCoins);
+          localStorage.setItem('sudo_level', userLevel);
+          localStorage.setItem('sudo_hints', hintCount);
+          localStorage.setItem('sudo_streak', streakDays);
+          localStorage.setItem('sudo_last_login', lastLoginDate);
+          localStorage.setItem('sudo_reward_day', currentRewardDay);
+          localStorage.setItem('sudo_last_claim_date', lastClaimDate);
+          localStorage.setItem('sudo_owned_skins', JSON.stringify(ownedSkins));
+          localStorage.setItem('sudo_active_skin', activeSkin);
+          localStorage.setItem('sudo_owned_accs', JSON.stringify(ownedAccs));
+          localStorage.setItem('sudo_active_acc', activeAcc);
+          localStorage.setItem('sudo_owned_board_themes', JSON.stringify(ownedBoardThemes));
+          localStorage.setItem('sudo_active_board_theme', activeBoardTheme);
+          localStorage.setItem('sudo_rp', userRp);
+          localStorage.setItem('sudo_username', userName);
+          localStorage.setItem('sudo_match_history', JSON.stringify(matchHistory));
+        }
+
+        function updateStatsUI() {
+          document.getElementById('userLevel').innerText = userLevel;
+          document.getElementById('userCoins').innerText = userCoins;
+          document.getElementById('userStreak').innerText = `${streakDays} Gün`;
+          const hintBtn = document.getElementById('hintBtn');
+          if(hintBtn) {
+            if (isRankedMatch) { hintBtn.innerHTML = `<span>💡</span> Yasak`; hintBtn.disabled = true; }
+            else { hintBtn.innerHTML = `<span>💡</span> İpucu (${hintCount})`; hintBtn.disabled = false; }
+          }
+          renderMascotSVG('menuMascot');
+          updateMarketUI();
+        }
+
+        function openLeagueModal() { playTokSound('click'); renderLeaderboard(); switchScreen('leagueScreen'); }
+        function openDailyRewardsModal() { playTokSound('click'); renderDailyRewardsGrid(); switchScreen('dailyRewardsScreen'); }
+        function openShop() { playTokSound('click'); updateMarketUI(); switchScreen('shopScreen'); }
+
+        function renderMascotSVG(containerId, mood = 'happy', isBlinking = false) {
+          const el = document.getElementById(containerId);
+          if (!el) return;
+          let color = skinColors[activeSkin] || '#ff4757';
+          let mouthPath = "M 38 62 Q 50 74 62 62";
+          if (mood === 'sad' || mood === 'sitem') mouthPath = "M 38 66 Q 50 54 62 66";
+          else if (mood === 'thinking') mouthPath = "M 42 62 Q 50 60 58 62";
+          else if (mood === 'sleep') mouthPath = "M 42 64 Q 50 68 58 64";
+
+          let eyesSVG = '';
+          if (mood === 'sleep' || isBlinking) {
+            eyesSVG = `<path d="M 31 38 Q 37 43 43 38" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M 61 38 Q 67 43 73 38" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+          } else {
+            eyesSVG = `<circle cx="35" cy="38" r="11" fill="#fff"/><circle cx="65" cy="38" r="11" fill="#fff"/><circle cx="37" cy="37" r="5.5" fill="#1e1e2f"/><circle cx="67" cy="37" r="5.5" fill="#1e1e2f"/><circle cx="39" cy="35" r="2" fill="#fff"/><circle cx="69" cy="35" r="2" fill="#fff"/>`;
+          }
+
+          let accSVG = '';
+          if (activeAcc === 'crown') {
+            accSVG = `<g transform="translate(0, -18)"><polygon points="20,22 32,4 50,16 68,4 80,22 75,28 25,28" fill="#f1c40f" stroke="#f39c12" stroke-width="2"/><circle cx="50" cy="13" r="3.5" fill="#ff4757"/><circle cx="32" cy="10" r="2.5" fill="#2ed573"/><circle cx="68" cy="10" r="2.5" fill="#3742fa"/></g>`;
+          } else if (activeAcc === 'glasses') {
+            accSVG = `<g transform="translate(0, -2)"><rect x="20" y="26" width="28" height="22" rx="6" fill="#1e1e2f"/><rect x="52" y="26" width="28" height="22" rx="6" fill="#1e1e2f"/><line x1="48" y1="36" x2="52" y2="36" stroke="#1e1e2f" stroke-width="4"/></g>`;
+          } else if (activeAcc === 'halo') {
+            accSVG = `<g transform="translate(0, -16)"><ellipse cx="50" cy="10" rx="30" ry="8" fill="none" stroke="#f1c40f" stroke-width="5" opacity="0.9"/></g>`;
+          } else if (activeAcc === 'bow') {
+            accSVG = `<g transform="translate(0, 52)"><polygon points="50,22 30,10 30,34" fill="#ff6b81"/><polygon points="50,22 70,10 70,34" fill="#ff6b81"/><circle cx="50" cy="22" r="5" fill="#ff4757"/></g>`;
+          } else if (activeAcc === 'headphones') {
+            accSVG = `<g><path d="M 8 42 A 44 44 0 0 1 92 42" fill="none" stroke="#1e1e2f" stroke-width="7" stroke-linecap="round"/><rect x="0" y="32" width="12" height="26" rx="6" fill="#ff4757"/><rect x="88" y="32" width="12" height="26" rx="6" fill="#ff4757"/></g>`;
+          } else if (activeAcc === 'cat') {
+            accSVG = `<g transform="translate(0, -12)"><polygon points="12,28 26,-2 42,18" fill="${color}"/><polygon points="88,28 74,-2 58,18" fill="${color}"/></g>`;
+          } else if (activeAcc === 'chef') {
+            accSVG = `<g transform="translate(0, -28)"><circle cx="36" cy="20" r="14" fill="#ffffff"/><circle cx="64" cy="20" r="14" fill="#ffffff"/><circle cx="50" cy="12" r="16" fill="#ffffff"/><rect x="32" y="22" width="36" height="14" rx="3" fill="#ffffff"/></g>`;
+          }
+
+          el.innerHTML = `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow:visible;"><circle cx="50" cy="50" r="45" fill="${color}"/>${eyesSVG}<path d="${mouthPath}" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>${accSVG}</svg>`;
+        }
+
+        let currentMood = 'happy';
+        function startBlinkLoop() {
+          if (blinkInterval) clearInterval(blinkInterval);
+          blinkInterval = setInterval(() => {
+            if (isSleeping) return;
+            renderMascotSVG('mascotEmotionAvatar', currentMood, true);
+            setTimeout(() => { renderMascotSVG('mascotEmotionAvatar', currentMood, false); }, 180);
+          }, 3000);
+        }
+
+        function setSudoEmotion(mood, text) {
+          currentMood = mood;
+          renderMascotSVG('mascotEmotionAvatar', mood, false);
+          const textEl = document.getElementById('mascotEmotionText');
+          const wrapperEl = document.getElementById('guideMascotWrapper');
+          if(textEl) textEl.innerText = text;
+          if(wrapperEl) {
+            wrapperEl.classList.remove('mascot-dance', 'mascot-thinking', 'mascot-sitem', 'mascot-sleep');
+            void wrapperEl.offsetWidth;
+            if(mood === 'happy') wrapperEl.classList.add('mascot-dance');
+            else if(mood === 'thinking') wrapperEl.classList.add('mascot-thinking');
+            else if(mood === 'sitem' || mood === 'sad') wrapperEl.classList.add('mascot-sitem');
+            else if(mood === 'sleep') wrapperEl.classList.add('mascot-sleep');
+          }
+        }
+
+        function renderLeaderboard() {
+          const container = document.getElementById('leaderboardContainer');
+          let dummyPlayers = [{ name: "", score: 2450 }, { name: userName, score: userScore, isUser: true }, { name: "", score: 2100 }];
+          dummyPlayers.sort((a, b) => b.score - a.score);
+          let html = '';
+          dummyPlayers.forEach((p, idx) => {
+            let rowClass = p.isUser ? 'leaderboard-item user-row' : 'leaderboard-item';
+            html += `<div class="${rowClass}"><span>${idx+1}. ${p.name}</span><span>⭐ ${p.score}</span></div>`;
+          });
+          container.innerHTML = html;
+        }
+
+        function switchMarketTab(tabName, btn) {
+          playTokSound('click');
+          document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.market-section').forEach(s => s.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById(`market-${tabName}`).classList.add('active');
+        }
+
+        function renderDailyRewardsGrid() {
+          const container = document.getElementById('dailyRewardGridContainer');
+          container.innerHTML = '';
+          const today = new Date().toDateString();
+          let html = '';
+          for (let i = 1; i <= 15; i++) {
+            let boxClass = 'reward-day-box';
+            if (i < currentRewardDay || (i === currentRewardDay && lastClaimDate === today)) boxClass += ' claimed';
+            else if (i === currentRewardDay && lastClaimDate !== today) boxClass += ' active-day';
+            html += `<div class="${boxClass}"><span style="font-size:0.65rem;">GÜN ${i}</span><span>🪙</span><span style="font-size:0.75rem; font-weight:800;">+${i*20}</span></div>`;
+          }
+          container.innerHTML = html;
+          const claimBtn = document.getElementById('claimRewardBtn');
+          if (lastClaimDate === today) { claimBtn.innerText = "Alındı ✔️"; claimBtn.disabled = true; }
+          else { claimBtn.innerText = "Bugünkü Ödülü Al ✨"; claimBtn.disabled = false; }
+        }
+
+        function claimDailyReward() {
+          playTokSound('success');
+          const today = new Date().toDateString();
+          if (lastClaimDate === today) return;
+          let earned = currentRewardDay * 20;
+          userCoins += earned; lastClaimDate = today; currentRewardDay++;
+          saveUserData(); updateStatsUI(); renderDailyRewardsGrid();
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+          showAppAlert(`Tebrikler! +${earned} Coin eklendi! 🎉`);
+        }
+
+        function showAppAlert(msg) {
+          renderMascotSVG('alertMascot');
+          document.getElementById('alertMessageText').innerText = msg;
+          document.getElementById('appAlertModal').style.display = 'flex';
+        }
+        function closeAppAlert() { playTokSound('click'); document.getElementById('appAlertModal').style.display = 'none'; }
+
+        function updateMarketUI() {
+          ['default', 'mint', 'royal'].forEach(id => {
+            let el = document.getElementById(`skin-${id}`);
+            if(el) { el.classList.remove('equipped', 'purchased'); if (activeSkin === id) el.classList.add('equipped'); else if (ownedSkins.includes(id)) el.classList.add('purchased'); }
+          });
+          ['none', 'crown', 'glasses', 'halo', 'bow', 'headphones', 'cat', 'chef'].forEach(id => {
+            let el = document.getElementById(`acc-${id}`);
+            if(el) { el.classList.remove('equipped', 'purchased'); if (activeAcc === id) el.classList.add('equipped'); else if (ownedAccs.includes(id)) el.classList.add('purchased'); }
+          });
+          ['classic', 'midnight', 'forest', 'royalgold'].forEach(id => {
+            let el = document.getElementById(`boardtheme-${id}`);
+            if(el) { el.classList.remove('equipped', 'purchased'); if (activeBoardTheme === id) el.classList.add('equipped'); else if (ownedBoardThemes.includes(id)) el.classList.add('purchased'); }
+          });
+        }
+
+        function buyOrEquipSkin(id, color, price) {
+          playTokSound('click');
+          if (ownedSkins.includes(id)) { activeSkin = id; saveUserData(); updateStatsUI(); }
+          else {
+            if (userCoins < price) { playTokSound('error'); return showAppAlert("Yeterli Coin'in yok!"); }
+            userCoins -= price; ownedSkins.push(id); activeSkin = id;
+            playTokSound('success');
+            saveUserData(); updateStatsUI(); showAppAlert("Kostüm giyildi! 🌸");
+          }
+        }
+
+        function buyOrEquipAcc(id, price) {
+          playTokSound('click');
+          if (ownedAccs.includes(id)) { activeAcc = id; saveUserData(); updateStatsUI(); }
+          else {
+            if (userCoins < price) { playTokSound('error'); return showAppAlert("Yeterli Coin'in yok!"); }
+            userCoins -= price; ownedAccs.push(id); activeAcc = id;
+            playTokSound('success');
+            saveUserData(); updateStatsUI(); showAppAlert("Aksesuar takıldı! ✨");
+          }
+        }
+
+        function buyOrEquipBoardTheme(id, price) {
+          playTokSound('click');
+          if (ownedBoardThemes.includes(id)) { activeBoardTheme = id; saveUserData(); updateStatsUI(); renderBoard(); }
+          else {
+            if (userCoins < price) { playTokSound('error'); return showAppAlert(`Bu tema için ${price} Coin gerekiyor!`); }
+            userCoins -= price; ownedBoardThemes.push(id); activeBoardTheme = id;
+            playTokSound('success');
+            saveUserData(); updateStatsUI(); renderBoard();
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            showAppAlert("Sudo Market teması uygulandı! 🧩✨");
+          }
+        }
+
+        function buyHints() {
+          playTokSound('click');
+          if (userCoins < 40) { playTokSound('error'); return showAppAlert("Yeterli Coin'in yok!"); }
+          userCoins -= 40; hintCount += 3; saveUserData(); updateStatsUI();
+          playTokSound('success');
+          showAppAlert("+3 İpucu alındı! 💡");
+        }
+
+        function setBoardSize(size, btn) {
+          playTokSound('click');
+          boardSize = size; 
+          document.querySelectorAll('#sizeOptions .option-btn').forEach(b => b.classList.remove('active')); 
+          btn.classList.add('active'); 
+        }
+        
+        function startConfiguredGame() {
+          playTokSound('click');
+          isBlitzMode = false;
+          closeGameSettingsModal();
+          initGame(Math.floor(Math.random()*900000)+100, "Yeni Oyun", false);
+        }
+
+        function seededRandom(seed) { let x = Math.sin(seed++) * 10000; return x - Math.floor(x); }
+
+        function generateSudoku(seed) {
+          let baseTemplates = {
+            6: [1,2,3,4,5,6, 4,5,6,1,2,3, 2,3,1,5,6,4, 5,6,4,2,3,1, 3,1,2,6,4,5, 6,4,5,3,1,2],
+            9: [1,2,3,4,5,6,7,8,9, 4,5,6,7,8,9,1,2,3, 7,8,9,1,2,3,4,5,6, 2,3,1,5,6,4,8,9,7, 5,6,4,8,9,7,2,3,1, 8,9,7,2,3,1,5,6,4, 3,1,2,6,4,5,9,7,8, 6,4,5,9,7,8,3,1,2, 9,7,8,3,1,2,6,4,5],
+            12: [1,2,3,4,5,6,7,8,9,10,11,12, 5,6,7,8,9,10,11,12,1,2,3,4, 9,10,11,12,1,2,3,4,5,6,7,8, 2,3,4,5,6,7,8,9,10,11,12,1, 6,7,8,9,10,11,12,1,2,3,4,5, 10,11,12,1,2,3,4,5,6,7,8,9, 3,4,5,6,7,8,9,10,11,12,1,2, 7,8,9,10,11,12,1,2,3,4,5,6, 11,12,1,2,3,4,5,6,7,8,9,10, 4,5,6,7,8,9,10,11,12,1,2,3, 8,9,10,11,12,1,2,3,4,5,6,7, 12,1,2,3,4,5,6,7,8,9,10,11],
+            16: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16, 5,6,7,8,9,10,11,12,13,14,15,16,1,2,3,4, 9,10,11,12,13,14,15,16,1,2,3,4,5,6,7,8, 13,14,15,16,1,2,3,4,5,6,7,8,9,10,11,12, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,1, 6,7,8,9,10,11,12,13,14,15,16,1,2,3,4,5, 10,11,12,13,14,15,16,1,2,3,4,5,6,7,8,9, 14,15,16,1,2,3,4,5,6,7,8,9,10,11,12,13, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,1,2, 7,8,9,10,11,12,13,14,15,16,1,2,3,4,5,6, 11,12,13,14,15,16,1,2,3,4,5,6,7,8,9,10, 15,16,1,2,3,4,5,6,7,8,9,10,11,12,13,14, 4,5,6,7,8,9,10,11,12,13,14,15,16,1,2,3, 8,9,10,11,12,13,14,15,16,1,2,3,4,5,6,7, 12,13,14,15,16,1,2,3,4,5,6,7,8,9,10,11, 16,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+          };
+
+          let currentSeed = seed;
+          let solution = [...baseTemplates[boardSize]];
+          let numMap = Array.from({length: boardSize}, (_, i) => i + 1);
+          for (let i = numMap.length - 1; i > 0; i--) {
+            let j = Math.floor(seededRandom(currentSeed++) * (i + 1));
+            [numMap[i], numMap[j]] = [numMap[j], numMap[i]];
+          }
+          solution = solution.map(val => numMap[val - 1]);
+          let puzzle = [...solution];
+          let removeCount = boardSize === 6 ? 18 : (boardSize === 9 ? 38 : (boardSize === 12 ? 55 : 95));
+          for(let i=0; i<removeCount; i++) {
+            let randIdx = Math.floor(seededRandom(currentSeed++) * puzzle.length);
+            puzzle[randIdx] = 0;
+          }
+          return { puzzle, solution };
+        }
+
+        function initGame(seed, title, tutorialMode) {
+          mistakes = 0; streakCorrect = 0;
+          document.getElementById('mistakeCounter').innerText = `Hata: 0`;
+          
+          const data = generateSudoku(seed);
+          initialBoard = [...data.puzzle]; currentBoard = [...data.puzzle]; solutionBoard = [...data.solution];
+          notesBoard = Array(boardSize * boardSize).fill().map(() => []);
+          history = []; selectedCell = null; isNotesMode = false;
+          document.getElementById('notesBtn').classList.remove('active');
+
+          const numpadContainer = document.getElementById('numpadContainer');
+          numpadContainer.style.gridTemplateColumns = boardSize > 9 ? `repeat(6, 1fr)` : `repeat(${boardSize}, 1fr)`;
+          numpadContainer.innerHTML = '';
+          let btnH = boardSize === 16 ? '34px' : (boardSize === 12 ? '38px' : '48px');
+          let btnF = boardSize === 16 ? '0.85rem' : (boardSize === 12 ? '0.95rem' : '1.2rem');
+
+          for (let i = 1; i <= boardSize; i++) {
+            numpadContainer.innerHTML += `<button class="num-btn" style="height:${btnH}; font-size:${btnF};" onclick="inputNumberToCell(${i})">${i}</button>`;
+          }
+
+          const boardEl = document.getElementById('board');
+          boardEl.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
+          document.getElementById('boardTitle').innerText = `${boardSize}x${boardSize} - ${title}`;
+          renderBoard();
+          if (!tutorialMode) startTimer();
+          switchScreen('gameScreen');
+          updateStatsUI();
+          setSudoEmotion('happy', isBlitzMode ? "Blitz başladı! Acele et! ⚡" : "Hadi başlayalım! 🌸");
+          startBlinkLoop();
+          resetIdleTimer();
+          if (!isMusicPlaying) {
+            isMusicPlaying = true;
+            document.getElementById('musicBtn').innerText = "🎵 Müzik: Açık";
+            document.getElementById('musicBtn').style.color = "var(--primary)";
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            playChillNote();
+            startMusicLoop();
+          }
+        }
+
+        function renderBoard() {
+          const container = document.getElementById('board');
+          container.innerHTML = '';
+          let totalCells = boardSize * boardSize;
+          let theme = boardThemesData[activeBoardTheme] || boardThemesData['classic'];
+          container.style.backgroundColor = theme.border;
+          let fontSize = boardSize === 16 ? '0.65rem' : (boardSize === 12 ? '0.82rem' : '1.3rem');
+
+          for (let i = 0; i < totalCells; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.style.fontSize = fontSize;
+            cell.style.backgroundColor = theme.bg;
+            cell.style.color = theme.text;
+            cell.dataset.index = i;
+
+            if (selectedCell === i) cell.style.backgroundColor = theme.selected;
+
+            if (initialBoard[i] !== 0) {
+              cell.classList.add('fixed');
+              cell.innerText = initialBoard[i];
+              cell.style.fontWeight = '800';
+              cell.style.color = theme.text;
+            } else if (currentBoard[i] !== 0) {
+              cell.innerText = currentBoard[i];
+              if (currentBoard[i] !== solutionBoard[i]) cell.classList.add('error');
+              else { cell.style.color = theme.userNum; cell.style.fontWeight = '700'; }
+            } else if (notesBoard[i].length > 0) {
+              const notesGrid = document.createElement('div');
+              notesGrid.className = 'notes-grid';
+              let subCols = boardSize === 6 ? 2 : (boardSize === 12 || boardSize === 16 ? 4 : 3);
+              notesGrid.style.gridTemplateColumns = `repeat(${subCols}, 1fr)`;
+              for (let n = 1; n <= boardSize; n++) {
+                const noteNum = document.createElement('div');
+                noteNum.className = 'note-num';
+                noteNum.style.fontSize = boardSize === 16 ? '0.35rem' : '0.55rem';
+                noteNum.innerText = notesBoard[i].includes(n) ? n : '';
+                notesGrid.appendChild(noteNum);
+              }
+              cell.appendChild(notesGrid);
+            }
+
+            cell.addEventListener('click', () => { 
+              playTokSound('click');
+              selectedCell = i; 
+              renderBoard(); 
+            });
+            container.appendChild(cell);
+          }
+        }
+
+        function inputNumberToCell(num) {
+          playTokSound('click');
+          resetIdleTimer();
+          if (selectedCell === null || initialBoard[selectedCell] !== 0) return;
+          if (currentBoard[selectedCell] === solutionBoard[selectedCell] && currentBoard[selectedCell] === num) return;
+          saveHistory();
+
+          if (isNotesMode) {
+            currentBoard[selectedCell] = 0;
+            let notes = notesBoard[selectedCell];
+            const idx = notes.indexOf(num);
+            if (idx > -1) notes.splice(idx, 1); else notes.push(num);
+          } else {
+            notesBoard[selectedCell] = [];
+            if (currentBoard[selectedCell] === num && num !== solutionBoard[selectedCell]) return;
+            currentBoard[selectedCell] = num;
+            if (num !== solutionBoard[selectedCell]) {
+              mistakes++; streakCorrect = 0;
+              document.getElementById('mistakeCounter').innerText = `Hata: ${mistakes}`;
+              playTokSound('error');
+              setSudoEmotion('sitem', getRandomPhrase(errorPhrases));
+            } else {
+              streakCorrect++;
+              playTokSound('success');
+              setSudoEmotion('happy', getRandomPhrase(successPhrases));
+              if (streakCorrect >= 5) { streakCorrect = 0; triggerDuolingoRewardModal(); }
+            }
+          }
+          renderBoard();
+          checkWin();
+        }
+
+        function triggerDuolingoRewardModal() {
+          hintCount += 1; saveUserData(); updateStatsUI();
+          renderMascotSVG('duoFlyingMascotContainer');
+          document.getElementById('duoRewardMessage').innerText = `Sana bir hediye verdim: +1 İpucu! 🎁✨`;
+          const modal = document.getElementById('duolingoRewardModal');
+          modal.style.display = 'flex';
+          setTimeout(() => { modal.classList.add('active'); }, 10);
+          playTokSound('success');
+          confetti({ particleCount: 130, spread: 85, origin: { y: 0.6 } });
+        }
+
+        function closeDuolingoRewardModal() {
+          playTokSound('click');
+          const modal = document.getElementById('duolingoRewardModal');
+          modal.classList.remove('active');
+          setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        function toggleNotes() {
+          playTokSound('click');
+          resetIdleTimer();
+          isNotesMode = !isNotesMode;
+          document.getElementById('notesBtn').classList.toggle('active', isNotesMode);
+          setSudoEmotion('thinking', isNotesMode ? "Not modu açık! ✏️" : "Normal mod aktif.");
+        }
+
+        function erase() {
+          playTokSound('click');
+          resetIdleTimer();
+          if (selectedCell === null || initialBoard[selectedCell] !== 0) return;
+          saveHistory();
+          currentBoard[selectedCell] = 0;
+          notesBoard[selectedCell] = [];
+          renderBoard();
+        }
+
+        function getHint() {
+          playTokSound('click');
+          resetIdleTimer();
+          if (isRankedMatch) return showAppAlert("Ranked maçlarda ipucu yasaktır! ⚔️");
+          if (hintCount <= 0) return showAppAlert("İpucu kalmadı!");
+          let totalCells = boardSize * boardSize;
+          let emptyOrWrong = [];
+          for (let i = 0; i < totalCells; i++) {
+            if (initialBoard[i] === 0 && currentBoard[i] !== solutionBoard[i]) emptyOrWrong.push(i);
+          }
+          if (emptyOrWrong.length === 0) return;
+
+          hintCount--; saveUserData(); updateStatsUI();
+          let targetIndex = emptyOrWrong[Math.floor(Math.random() * emptyOrWrong.length)];
+          let targetCell = document.querySelector(`.cell[data-index="${targetIndex}"]`);
+          let cellRect = targetCell.getBoundingClientRect();
+          let wrapperEl = document.getElementById('guideMascotWrapper');
+          let mascotRect = wrapperEl.getBoundingClientRect();
+
+          setSudoEmotion('thinking', "Yuvarlanıyorum! 🌀✨");
+
+          let dx = cellRect.left - mascotRect.left + (cellRect.width / 2) - (mascotRect.width / 2);
+          let dy = cellRect.top - mascotRect.top + (cellRect.height / 2) - (mascotRect.height / 2);
+
+          wrapperEl.style.setProperty('--dx', `${dx}px`);
+          wrapperEl.style.setProperty('--dy', `${dy}px`);
+          wrapperEl.classList.add('rolling-motion');
+
+          setTimeout(() => {
+            saveHistory();
+            currentBoard[targetIndex] = solutionBoard[targetIndex];
+            notesBoard[targetIndex] = [];
+            renderBoard();
+            selectedCell = targetIndex;
+            checkWin();
+            resetMascotPosition();
+          }, 850);
+        }
+
+        function resetMascotPosition() {
+          let wrapperEl = document.getElementById('guideMascotWrapper');
+          if (wrapperEl) { wrapperEl.classList.remove('rolling-motion'); wrapperEl.style.transform = 'translate(0px, 0px) scale(1)'; }
+        }
+
+        function saveHistory() { history.push({ board: [...currentBoard], notes: JSON.parse(JSON.stringify(notesBoard)) }); }
+
+        function undo() {
+          playTokSound('click');
+          resetIdleTimer();
+          if (history.length === 0) return;
+          let last = history.pop();
+          currentBoard = [...last.board];
+          notesBoard = JSON.parse(JSON.stringify(last.notes));
+          renderBoard();
+        }
+
+        function startTimer() {
+          stopTimer(); 
+          secondsElapsed = 0;
+          if (isBlitzMode) {
+            timerInterval = setInterval(() => {
+              blitzTimeLeft--;
+              let m = Math.floor(blitzTimeLeft / 60).toString().padStart(2, '0');
+              let s = (blitzTimeLeft % 60).toString().padStart(2, '0');
+              document.getElementById('timer').innerText = `${m}:${s}`;
+              if (blitzTimeLeft <= 10 && blitzTimeLeft > 0) playTokSound('blitz_tick');
+
+              if (blitzTimeLeft <= 0) {
+                stopTimer();
+                playTokSound('error');
+                showAppAlert("Süre bitti! Blitz modunu kaybettin! ⏱️❌");
+                setTimeout(() => { showMenu(); }, 2000);
+              }
+            }, 1000);
+          } else {
+            timerInterval = setInterval(() => {
+              secondsElapsed++;
+              let m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+              let s = (secondsElapsed % 60).toString().padStart(2, '0');
+              document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+          }
+        }
+
+        function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
+
+        function checkWin() {
+          let totalCells = boardSize * boardSize;
+          for (let i = 0; i < totalCells; i++) { if (currentBoard[i] !== solutionBoard[i]) return; }
+          stopTimer();
+
+          if (isRankedMatch && currentRoomId) {
+            let durationStr = document.getElementById('timer').innerText;
+            let rpGain = 25;
+            userRp += rpGain;
+            matchHistory.push({ result: 'KAZANDIN', duration: durationStr, rpChange: rpGain });
+            saveUserData();
+            socket.emit('game_won', { roomId: currentRoomId });
+          }
+
+          renderMascotSVG('winMascot');
+          playTokSound('success');
+          confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
+          
+          let earnedScore = isBlitzMode ? 300 : Math.max(30, 150 - (mistakes * 20));
+          let earnedCoins = isBlitzMode ? 80 : Math.max(10, 50 - (mistakes * 5));
+          userScore += earnedScore; userCoins += earnedCoins;
+
+          let rpGainText = isRankedMatch ? ` | +25 RP 🏆` : "";
+
+          saveUserData();
+          document.getElementById('winStatsText').innerText = `Süre: ${document.getElementById('timer').innerText} | Hata: ${mistakes} | +${earnedScore} Puan | +${earnedCoins} Coin${rpGainText}`;
+          document.getElementById('winModal').style.display = 'flex';
+          updateStatsUI();
+          setTimeout(() => { showMenu(); }, 3000);
+        }
+        
+        checkDailyStreak();
+        updateStatsUI();
+      </script>
+    </body>
+    </html>
